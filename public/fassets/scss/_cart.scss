@@ -1,0 +1,86 @@
+.cartMidSection {
+  margin: 0 auto;
+  flex: 0 0 85%;
+  max-width: 85%;
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .cartSection {
+    tr {
+      th {
+        text-align: left;
+      }
+    }
+    tr {
+      td {
+        button {
+          outline: none;
+          background: none;
+          border: 0;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+.qty_input {
+  .qty {
+    .icount {
+      display: inline-block;
+      vertical-align: top;
+      font-weight: 500;
+      line-height: 1;
+      padding: 0 2px;
+      min-width: 36px;
+      text-align: center;
+      border: 1px solid #f1f1f1;
+      width: 50px;
+      height: 30px;
+      border-radius: 0;
+    }
+    .plus {
+      cursor: pointer;
+      display: inline-block;
+      vertical-align: top;
+      color: $colorGreen;
+      width: 30px;
+      height: 30px;
+      font: 30px/0.9 $myFontRegular, sans-serif;
+      text-align: center;
+      &:hover {
+        color: $colorBlack !important;
+      }
+    }
+    .minus {
+      cursor: pointer;
+      display: inline-block;
+      vertical-align: top;
+      color: $colorGreen;
+      width: 30px;
+      height: 30px;
+      font: 30px/0.9 $myFontRegular, sans-serif;
+      text-align: center;
+      background-clip: padding-box;
+      &:hover {
+        color: $colorBlack !important;
+      }
+    }
+  }
+}
+
+/*Prevent text selection*/
+.qty_input span {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+.qty_input input::-webkit-outer-spin-button,
+.qty_input input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.qty_input input:disabled {
+  background-color: white;
+}

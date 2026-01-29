@@ -1,0 +1,9 @@
+.footerWidget {
+  position: relative;
+  .footerWidgetBody {
+    justify-content: space-between;
+    font-size: 0.9rem;
+    padding: 1.2rem 0;
+    border-top: 2px solid $colorGreen;
+  }
+}

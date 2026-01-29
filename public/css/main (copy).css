@@ -1,0 +1,15 @@
+.sidebar-fixed .sidebar{
+    width: 230px;
+}
+
+.sidebar .sidebar-nav{
+    width: 230px;
+}
+
+.sidebar .nav{
+    width: 230px;
+}
+
+.main .container-fluid {
+    padding: 0 40px;
+}

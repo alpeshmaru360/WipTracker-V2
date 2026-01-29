@@ -1,0 +1,17 @@
+.pull-right {
+    float: right;
+}
+.admin_dashboard{
+    background: white;
+    color: #0000007a;
+    border: 0;
+    padding: 20px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    -webkit-border-radius: 12px;
+    min-height: 100% !important;
+}
+
+.role_lable{
+    line-height: 1 !important;
+}

@@ -1,0 +1,249 @@
+.loginPage {
+    background-image: url(../images/loginPgaeBg.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    .headerWidget {
+        position: absolute;
+        width: 100%;
+        .logo {
+            position: relative;
+            z-index: 1;
+        }
+    }
+    .loginWrapper {
+        overflow: hidden;
+        .loginWidget {
+            background: rgba(0, 156, 130, 0.9);
+            color: $colorWhite;
+            padding: 1.5rem;
+            margin-left: auto;
+            height: 100%;
+            position: relative;
+            flex: 0 0 40%;
+            max-width: 40%;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            &:after {
+                content: "";
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                right: -100%;
+                top: 0;
+                bottom: 0;
+                background: rgba(0, 156, 130, 0.9);
+            }
+            .loginWidgetTop {
+                position: absolute;
+                left: 3.125rem;
+                top: 3.125rem;
+                a {
+                    color: $colorWhite;
+                }
+            }
+            .loginFormWidget {
+                background: $colorWhite;
+                color: $colorBlack;
+                padding: 2.5rem;
+                text-align: center;
+                border-radius: 1.125rem;
+                .loginFormHeader {
+                    color: #505050;
+                    font-size: 0.8rem;
+                    h2 {
+                        font-size: 2.6rem;
+                        text-transform: uppercase;
+                        color: $colorBlack;
+                    }
+                }
+                .loginFormFields {
+                    position: relative;
+                    .formFields {
+                        position: relative;
+                        overflow: hidden;
+                        border: 1px solid #e1e1e1;
+                        .formIcon {
+                            position: absolute;
+                            background: $colorGreen;
+                            width: 3rem;
+                            height: 100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        .formInput {
+                            height: 57px;
+                            padding: 0.5rem 1rem 0.5rem 4rem;
+                            width: 100%;
+                            border: 0;
+                        }
+                    }
+                    .fieldTxt {
+                        border-radius: 0.5rem 0.5rem 0 0;
+                        -webkit-border-radius: 0.5rem 0.5rem 0 0;
+                        -moz-border-radius: 0.5rem 0.5rem 0 0;
+                        -ms-border-radius: 0.5rem 0.5rem 0 0;
+                        -o-border-radius: 0.5rem 0.5rem 0 0;
+                    }
+                    .fieldPass {
+                        border-radius: 0 0 0.5rem 0.5rem;
+                        -webkit-border-radius: 0 0 0.5rem 0.5rem;
+                        -moz-border-radius: 0 0 0.5rem 0.5rem;
+                        -ms-border-radius: 0 0 0.5rem 0.5rem;
+                        -o-border-radius: 0 0 0.5rem 0.5rem;
+                    }
+                    .chkWraper {
+                        position: relative;
+                        font-size: 0.8rem;
+                        justify-content: space-between;
+                        margin: 1.125rem 0;
+                        a {
+                            color: $colorGreen;
+                            text-decoration: underline;
+                            font-size: 12px;
+                        }
+                    }
+                    .loginFormBtn {
+                        margin-top: 2rem;
+                        .loginBtn {
+                            span {
+                                background: #505050;
+                                color: $colorWhite;
+                                width: 100%;
+                                border-radius: 0.4em;
+                                -webkit-border-radius: 0.4em;
+                                -moz-border-radius: 0.4em;
+                                -ms-border-radius: 0.4em;
+                                -o-border-radius: 0.4em;
+                                display: inline-block;
+                                position: relative;
+                                overflow: hidden;
+                            }
+                            span:hover {
+                                // background: $colorBlack;
+                                button[type="submit"],
+                                input[type="submit"] {
+                                    color: $colorWhite;
+                                    position: relative;
+                                    z-index: 2;
+                                }
+                            }
+
+                            span:before {
+                                background: $colorGreen;
+                                content: "";
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                z-index: 1;
+                                width: 100%;
+                                height: 0%;
+                                transform: translate(-50%, -50%) rotate(45deg);
+                                transition: all 0.3s ease;
+                                -webkit-transition: all 0.3s ease;
+                                -moz-transition: all 0.3s ease;
+                                -ms-transition: all 0.3s ease;
+                                -o-transition: all 0.3s ease;
+                            }
+                            span:hover::before {
+                                height: 580%;
+                            }
+                        }
+                        button[type="submit"],
+                        input[type="submit"] {
+                            font-family: "WiloPlusGlobalBold";
+                            font-size: 1.2rem;
+                            background: none;
+                            color: $colorWhite;
+                            width: 100%;
+                            border: 0;
+                            padding: 0.7rem;
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+            .loginFormFooter {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 2rem;
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                p {
+                    width: 100%;
+                    font-size: 0.7rem;
+                    text-align: right;
+                    margin: 0 3.5rem;
+                    padding: 1rem 0;
+                }
+            }
+        }
+    }
+}
+
+.loginWrapper .container {
+    //   max-width: 100%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+}
+.loginChkBox {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-size: 13px;
+}
+.loginChkBox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+.loginChkBox .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #effaf8;
+    border: 1px solid #009c82;
+    border-radius: 5px;
+}
+.loginChkBox:hover input ~ .checkmark {
+    background-color: #009c82;
+}
+.loginChkBox input:checked ~ .checkmark {
+    background-color: #009c82;
+}
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+.loginChkBox input:checked ~ .checkmark:after {
+    display: block;
+}
+.loginChkBox .checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}

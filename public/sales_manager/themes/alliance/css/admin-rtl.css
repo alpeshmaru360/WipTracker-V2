@@ -1,0 +1,133 @@
+/* About Theme */
+.alliance_about {
+	margin: 2em 0 0 2em;
+}
+
+/* Theme Options */
+.alliance_options_item[class*="column-"] {
+	padding: 1.25em 0 1.25em 2em;
+}
+.alliance_list_choice_item {
+	margin-left: 20px;
+	margin-right: 0;
+}
+.alliance_options_header {
+	margin: 1em 0 0 20px;
+}
+.alliance_options_title {
+	float: right;
+}
+.alliance_options_item_info {
+	border-right: 0 !important;
+}
+.alliance_options_item_title {
+	padding-left: 30px;
+	padding-right: 0;
+}
+.alliance_options_item_info .alliance_options_item_title,
+[class*="alliance_column-"] .alliance_options_item_title,
+[class*="alliance_column-"] .alliance_options_item_data {
+	text-align: right;
+}
+.alliance_range_slider_value {
+	margin-left: 10px !important;
+	margin-right: 0 !important;
+}
+.alliance_options_buttons {
+	float: left;
+	text-align: left;
+}
+.alliance_options .alliance_options_button:before {
+	margin: -1px 0 0 0.3em;
+}
+div.alliance_tabs_vertical > ul.ui-tabs-nav > li.ui-state-active {
+	border-right: 3px solid #11a0d2;
+	border-left: 0;
+}
+div.alliance_tabs_vertical > ul.ui-tabs-nav > li.ui-state-active > a.ui-tabs-anchor {
+	right: 1px;
+	left: auto;
+	padding-right: 10px;
+	padding-left: 13px;
+}
+div.alliance_tabs > ul.ui-tabs-nav > li > a > i[class*="dashicons-"],
+div.alliance_tabs > ul.ui-tabs-nav > li > a > i[class*="icon-"] {
+	margin: 0 0 0 0.5em;
+}
+div.alliance_tabs_vertical > ul.ui-tabs-nav > li.alliance_tabs_title_super > a.ui-tabs-anchor {
+	padding-left: 2em;
+	padding-right: 13px;
+}
+div.alliance_tabs_vertical > ul.ui-tabs-nav > li.alliance_tabs_title_super:after {
+	content: '\e858';
+	left: 12px;
+	right: auto;
+}
+div.alliance_tabs_vertical > ul.ui-tabs-nav > li.alliance_tabs_title_sub > a.ui-tabs-anchor,
+div.alliance_tabs_vertical > ul.ui-tabs-nav > li.alliance_tabs_title_sub.ui-state-active > a.ui-tabs-anchor {
+	padding: 0.6em 2.95em 0.6em 0.6em;
+}
+.alliance_range_slider_units {
+	margin-right: -8px;
+	margin-left: 0;
+}
+.alliance_options_item_radio .alliance_options_item_holder,
+.alliance_options input[type="radio"] + .alliance_options_item_holder {
+	margin-left: 0.5em;
+	margin-right: 0;
+}
+.alliance_options_item_radio .alliance_options_item_label {
+	margin: 0 0 0 1em;
+}
+.alliance_checklist.alliance_sortable .alliance_checklist_item_label {
+	padding: 6px 6px 6px 2.5em;
+}
+.alliance_options_item_checkbox input[type="checkbox"],
+.alliance_options_item_checklist input[type="checkbox"] {
+	margin-left: 0.5em;
+	margin-right: 0;
+}
+.alliance_options_item_checkbox input[type="checkbox"]:checked:before,
+.alliance_options_item_checklist input[type="checkbox"]:checked:before {
+	right: 50%;
+	left: auto;
+	-webkit-transform: translate(50%, -50%);
+	-ms-transform: translate(50%, -50%);
+	transform: translate(50%, -50%);
+}
+.alliance_checklist.alliance_sortable .alliance_checklist_item_label:after {
+	left: 12px;
+	right: auto;
+}
+.alliance_scheme_editor_scheme {
+	padding-left: 105px;
+	padding-right: 0;
+}
+.alliance_scheme_editor_controls {
+	left: 0;
+	right: auto;
+}
+.alliance_scheme_editor_control {
+	margin-right: 2px;
+	margin-left: 0;
+}
+.alliance_options_inherit_off .alliance_options_inherit_lock {
+	left: 4px;
+	right: auto;
+}
+.alliance_options_inherit_lock {
+	left: 2px;
+	right: auto;
+}
+.alliance_options_item_image .alliance_media_selector,
+.alliance_options_item_media .alliance_media_selector,
+.alliance_options_item_audio .alliance_media_selector,
+.alliance_options_item_video .alliance_media_selector {
+	float: none !important;
+}
+
+@media (min-width: 601px) {
+	.alliance_options_header.sticky {
+		margin: 0 -20px 0 0;
+	}
+}

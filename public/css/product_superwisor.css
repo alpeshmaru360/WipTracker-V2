@@ -1,0 +1,77 @@
+#project_table_wrapper{margin-top: 1rem !important;}
+.order_lable{background-color: #eef6f7 !important;border-radius: 12px;}
+#project_table_length{display: none;}
+.product_superwisor_dashboard{
+    background: #eef6f7;color: #0000007a;border: 0;padding: 5px 20px;
+    font-size: 20px;cursor: pointer;-webkit-border-radius: 12px;min-height: 100% !important;
+}
+.modal {position: fixed;left: 0;top: 0;width: 100%;height: 100%;background-color: rgb(0,0,0);background-color: rgba(0,0,0,0.4);padding-top: 60px;}
+.modal-header {background-color: #343a40;color: #ffffff;}
+.modal-header .close {color: #ffffff;opacity: 1;}
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {background-color: #169e88 !important;color: #fff;}
+
+
+.project_table_heading{border:1px solid #d9e0e3 !important;border-bottom: 0px !important;}
+body.menu_side_present .body_wrap {overflow: unset !important;}
+
+.switch-group label {line-height: 10px !important;}
+.dataTables_wrapper {width: 100%;}
+.send-email-btn:disabled {
+    background-color: #6c757d !important;color: #ffffff !important;border-color: #6c757d !important;
+    opacity: 1 !important;cursor: not-allowed !important;
+}
+.send-email-btn:disabled:hover {background-color: #6c757d !important;color: #ffffff !important;border-color: #6c757d !important;}
+
+.pointer_cursor {cursor: pointer}
+.multi_oparators_dd {max-height: 300px;overflow-y: auto;}
+
+.dwld_pdf_btn{background-color: #169e88; color: #fff; padding: 5px 10px; border-radius: 5px;} 
+.superwisor_inbox_page .dwld_pdf_btn{background-color: #169e88; color: #fff; padding: 5px 10px; border-radius: 5px;} 
+
+body.materials_ready_response_page {
+    font-family: 'Arial', sans-serif;background-color: #f3f4f6;margin: 0;padding: 20px;
+    color: #333;display: flex;justify-content: center;align-items: center;min-height: 100vh;
+}
+.materials_ready_response_page .container {
+    border: 2px #169e88 solid;max-width: 600px;background: #fff;border-radius: 10px;box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;padding: 0;text-align: center;
+}
+.materials_ready_response_page .header {background-color: #169e88;color: #fff;padding: 15px;font-size: 1.5em;}
+.materials_ready_response_page .content {padding: 20px;}
+.materials_ready_response_page p {font-size: 1em;line-height: 1.6;color: #555;margin: 10px 0;}
+.materials_ready_response_page .success {color: #28a745;font-weight: bold;}
+.materials_ready_response_page .error,
+.materials_ready_response_page .already_responded {color: #dc3545;font-weight: bold;}
+.materials_ready_response_page .footer {text-align: center;padding: 15px;background-color: #f1f1f1;font-size: 0.85em;color: #aaa;}
+
+.project_icon:hover {color: white !important;text-decoration: none;}
+.date-modal {margin-top: 100px !important;}
+.project_index_btn {margin-left: auto !important;}
+.close-button {background-color: black !important;}
+.child-row {background-color: #d4edda !important;}
+.btn-primary.disabled,.btn-primary:disabled {border-radius: 3px;padding: 10px 25px;}
+
+/* A Code: 16-07-2025 Start */
+.filter_dropdown .dropdown-toggle{
+    font-size: 15px;border: 0px;font-weight: bold;text-transform: capitalize;
+    background-color: var(--theme-color-navigate_bg);color: #000724;padding: 0px !important;text-wrap: auto;
+}
+.filter_dropdown .dropdown-toggle:hover,.filter_dropdown .dropdown-toggle:focus{
+    background-color: var(--theme-color-navigate_bg) !important;color: #000724 !important;
+}
+.filter_dropdown .dropdown-menu{max-height: 300px; overflow-y: auto;z-index: 9999;}
+.filter_dropdown .dropdown-menu .checkbox_label{cursor: pointer;}
+.filter_dropdown .dropdown-menu .checkbox_label:active{background-color: #fff;color: #000724;}
+.filter_dropdown .dropdown-menu .checkbox_label:before{top: 3px !important;}
+.filter_dropdown .dropdown-toggle.filtered_dd{border:3px solid #169e88 !important;}
+.section_po{overflow-x: auto;min-height: 500px;}
+.main_section.project_bg{min-height: 500px;}
+/* A Code: 16-07-2025 End */
+.export_reset_btn{background-color: #169e88 !important;border-color: #169e88 !important;color: white !important;}
+.dataTables_wrapper.no-footer .dataTables_scrollBody{border-bottom: 1px solid #fff !important;}
+
+.superwisor_inbox_page #pending_project_inspected_table .project_check_status,
+.superwisor_inbox_page #pending_project_all_items_are_from_stock .project_check_status{background-color:transparent !important}
+.blank_record_message{text-align: center;padding: 40px 0 !important;font-size: 16px;}
+.section_ot{overflow-x: auto;min-height: 500px;}
+

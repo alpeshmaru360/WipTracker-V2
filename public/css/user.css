@@ -1,0 +1,27 @@
+body.menu_side_present.menu_side_left {margin-left: 20px !important;margin-right: 20px !important;}
+.elementor:not(.elementor-bc-flex-widget) .elementor-widget-wrap {display: block !important;}
+@media (max-width: 1023px) {
+    body.menu_side_present.menu_side_left .sc_layouts_row_fixed {left: 40px !important;}
+}
+@media (min-width: 1023px) and (max-width: 1500px) {
+    body.menu_side_present.menu_side_left .sc_layouts_row_fixed {left: 50px !important;}
+}
+@media (min-width: 1280px) and (max-width: 1500px) {
+    body.menu_side_present.menu_side_left .sc_layouts_row_fixed {left: 120px !important;}
+}
+@media (max-width: 767px) {
+    .sc_layouts_login .sc_layouts_item_details {display: block !important;}
+    .trx_addons_login_link{display: none !important;}
+    .elementor-3160 .elementor-element.elementor-element-559c822{padding: 0px 40px 0px 25px !important;}
+}
+.project_priority_dd {border-radius: 12px !important;border-color: #169e88 !important;font-size: 15px !important;}
+.project_status_dd {border-radius: 12px !important;border-color: #169e88 !important;font-size: 15px !important;}
+.user_dashboard_page .high_priority_color{color: red;}
+.user_dashboard_page .normal_priority_color{color: green;}
+.user_dashboard_page .project_status_label{border-radius: 12px;}
+
+@media (max-width: 1279px) {
+    .elementor-3160 .elementor-element.elementor-element-9e5daa3 > .elementor-widget-container {
+        margin: 0rem 0rem 0rem 0rem;
+    }
+}

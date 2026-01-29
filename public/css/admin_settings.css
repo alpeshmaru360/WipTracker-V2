@@ -1,0 +1,10 @@
+.accordion button.btn.btn-link.font-weight-bolder.text-uppercase.cutome_collapsed{
+    background: unset !important;color: black !important;font-size: 14px;width: 100%;text-align: left;text-decoration: none;
+    /*justify-content: space-between;*/
+}
+/* Rotate arrow when accordion is opened */
+.cutome_collapsed[aria-expanded="true"] .arrow-icon {transform: rotate(180deg);transition: transform 0.3s ease-in-out;}
+/* Default state */
+.cutome_collapsed[aria-expanded="false"] .arrow-icon {transform: rotate(0deg);transition: transform 0.3s ease-in-out;}
+.main-content {margin: 1.5rem  1.5rem !important;}
+.admin_settings_page .main_content_card{border-radius: 15px;}

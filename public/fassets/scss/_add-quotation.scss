@@ -1,0 +1,21 @@
+.addQuotationMidSection {
+  max-width: 1300px;
+  margin: 0 auto;
+  flex: 0 0 85%;
+  max-width: 85%;
+  h2 {
+    text-align: center;
+  }
+  .quotationTopSection {
+    max-width: 60%;
+    margin: 0 auto 5rem;
+  }
+  .quotationBottomSection {
+    margin: 0 auto 5rem;
+    tr {
+      th {
+        text-align: left;
+      }
+    }
+  }
+}

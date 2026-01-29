@@ -1,0 +1,9 @@
+.assembly_dashboard{
+    background: #eef6f7;color: #0000007a;border: 0;padding: 10px 10px;font-size: 20px;
+    cursor: pointer;-webkit-border-radius: 12px;min-height: 100% !important;
+}
+.chartjs-render-monitor{display: block !important;width: 450px !important;height:250px !important;}
+
+.cancel-black {background-color: black;color: white;padding: 10px 15px;}
+.modal-content {transform: translate(25px, 65px);}
+

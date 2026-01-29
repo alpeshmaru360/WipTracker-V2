@@ -1,0 +1,86 @@
+<link href="{{ asset('css/admin.css') }}" rel="stylesheet" />
+<link property="stylesheet" rel="stylesheet" id="trx_addons-icons-css" href="{{ asset('sales_manager/trx_addons_icons.css')}}" media="all">
+<link property="stylesheet" rel="stylesheet" id="alliance-font-google_fonts-css" href="{{ asset('sales_manager/css2')}}" media="all">
+<link property="stylesheet" rel="stylesheet" id="alliance-fontello-css" href="{{ asset('sales_manager/fontello.css')}}" media="all">
+<link property="stylesheet" rel="stylesheet" id="elementor-icons-css" href="{{ asset('sales_manager/elementor-icons.min.css')}}" media="all">
+<link property="stylesheet" rel="stylesheet" id="elementor-common-css" href="{{ asset('sales_manager/common.min.css')}}" media="all">
+<link property="stylesheet" rel="stylesheet" id="e-theme-ui-light-css" href="{{ asset('sales_manager/theme-light.min.css')}}" media="all">
+<link property="stylesheet" rel="stylesheet" id="wp-block-library-css" href="{{ asset('sales_manager/style.min.css')}}" media="all">
+<!--  -->
+<link property="stylesheet" rel="stylesheet" id="wp-block-library-css" href="{{ asset('sales_manager/css/sales_manager.css')}}" media="all">
+
+<style type="text/css">
+      <!--
+        #page_preloader {
+          background-color: #ffffff !important;       }
+      -->
+      </style>
+      <style type="text/css">
+          .rtmedia-activity-container ul.rtm-activity-media-list{
+          overflow: auto;
+          }
+
+          div.rtmedia-activity-container ul.rtm-activity-media-list li.media-type-document,
+          div.rtmedia-activity-container ul.rtm-activity-media-list li.media-type-other{
+          margin-left: 0.6em !important;
+          }
+
+          .rtmedia-activity-container li.media-type-video{
+          height: 240px !important;
+          width: 320px !important;
+          }
+
+          .rtmedia-activity-container li.media-type-video div.rtmedia-item-thumbnail,
+          .rtmedia-activity-container li.media-type-photo a{
+          width: 100% !important;
+          height: 98% !important;
+          }
+
+          .rtmedia-activity-container li.media-type-video div.rtmedia-item-thumbnail video{
+          width: 100% !important;
+          height: 100% !important;
+          }
+
+          .rtmedia-activity-container li.media-type-video div.rtmedia-item-thumbnail .mejs-video,
+          .rtmedia-activity-container li.media-type-video div.rtmedia-item-thumbnail .mejs-video video,
+          .rtmedia-activity-container li.media-type-video div.rtmedia-item-thumbnail .mejs-video .mejs-overlay-play{
+          width: 100% !important;
+          height: 100% !important;
+          }
+
+          .rtmedia-activity-container li.media-type-music{
+          width: 320px !important;
+          }
+
+          .rtmedia-activity-container li.media-type-music .rtmedia-item-thumbnail,
+          .rtmedia-activity-container li.media-type-music .rtmedia-item-thumbnail .mejs-audio,
+          .rtmedia-activity-container li.media-type-music .rtmedia-item-thumbnail audio{
+          width: 100% !important;
+          }
+
+          .rtmedia-activity-container li.media-type-photo{
+          width: auto !important;
+          height: auto !important;
+          }
+
+          .rtmedia-activity-container .media-type-photo .rtmedia-item-thumbnail,
+          .rtmedia-activity-container .media-type-photo .rtmedia-item-thumbnail img {
+          width: 100% !important;
+          height: 100% !important;
+          overflow: hidden;
+          }
+                #buddypress ul.activity-list li.activity-item .activity-comments ul li form.ac-form .rtmedia-comment-media-upload,#buddypress ul.activity-list li.activity-item .activity-comments ul li form.ac-form .rtmedia-container {
+              display: none !important
+            }
+              .rtmedia-container ul.rtmedia-list li.rtmedia-list-item div.rtmedia-item-thumbnail {
+        width: 150px;
+        max-height: 150px;
+        }
+        .rtmedia-container ul.rtmedia-list li.rtmedia-list-item div.rtmedia-item-thumbnail img {
+        max-width: 150px;
+        max-height: 150px;
+        }
+        .rtmedia-container .rtmedia-list  .rtmedia-list-item {
+        width: 150px;
+        }
+      </style>

@@ -1,0 +1,68 @@
+a:3:{s:6:"layout";s:6921:"<style>.elementor-1421 .elementor-element.elementor-element-b711473 > .elementor-container > .elementor-row > .elementor-column > .elementor-column-wrap > .elementor-widget-wrap{align-content:center;align-items:center;}@media(max-width:767px){.elementor-1421 .elementor-element.elementor-element-19957de{width:30%;}.elementor-1421 .elementor-element.elementor-element-ea35ad6{width:70%;}}</style>		<div data-elementor-type="cpt_layouts" data-elementor-id="1421" class="elementor elementor-1421" data-elementor-settings="[]">
+						<div class="elementor-inner">
+							<div class="elementor-section-wrap">
+							<section class="elementor-section elementor-top-section elementor-element elementor-element-b711473 elementor-section-content-middle sc_layouts_row sc_layouts_row_type_narrow sc_layouts_row_fixed sc_layouts_row_fixed_always elementor-section-boxed elementor-section-height-default elementor-section-height-default sc_fly_static" data-id="b711473" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-extended">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-19957de sc_inner_width_none sc_content_align_inherit sc_layouts_column_icons_position_left sc_fly_static" data-id="19957de" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="sc_layouts_item elementor-element elementor-element-42e8737 sc_layouts_hide_on_mobile sc_fly_static elementor-widget elementor-widget-trx_sc_layouts_search" data-id="42e8737" data-element_type="widget" data-widget_type="trx_sc_layouts_search.default">
+				<div class="elementor-widget-container">
+			<div class="sc_layouts_search hide_on_mobile" ><div class="search_wrap search_style_normal layouts_search">
+	<div class="search_form_wrap">
+		<form role="search" method="get" class="search_form" action="http://alliance.dv.themerex.net/">
+			<input type="hidden" value="" name="post_types">
+			<input type="text" class="search_field" placeholder="Search" value="" name="s">
+			<button type="submit" class="search_submit trx_addons_icon-search" aria-label="Start search"></button>
+					</form>
+	</div>
+	</div></div>		</div>
+				</div>
+				<div class="sc_layouts_item elementor-element elementor-element-3e78ecf sc_layouts_hide_on_wide sc_layouts_hide_on_desktop sc_layouts_hide_on_notebook sc_layouts_hide_on_tablet sc_fly_static elementor-widget elementor-widget-trx_sc_layouts_search" data-id="3e78ecf" data-element_type="widget" data-widget_type="trx_sc_layouts_search.default">
+				<div class="elementor-widget-container">
+			<div class="sc_layouts_search hide_on_wide hide_on_desktop hide_on_notebook hide_on_tablet" ><div class="search_wrap search_style_fullscreen layouts_search">
+	<div class="search_form_wrap">
+		<form role="search" method="get" class="search_form" action="http://alliance.dv.themerex.net/">
+			<input type="hidden" value="" name="post_types">
+			<input type="text" class="search_field" placeholder="Search" value="" name="s">
+			<button type="submit" class="search_submit trx_addons_icon-search" aria-label="Start search"></button>
+							<a class="search_close trx_addons_icon-delete"></a>
+					</form>
+	</div>
+	</div></div>		</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-66 elementor-top-column elementor-element elementor-element-ea35ad6 sc_layouts_column_align_right sc_layouts_column sc_inner_width_none sc_content_align_inherit sc_layouts_column_icons_position_left sc_fly_static" data-id="ea35ad6" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="sc_layouts_item elementor-element elementor-element-2c6c29d sc_fly_static elementor-widget elementor-widget-trx_sc_layouts_language" data-id="2c6c29d" data-element_type="widget" data-widget_type="trx_sc_layouts_language.default">
+				<div class="elementor-widget-container">
+			<div class="sc_layouts_language sc_layouts_menu sc_layouts_menu_default" >			<ul class="sc_layouts_language_menu sc_layouts_dropdown sc_layouts_menu_nav">
+				<li class="menu-item menu-item-has-children">
+					<a href="#"><img src="http://alliance.dv.themerex.net/wp-content/plugins/trx_addons/components/cpt/layouts/shortcodes/language/flags/en.png" alt="English" title="English" /><span class="menu-item-title">English</span></a><ul>
+<li class="menu-item current-menu-item"><a rel="alternate" hreflang="en" href="#"><span class="menu-item-title">English</span></a></li>
+<li class="menu-item"><a rel="alternate" hreflang="de" href="#"><span class="menu-item-title">Deutsch</span></a></li>
+<li class="menu-item"><a rel="alternate" hreflang="es" href="#"><span class="menu-item-title">Español</span></a></li></ul>				</li>
+			</ul>
+			</div>		</div>
+				</div>
+				<div class="sc_layouts_item elementor-element elementor-element-83fa8b8 sc_fly_static elementor-widget elementor-widget-trx_sc_layouts_login" data-id="83fa8b8" data-element_type="widget" data-widget_type="trx_sc_layouts_login.default">
+				<div class="elementor-widget-container">
+			<div class="sc_layouts_login sc_layouts_menu sc_layouts_menu_default" ><ul class="sc_layouts_login_menu sc_layouts_dropdown sc_layouts_menu_nav sc_layouts_menu_no_collapse">
+		<li class="menu-item menu-item-has-children">
+			<a href="#" class="trx_addons_login_link"><span class="sc_layouts_item_avatar"><img loading="lazy" src="//www.gravatar.com/avatar/2f4064db223cb9670191652e18f85064?s=50&#038;r=g&#038;d=mm" class="avatar user-1-avatar avatar-50 photo" width="50" height="50" alt="Profile picture of Anna Smith" /></span><span class="sc_layouts_item_details sc_layouts_login_details"><span class="sc_layouts_item_details_line1 sc_layouts_iconed_text_line1">Hi,</span><span class="sc_layouts_item_details_line2 sc_layouts_iconed_text_line2">Anna</span></span></a><ul><li class="menu-item trx_addons_icon-wpforms"><a href="http://alliance.dv.themerex.net/wp-admin/post-new.php"><span>New post</span></a></li><li class="menu-item menu-delimiter"></li><li class="menu-item trx_addons_icon-edit"><a href="http://alliance.dv.themerex.net/my-account/"><span>My account</span></a></li><li class="menu-item trx_addons_icon-cog"><a href="http://alliance.dv.themerex.net/members/anc_admin/profile/edit/"><span>My profile</span></a></li><li class="menu-item menu-delimiter"></li><li class="menu-item trx_addons_icon-user-times"><a href="http://alliance.dv.themerex.net/wp-login.php?action=logout&#038;redirect_to=http%3A%2F%2Falliance.dv.themerex.net%2F&#038;_wpnonce=08e4165078"><span>Logout</span></a></li></ul></li>
+	</ul></div>		</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+						</div>
+						</div>
+					</div>
+		";s:3:"css";s:0:"";s:4:"html";s:0:"";}

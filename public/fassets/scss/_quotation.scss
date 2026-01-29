@@ -1,0 +1,32 @@
+.quotationMidSection {
+  margin: 0 auto;
+  flex: 0 0 85%;
+  max-width: 85%;
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .quotationTopSection {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 1rem 0;
+    ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      li {
+        margin: 0 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  }
+  .quotationSection {
+    tr {
+      th {
+        text-align: left;
+      }
+    }
+  }
+}

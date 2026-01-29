@@ -1,0 +1,138 @@
+button.btn.btn-lg:hover {background-color: #169e88 !important;}
+
+/* Existing styles for pdfTable */
+#pdfTable {width: 100%;border-collapse: collapse;margin-top: 20px;}
+#pdfTable th,
+#pdfTable td {border: 1px solid #ddd;padding: 8px;text-align: left;}
+#pdfTable th {background-color: #f2f2f2;}
+
+/* Refined styles for Pikaday calendar with color theme #169e88 */
+.pika-single {
+    z-index: 9999;display: block;position: absolute;background: #ffffff;border: 1px solid #e0e0e0;border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);font-family: 'Arial', sans-serif;padding: 10px;width: 280px;
+    /* Fixed width for consistent alignment */
+}
+
+/* Header (month and year) */
+.pika-title {
+    display: flex;justify-content: center;align-items: center;padding: 10px 0;font-size: 16px;
+    font-weight: 600;color: #333;position: relative;width: 100%;
+}
+
+/* Navigation buttons (Previous/Next) */
+.pika-prev, 
+.pika-next {
+    position: absolute;top: 50%;transform: translateY(-50%);background: #169e88;color: #fff;border-radius: 5px;width: 30px;height: 30px;
+    line-height: 30px;text-align: center;cursor: pointer;font-size: 16px;text-indent: -9999px;transition: background 0.3s ease;
+}
+
+/* Add arrows using ::before */
+.pika-prev::before, 
+.pika-next::before {position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);text-indent: 0;color: #fff;}
+.pika-prev::before {content: '←';}
+.pika-next::before {content: '→';}
+.pika-prev {left: 10px;}
+.pika-next {right: 10px;}
+.pika-prev:hover, 
+.pika-next:hover {background: #127a68;}
+.pika-table {width: 100%;margin: 5px 0 0 -10px;}
+.pika-table th {text-align: center;color: #666;font-weight: 500;font-size: 12px;padding: 8px 0;}
+.pika-table td {text-align: center;padding: 2px;}
+.pika-button {
+    width: 32px;height: 32px;line-height: 32px;display: inline-block;text-align: center;border-radius: 5px;
+    font-size: 14px;color: #333;transition: background 0.3s ease, color 0.3s ease;
+}
+.pika-button:hover {background: #e6f4f1;color: #169e88;}
+.is-selected .pika-button {background: #169e88;color: #fff;}
+.is-today .pika-button {border: 1px solid #169e88;color: #169e88;}
+.is-disabled .pika-button, 
+.is-outside-current-month .pika-button {color: #ccc;pointer-events: none;}
+
+.assembly_page .back_btn{background-color: #169e88; color: white;}
+.assembly_page .card{border-radius: 15px;}
+.assembly_page .card .fa-file-pdf{font-size: 20px; color: #169e88;}
+
+/*included css from reupload_po_page File - Start */
+.reupload_po_page #pdfTable {width: 100%;border-collapse: collapse;margin-top: 20px;}
+.reupload_po_page #pdfTable th,
+.reupload_po_page #pdfTable td {border: 1px solid #ddd;padding: 8px;text-align: left;}
+.reupload_po_page #pdfTable th {background-color: #f2f2f2;}
+.reupload_po_page .hidden-column {display: none;}
+.reupload_po_page #pdfTable tbody tr td:nth-child(3) {display: none;}
+.reupload_po_page .mask .card{border-radius: 15px;}
+.reupload_po_page .req_for_finance_approval{
+    width: 20px; height: 20px; accent-color: green; clip: unset !important; position: unset !important;
+}
+/*included css from reupload_po_page File - End */
+
+/*included css from production_manager css File - Start */
+body.menu_side_present .body_wrap {overflow: unset !important;}
+.purchase_order_page .input-group {display: flex;align-items: center;}
+/*included css from production_manager css File - End */
+
+/*included css from purchase_order_page File - Start */
+.purchase_order_page .project_icon:hover {color: white !important;text-decoration: none;}
+.purchase_order_page .date-modal {margin-top: 100px !important;}
+.purchase_order_page .project_index_btn {margin-left: auto !important;}
+.purchase_order_page .close-button {background-color: black !important;}
+.purchase_order_page .child-row {background-color: #d4edda !important;}
+.purchase_order_page .btn-primary.disabled,
+.purchase_order_page .btn-primary:disabled {border-radius: 3px;padding: 10px 25px;}
+.purchase_order_page .filter_dropdown .dropdown-toggle{
+    font-size: 15px;border: 0px;font-weight: bold;text-transform: capitalize;
+    background-color: #f8fbfc;color: #000724;padding: 0px !important;text-wrap: auto;
+}
+.purchase_order_page .filter_dropdown .dropdown-toggle:hover,
+.purchase_order_page .filter_dropdown .dropdown-toggle:focus{
+    background-color: #f8fbfc !important;color: #000724 !important;
+}
+.purchase_order_page .filter_dropdown .dropdown-menu{max-height: 300px; overflow-y: auto;z-index: 9999;}
+.purchase_order_page .filter_dropdown .dropdown-menu .checkbox_label{cursor: pointer;}
+.purchase_order_page .filter_dropdown .dropdown-menu .checkbox_label:active{background-color: #fff;color: #000724;}
+.purchase_order_page .filter_dropdown .dropdown-menu .checkbox_label:before{top: 3px !important;}
+.purchase_order_page .filter_dropdown .dropdown-toggle.filtered_dd{border:3px solid #169e88 !important;}
+.purchase_order_page .section_po{overflow-x: auto;min-height: 500px;}
+.purchase_order_page.main_section.bg-white.m-4.po_bg{min-height: 500px;}
+.purchase_order_page .export_reset_btn{background-color: #169e88 !important;border-color: #169e88 !important;color: white !important;}
+.purchase_order_page .mark-received{background-color: transparent !important;}
+.purchase_order_page .mark-received .mark_received_icon{color:#169e88;}
+.purchase_order_page .mark_received_inactive{background-color: transparent !important;}
+.purchase_order_page .mark_received_inactive .mark_received_icon{color:#169e88;}
+.purchase_order_page .partial_section .req_for_finance_approval{
+    width: 20px; height: 20px; accent-color: green; clip: unset !important; position: unset !important;
+}
+.purchase_order_page .original-quantity .toggle-child-rows{padding: 4px 6px; font-size: 18px; line-height: 1;}
+.purchase_order_page .project_table_heading{border:1px solid #d9e0e3 !important;border-bottom: 0px !important;background-color: #f8fbfc;}
+/*included css from purchase_order_page File - End */
+
+/*included css from add_po_page File - Start */
+.add_po_page #pdfTable {width: 100%;border-collapse: collapse;margin-top: 20px;}
+.add_po_page #pdfTable th,
+.add_po_page #pdfTable td {border: 1px solid #ddd;padding: 8px;text-align: left;}
+.add_po_page #pdfTable th {background-color: #f2f2f2;}
+.add_po_page .hidden-column {display: none;}
+/* Hide the corresponding <td> in each row (2nd index, since it's the 3rd column) */
+.add_po_page #pdfTable tbody tr td:nth-child(3) {display: none;}
+.add_po_page .card{border-radius: 15px;}
+.add_po_page .req_for_finance_approval{width: 20px;height: 20px;accent-color: green;clip: unset !important;position: unset !important;}
+/*included css from add_po_page File - End */
+
+/*included css from edit_po_page File - Start */
+.edit_po_page .file-upload-container {display: flex;align-items: center;gap: 15px;flex-wrap: wrap;}
+.edit_po_page .file-upload-container .download-icon {font-size: 1.2rem;color: #17a2b8;text-decoration: none;}
+.edit_po_page .file-upload-container .download-icon:hover {color: #138496;}
+.edit_po_page .file-upload-container .file-input-wrapper {position: relative;display: inline-block;}
+.edit_po_page .file-upload-container .custom-file-input {
+    width: 250px;padding: 6px 12px;border: 1px solid #ced4da;border-radius: 4px;background-color: #fff;
+    cursor: pointer;opacity: 0;position: absolute;top: 0;left: 0;height: 100%;
+}
+.edit_po_page .file-upload-container .file-input-label {
+    display: inline-block;width: 250px;padding: 6px 12px;border: 1px solid #ced4da;border-radius: 4px;background-color: #f8f9fa;
+    color: #6c757d;text-align: left;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;
+}
+.edit_po_page .file-upload-container .custom-file-input:focus+.file-input-label {border-color: #17a2b8;box-shadow: 0 0 5px rgba(23, 162, 184, 0.3);}
+.edit_po_page .download-icon {background-color: #169e88;color: white;padding: 3px 5px;}
+.edit_po_page i.bi.bi-download {color: white;}
+.edit_po_page .file-upload-container small {color: #6c757d;}
+.edit_po_page .card{border-radius: 15px;}
+/*included css from edit_po_page File - End */

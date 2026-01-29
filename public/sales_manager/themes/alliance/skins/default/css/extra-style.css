@@ -1,0 +1,106 @@
+/* Alliance custom styles
+----------------------------------------------------------------- */
+/* Blockquote */
+blockquote {
+  background-color: var(--theme-color-accent_link2); }
+  blockquote cite {
+    font-weight: 500; }
+
+/* Login */
+.sc_layouts_login .sc_layouts_item_avatar::after {
+  background-color: var(--theme-color-accent_link3); }
+
+/* Audio */
+.mejs-controls .mejs-button > button:hover,
+.mejs-controls .mejs-button > button:focus {
+  color: var(--theme-color-accent_link3); }
+
+.mejs-controls .mejs-time-rail .mejs-time-current,
+.mejs-controls .mejs-volume-slider .mejs-volume-current,
+.mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-current {
+  background: var(--theme-color-accent_link3); }
+
+.mejs-controls .mejs-time-rail .mejs-time-handle-content {
+  border-color: var(--theme-color-accent_link3); }
+
+/* Sticky */
+.sticky.post_item .post_meta_item.post_categories a:hover,
+.sticky.post_item .post_meta_item.post_categories a:focus {
+  background-color: var(--theme-color-accent_hover2); }
+
+.sticky.post_item:not(.post_layout_custom) a:hover,
+.sticky.post_item:not(.post_layout_custom) a:focus,
+.sticky.post_item:not(.post_layout_custom) a.post_meta_item:hover:before {
+  color: var(--theme-color-accent_hover2); }
+
+/* Search & 404 */
+.post_item_404 .page_title {
+  color: var(--theme-color-accent_link_02); }
+
+/* Testimonials */
+.sc_testimonials_rating_stars_default,
+.sc_testimonials_rating_stars_hover {
+  color: var(--theme-color-accent_link3); }
+
+.sc_testimonials_slider .swiper-pagination {
+  text-align: left; }
+  .sc_testimonials_slider .swiper-pagination .swiper-pagination-bullet:not(.swiper-pagination-bullet-active) {
+    width: 6px;
+    height: 6px;
+    line-height: 6px; }
+
+/* BBPress and BuddyPress - Activity */
+div#buddypress .activity-list li.load-more a {
+  background-color: var(--theme-color-accent_link2);
+  border-color: var(--theme-color-accent_link2); }
+  div#buddypress .activity-list li.load-more a:hover, div#buddypress .activity-list li.load-more a:focus {
+    border-color: var(--theme-color-accent_hover2);
+    background-color: var(--theme-color-accent_hover2); }
+
+/* BBPress and BuddyPress - Who's online */
+.widget.widget_bp_core_whos_online_widget .avatar-block .item-avatar::before,
+.wp-widget-bp_core_whos_online_widget .avatar-block .item-avatar::before {
+  background-color: var(--theme-color-accent_link3); }
+
+/* BBPress and BuddyPress - Members && Groups */
+.widget.widget_bp_core_members_widget .item-list li .item::before,
+.wp-widget-bp_core_members_widget .item-list li .item::before,
+.widget.widget_bp_groups_widget .item-list li .item::before,
+.wp-widget-bp_groups_widget .item-list li .item::before {
+  letter-spacing: 0.04em; }
+
+/* BuddyPress Docs - Recent Docs */
+.widget.widget_recent_bp_docs ul li,
+.wp-widget-widget_recent_bp_docs ul li {
+  background-color: var(--theme-color-bg_color); }
+
+/* BBPress - Forums */
+div#bbpress-forums .bbp-topics .bbp-body > ul.sticky a:hover,
+div#bbpress-forums .bbp-topics .bbp-body > ul.sticky a:focus {
+  color: var(--theme-color-accent_hover2); }
+
+/* Elementor - Icon box */
+.page_content_blocks:not(.single-post):not(.single-job_listing):not(.elementor-page) .content .elementor-icon-box-wrapper:hover,
+.page_content_blocks:not(.single-post):not(.single-job_listing).elementor-page .content .elementor-widget:not(.elementor-inner) .elementor-icon-box-wrapper:hover {
+  background-color: var(--theme-color-accent_link2); }
+
+/* Tribe Events Calendar - Events Shortcode */
+.sc_events_default .sc_events_item .sc_events_item_thumb .sc_events_item_date:hover .sc_events_item_date_month {
+  background-color: var(--theme-color-accent_link2); }
+
+/* Error Messages */
+form.wpcf7-form .wpcf7-not-valid-tip,
+div#buddypress #signup_form.standard-form div.error,
+div#buddypress #signup_form.standard-form #pass-strength-result {
+  color: #e22828; }
+
+form.comment-form .error_field, div#buddypress #message[class*="error"], div#buddypress #message[class*="nodata"], div#buddypress #sitewide-notice[class*="error"], div#buddypress #sitewide-notice[class*="nodata"], div#buddypress #bp-webcam-message[class*="error"], div#buddypress #bp-webcam-message[class*="nodata"], div#buddypress .bp-cover-image-status p[class*="error"], div#buddypress .bp-cover-image-status p[class*="nodata"], div#buddypress .bp-avatar-status p[class*="error"], div#buddypress .bp-avatar-status p[class*="nodata"], div#buddypress .media-edit-messge[class*="error"], div#buddypress .media-edit-messge[class*="nodata"], div#buddypress .notice[class*="error"], div#buddypress .notice[class*="nodata"], div#buddypress .bp-avatar p.warning[class*="error"], div#buddypress .bp-avatar p.warning[class*="nodata"], div#bbpress-forums .bbp-template-notice[class*="error"], div#bbpress-forums .bbp-template-notice[class*="nodata"], div#buddypress .rtmedia-gallery-message-box span[class*="error"], div#buddypress .rtmedia-gallery-message-box span[class*="nodata"], div#buddypress .rtmedia-nodata[class*="error"], div#buddypress .rtmedia-nodata[class*="nodata"], div#buddypress #signup_form.standard-form .not-valid, form.wpcf7-form .wpcf7-not-valid, .mc4wp-response > div.mc4wp-error, .wpcf7 form.invalid .wpcf7-response-output.trx_addons_message_box.trx_addons_message_box_error, .wpcf7 form.unaccepted .wpcf7-response-output.trx_addons_message_box.trx_addons_message_box_error, .trx_addons_message_box_error, .job-manager-message.job-manager-error, .job-manager-error.job-manager-error, .job-manager-info.job-manager-error {
+  border-color: rgba(226, 40, 40, 0.5) !important; }
+
+div#buddypress #message[class*="error"]:before, div#buddypress #message[class*="nodata"]:before, div#buddypress #sitewide-notice[class*="error"]:before, div#buddypress #sitewide-notice[class*="nodata"]:before, div#buddypress #bp-webcam-message[class*="error"]:before, div#buddypress #bp-webcam-message[class*="nodata"]:before, div#buddypress .bp-cover-image-status p[class*="error"]:before, div#buddypress .bp-cover-image-status p[class*="nodata"]:before, div#buddypress .bp-avatar-status p[class*="error"]:before, div#buddypress .bp-avatar-status p[class*="nodata"]:before, div#buddypress .media-edit-messge[class*="error"]:before, div#buddypress .media-edit-messge[class*="nodata"]:before, div#buddypress .notice[class*="error"]:before, div#buddypress .notice[class*="nodata"]:before, div#buddypress .bp-avatar p.warning[class*="error"]:before, div#buddypress .bp-avatar p.warning[class*="nodata"]:before, div#bbpress-forums .bbp-template-notice[class*="error"]:before, div#bbpress-forums .bbp-template-notice[class*="nodata"]:before, div#buddypress .rtmedia-gallery-message-box span[class*="error"]:before, div#buddypress .rtmedia-gallery-message-box span[class*="nodata"]:before, div#buddypress .rtmedia-nodata[class*="error"]:before, div#buddypress .rtmedia-nodata[class*="nodata"]:before, .mc4wp-response > div.mc4wp-error:before, .wpcf7 form.invalid .wpcf7-response-output.trx_addons_message_box.trx_addons_message_box_error:before, .wpcf7 form.unaccepted .wpcf7-response-output.trx_addons_message_box.trx_addons_message_box_error:before, .trx_addons_message_box_error:before, .job-manager-message.job-manager-error:before, .job-manager-error.job-manager-error:before, .job-manager-info.job-manager-error:before {
+  background-color: rgba(226, 40, 40, 0.05); }
+
+@media (max-width: 1679px) {
+  /* Mobile menu */
+  .menu_mobile .menu_mobile_close {
+    margin-top: 0em !important; } }

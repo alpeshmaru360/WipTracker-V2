@@ -1,0 +1,84 @@
+.quality_dashboard{
+    background: #eef6f7;color: #0000007a;border: 0;padding: 30px 20px;font-size: 20px;cursor: pointer;
+    -webkit-border-radius: 12px;min-height: 90% !important;
+}
+.graph_box{text-align: center;-webkit-border-radius: 10px !important;-ms-flex-wrap: wrap;flex-wrap: wrap;min-height: 130px;overflow: hidden;
+    transition: 0.3s;-webkit-transition: 0.3s;-moz-transition: 0.3s;-ms-transition: 0.3s;-o-transition: 0.3s;background-color: #eef6f7;
+}
+.months_row{-webkit-border-radius: 10px !important;border:1px solid black !important;background-color: #eef6f7;color: #0000007a !important;}
+.today_process{padding: 10px 20px;-webkit-border-radius: 10px !important;color: #0000007a !important;background-color: #eef6f7;}
+.months_row_second{-webkit-border-radius: 10px !important;color: #0000007a !important;}
+.months_row_second_2{-webkit-border-radius: 10px !important;background-color: #eef6f7;color: #0000007a !important;}
+#pie_chart {border-radius: 12px;}
+.highcharts-title{font-size: 14px !important;}
+.ptl{padding: 0px 4px !important;}
+.card{-webkit-border-radius: 12px;}
+.efficiency_table{background-color: #eef6f7 !important;}
+.scroll_issue{background-color: #eef6f7 !important;overflow-y: unset !important;overflow-x: unset !important;}
+.pie_chart_section{border-radius: 14px !important;}
+
+.quality_dashboard_page #monthly_inspection{background-color: #eef6f7 !important;border-radius: 12px;width: 100%; height: 400px;}
+.quality_dashboard_page #monthly_inspection1{background-color: #eef6f7 !important;border-radius: 12px;width: 100%; height: 400px;}
+.quality_dashboard_page #monthly_inspection2{background-color: #eef6f7 !important;border-radius: 12px;width: 100%; height: 400px;}
+.quality_dashboard_page .card {-webkit-border-radius: 12px;}
+
+.project_table_heading{border: 1px solid #d9e0e3 !important;}
+body.menu_side_present .body_wrap {overflow: unset !important;}
+.project_table_section{overflow: auto;}
+
+.create_quality_page .card,
+.create_final_inspection_page .card{border-radius: 15px;}
+.dataTables_wrapper {width: 100%;}
+
+.text-green {color: green;}
+.text-red {color: red;}
+
+
+table.dataTable thead tr th {border: 1px solid #d9e0e3 !important;}
+.fa-download {color: white;}
+.fa-download:hover {color: white;}
+/* Modal styles */
+.modal-content {border-radius: 10px;}
+.modal-body {max-height: 70vh;overflow-y: auto;}
+.modal-dialog {top: 10%;}
+.thumbnail {width: 100px;height: 100px;object-fit: cover;margin: 5px;cursor: pointer;}
+/* Eye icon styles */
+.eye-icon {font-size: 1.2rem;padding: 5px;color: #169e7a;transition: color 0.2s;}
+.eye-icon:hover {color: #169e7a;}
+button.btn.btn-sm.btn-primary {padding: 4px 8px;color: white !important;}
+/* Image table styles */
+.image-table img {width: 50px;height: 50px;object-fit: cover;}
+.image-table .delete-icon {color: #dc3545;cursor: pointer;font-size: 1.1rem;}
+.image-table .delete-icon:hover {color: #a71d2a;}
+/* Add button styles */
+.btn-add {background-color: #169e7a;color: white;}
+.btn-add:hover {background-color: #127a5e;color: white;}
+button.btn.btn-add.text-right {display: flex;margin-bottom: 10px;background-color: #169e88;color: #ffffff;}
+.upload-doc{display: contents;}   
+
+#qualityTabs{border-color: #169e88 !important;}
+#qualityTabs .nav-link{        
+    color: #169e88 !important;padding: 12px 24px;border-top-left-radius: 10px !important;border-top-right-radius: 10px !important;
+    font-size: 16px;font-weight: bold;text-transform: uppercase;        
+}    
+#qualityTabs .nav-link.active{
+    border-top-color: #169e88 !important;border-right-color: #169e88 !important;
+    border-left-color: #169e88 !important;border-bottom: 0px;      
+}
+#qualityTabs .nav-item{margin-bottom: -2px;border-color: #169e88 !important;}
+
+@media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 1366px) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+    #qualityTabs{padding-left: 2px;}
+    /* #qualityTabs .nav-item{margin-bottom: -3px;margin-top: 3px;margin-left: -1px;border-color: #169e88 !important;} */  
+    #qualityTabs .nav-item {margin-bottom: -3px;margin-top: 0px;margin-left: -1px;border-color: #169e88 !important;}
+    #qualityTabs .nav-link.active {border: 2px solid;border-bottom: 0px;}
+}
+
+.file-upload-success {
+    display: inline-block;margin-top: 5px;padding: 5px 10px;border-radius: 12px;
+    font-size: 0.9em;transition: opacity 0.3s ease-in-out;
+}
+.project_check_status {background-color: transparent !important;border-radius: 5px !important;}

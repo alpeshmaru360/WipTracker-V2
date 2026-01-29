@@ -1,0 +1,75 @@
+.paral {
+    background-attachment: fixed;
+    background-size: contain;
+    background-position: 50% 50%;
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 350px !important;
+}
+
+.paral p {
+    font-size: 24px;
+    color:#f5f5f5;
+    text-align: center;
+    line-height: 60px;
+}
+
+/* Heading for Parallax Section */ 
+.paral h1 {
+    color: white;
+    font-size: 50px;
+    padding-top: 60px;
+    line-height: 53px;
+}
+
+.paralsec {
+    background-image:url("/sales_manager/banner/dubai_production.jfif");
+}
+
+.jumbotron{
+    margin-bottom: 0;
+    border-radius: 12px !important;
+}
+
+
+.dubai_production_section{
+    margin: 2rem !important;
+    border-radius: 12px !important;
+}
+
+.img_container img{
+    border-radius: 12px !important;
+}
+
+.paragraph_container{
+    background-color: #0ba87e !important;
+    border-radius: 12px !important;
+}
+
+.production_lable{
+    line-height: 25px !important;
+}
+
+.elementor-widget-container{
+    background: white !important;
+    border-radius: 12px !important;
+}
+
+.elementor-image-box-content h6{
+    font-size: 14px !important; 
+/*    font-weight: 800 !important;*/
+    letter-spacing:1px;
+}
+
+.elementor-image-box-content a{
+    font-weight: 600 !important;
+    color: #808080e0 !important;
+}
+
+.fs-14{
+    font-size: 14px !important;
+}
+
+.elementor-image-box-wrapper{
+    min-height: 120px !important;
+}

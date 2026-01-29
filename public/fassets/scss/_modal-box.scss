@@ -1,0 +1,70 @@
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    .modal-content {
+        background-color: #fefefe;
+        font-size: 15px;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 40%; /* Could be more or less, depending on screen size */
+        h4 {
+            font-size: 18px;
+        }
+        .modalBtns {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            text-align: center;
+            a,
+            button {
+                background: #169e88;
+                color: #fff;
+                border: 0;
+                padding: 0.5rem 1rem;
+                font-size: 14px;
+                outline: none;
+                width: 120px;
+                cursor: pointer;
+                border-radius: 6px;
+                -webkit-border-radius: 6px;
+                -moz-border-radius: 6px;
+                -ms-border-radius: 6px;
+                -o-border-radius: 6px;
+                &:hover {
+                    background: #ffb400;
+                }
+            }
+            span {
+                background: #169e88;
+                color: #fff;
+                border: 0;
+                width: 120px;
+                padding: 0.5rem 1rem;
+                font-size: 14px;
+                outline: none;
+                cursor: pointer;
+
+                border-radius: 6px;
+                -webkit-border-radius: 6px;
+                -moz-border-radius: 6px;
+                -ms-border-radius: 6px;
+                -o-border-radius: 6px;
+                transition: 0.3s all ease-in-out;
+                position: static;
+                &:hover {
+                    background: #ffb400;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,77 @@
+.kpi_reports{
+    display:block !important;
+}
+
+#allocated-month-icon {
+    font-size: 1.2rem; 
+    color: #007bff; 
+    margin-left: 10px; 
+    cursor: pointer; 
+    transition: color 0.3s ease, transform 0.3s ease;
+    margin-top: 6px;
+}
+
+#allocated-month-icon:hover {
+    color: #0056b3; 
+    transform: scale(1.1); 
+}
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
+    border: 0;
+    border-radius: .25em;
+    background: initial;
+    background-color: #169e88 !important;
+    border-color: #169e88 !important;
+    color: #fff;
+    font-size: 1em;
+}
+
+
+#allocated-month-btn {
+    display: flex;
+    align-items: center;
+    font-size: 14px; 
+    padding: 6px 15px;
+    background-color: #169e88; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#allocated-month-btn i {
+    margin-right: 5px; 
+}
+
+#allocated-month-btn:hover {
+    background-color: #138c73; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
+#allocated-month-btn:focus {
+    outline: none; 
+    box-shadow: 0 0 0 2px rgba(22, 158, 136, 0.6); 
+}
+
+.dropdown-width .select_container {
+    width: unset;
+}
+
+.main_section {
+    flex-grow: 1; 
+    padding: 30px;
+    overflow-y: auto; 
+    margin: 6.5rem 1.5rem!important;
+    max-height: 100%; 
+    
+}
+
+
+
+
+
+
+
+
+

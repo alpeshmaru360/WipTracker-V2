@@ -1,0 +1,89 @@
+.procurement_dashboard{-webkit-border-radius: 10px !important;padding: 6px 8px;align-items: center;background-color: #eef6f7 !important;}
+.chartjs-render-monitor{display: block !important;height:350px !important;}
+.suppliers_compare{padding: 6px 8px;background-color: #169e88 !important;}
+.fs-18{font-size: 18px !important;}
+
+
+/* .procurement_dashboard_page .line_chart {width: 100% !important;} */
+.procurement_dashboard_page .chart_title{width: 70% !important;}
+.procurement_dashboard_page .mylinechart{display: block; margin: 0 auto;}
+.project_table_heading{border: 1px solid #d9e0e3 !important;}
+body.menu_side_present .body_wrap {overflow: unset !important;}
+
+/*included css from superwisor css file - start */
+.procurement_inbox_page .modal {position: fixed;left: 0;top: 0;width: 100%;height: 100%;background-color: rgb(0,0,0);background-color: rgba(0,0,0,0.4);padding-top: 60px;}
+.procurement_inbox_page .modal-header {background-color: #343a40;color: #ffffff;}
+.procurement_inbox_page .modal-header .close {color: #ffffff;opacity: 1;}
+.procurement_inbox_page div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {background-color: #169e88 !important;color: #fff;}
+.procurement_inbox_page .btn-primary:disabled {border-radius: 3px;padding: 10px 25px;}
+.procurement_inbox_page .project_table_heading{border:1px solid #d9e0e3 !important;border-bottom: 0px !important;}
+/*included css from superwisor css file - End */
+
+/*included css from procurement inbox page - start */
+.procurement_inbox_page .itemslectioncontent {overflow: clip !important;}
+/* Bulk Supplier Modal Styles */
+.procurement_inbox_page #bulkSupplierModal .supplier-item {
+    padding: 12px;margin: 8px 0;border: 1px solid #ddd;border-radius: 4px;cursor: pointer;transition: all 0.3s;background-color: #f8f9fa;
+}
+.procurement_inbox_page #bulkSupplierModal .supplier-item:hover {background-color: #e9ecef;border-color: #007bff;}
+.procurement_inbox_page #bulkSupplierModal .supplier-item.selected {background-color: #d4edda;border-color: #28a745;}
+.procurement_inbox_page #itemSelectionModal .modal-dialog {max-width: 700px;}
+.procurement_inbox_page .bulk-items-list {max-height: 400px;overflow-y: auto;padding: 10px;}
+.procurement_inbox_page .item-row {
+    padding: 12px;margin-bottom: 8px;border: 1px solid #e0e0e0;border-radius: 4px;background-color: #fff;transition: all 0.2s;
+}
+.procurement_inbox_page .item-row:hover {background-color: #f0f8ff;border-color: #007bff;}
+.procurement_inbox_page .item-row label {width: 100%;margin-bottom: 0 !important;font-weight: normal;cursor: pointer !important;user-select: none;}
+.procurement_inbox_page .item-row label * {cursor: pointer !important;}
+.procurement_inbox_page .item-checkbox {
+    margin-right: 0 !important;width: 20px !important;height: 20px !important;cursor: pointer !important;flex-shrink: 0 !important;
+}
+.procurement_inbox_page .item-row.selected {background-color: #d4edda;border-color: #28a745;}
+.procurement_inbox_page .switch-group label {line-height: 10px !important;}
+.procurement_inbox_page .plus-sm-btn {padding: 4px 10px !important;}
+.procurement_inbox_page .dataTables_wrapper {width: 100%;}
+.procurement_inbox_page .select_container.selected::after {color: #ffffff !important;content: "✓";}
+.procurement_inbox_page span.select2-selection.select2-selection--single,
+.procurement_inbox_page input.select2-search__field {border-radius: 0 !important;padding: 7px !important;}
+.procurement_inbox_page #bomModal .modal-body table {overflow-y: auto;position: relative;max-height: 70vh;}
+
+.procurement_inbox_page .select2-container--open {z-index: 1060 !important;}
+.procurement_inbox_page .select2-dropdown {position: absolute !important;max-height: 200px !important;overflow-y: auto !important;}
+@media only screen and (min-device-width: 768px) and (max-device-width: 1366px) and (-webkit-min-device-pixel-ratio: 1) {
+    .procurement_inbox_page .select2-dropdown {max-width: min-content;}
+}
+
+.procurement_inbox_page .select2-results__option--highlighted {background-color: #169e88 !important;}
+.procurement_inbox_page span.selection {width: 137px !important;display: block;}
+/* Customize colors */
+.procurement_inbox_page .supplier-selected {background-color: #e6f7ff !important;/* light blue */border-color: #1890ff;}
+.procurement_inbox_page td.selected span span {background-color: green !important;color: white !important;}
+/* Search bar for bulk supplier modal */
+.procurement_inbox_page #supplierSearchInput {
+	width: 100%;padding: 10px 15px;margin-bottom: 15px;border: 1px solid #ced4da;border-radius: 4px;font-size: 14px;
+}
+.procurement_inbox_page #supplierSearchInput:focus {outline: none;border-color: #007bff;box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);}
+.procurement_inbox_page .supplier-item.hidden {display: none;}
+.procurement_inbox_page #supplierListContainer {max-height: 500px;overflow-y: auto;}
+/* Yellow background for N/A suppliers in Select2 */
+.procurement_inbox_page td.na-supplier .select2-container .select2-selection {
+    background-color: #fff3cd !important;border-color: #ffc107 !important;
+}
+.procurement_inbox_page td.na-supplier .select2-container .select2-selection__rendered {color: #000000 !important;font-weight: 500;}
+/* Also style regular select (if Select2 not initialized) */
+.procurement_inbox_page td.na-supplier select.supplier-select {
+    background-color: #fff3cd !important;color: #000000 !important;border-color: #ffc107 !important;
+}
+/* Larger badge for supplier count */
+.procurement_inbox_page #bulkSupplierModal .supplier-item .badge {font-size: 10px;padding: 2px 4px;font-weight: 500;vertical-align: middle;}
+/* Alternative: Make the entire badge bigger */
+/* #bulkSupplierModal .supplier-item .badge-primary {font-size: 15px;padding: 5px 10px;border-radius: 12px;} */
+/* Custom color for supplier count badge */
+.procurement_inbox_page #bulkSupplierModal .supplier-item .badge-success {
+    background-color: #169e88 !important;color: #ffffff !important;font-size: 14px;padding: 5px 7px;border-radius: 12px;font-weight: 500;margin-left: 6px;
+}
+.procurement_inbox_page .place-order-btn-disabled,
+.procurement_inbox_page .place-order-btn-disabled:hover{color: #fff !important;background-color: #6c757d !important;border-color: #6c757d !important;opacity: .65;}
+
+/*included css from procurement inbox page - End */
+

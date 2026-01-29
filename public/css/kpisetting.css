@@ -1,0 +1,14 @@
+.kpi_container {max-width: 1200px;margin: 0 auto;}
+.kpi_container h1{margin-bottom: 15px !important;}
+.kpi-table {width: 100%;border-collapse: collapse;background-color: rgba(245, 245, 245, 0.8);border-radius: 8px;overflow: hidden;}
+.kpi-table thead tr th {background-color: #169e88 !important;color: #fff !important;}
+.kpi-table th, 
+.kpi-table td {text-align: left;padding: 12px;border: 1px solid #ddd;}
+.kpi-table tbody tr:hover {background-color: rgba(0, 0, 0, 0.05);}
+.main_section {flex-grow: 1;padding: 15px;overflow-y: auto;margin: 1.5rem 1.5rem!important;max-height: 100%;}
+/* Center modal dialog on the screen */
+.modal-dialog {display: flex;justify-content: center;align-items: center;min-height: 100vh;}
+.modal-title{color: white !important;}
+.cancle-button{background-color: black !important;color: white !important;}
+.modal-content{width: 350px !important;}
+.savechange{background-color: #169e88 !important;color: #fff !important;}

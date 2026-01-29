@@ -1,0 +1,34 @@
+.homePage {
+  position: relative;
+  .mainWrapper {
+    height: 100vh;
+  }
+}
+.homeMidSection {
+  background-image: url(../images/home_bg_globe.png);
+  background-position: center top;
+  background-repeat: no-repeat;
+  justify-content: space-between;
+  padding: 1.5rem 0 5.5rem;
+  background-size: 46%;
+  .left {
+    flex: 0 0 40%;
+    max-width: 40%;
+  }
+  .right {
+    flex: 0 0 50%;
+    max-width: 50%;
+    text-align: right;
+  }
+  h2 {
+    font-size: 2.4rem;
+    color: $colorBlack;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    span {
+      font-size: 2.25rem;
+      display: block;
+      color: $colorGreen;
+    }
+  }
+}

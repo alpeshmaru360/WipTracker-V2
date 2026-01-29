@@ -1,0 +1,98 @@
+.subComponentMidSection {
+  position: relative;
+  .subComponentList {
+    width: 40rem;
+    background: #effaf8;
+    border: 1px solid $colorGreen;
+    padding: 1.125rem;
+    text-align: left;
+    border-radius: 0.5rem;
+    -webkit-border-radius: 0.5rem;
+    -moz-border-radius: 0.5rem;
+    -ms-border-radius: 0.5rem;
+    -o-border-radius: 0.5rem;
+    .subComponentBox {
+      position: relative;
+      ul {
+        list-style: none;
+        padding-left: 0;
+        display: grid;
+        grid-column-gap: 20px;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto;
+        li {
+          line-height: 0.7;
+          margin-top: 1rem;
+        }
+      }
+    }
+  }
+}
+
+.subComponentBoxList {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  h5 {
+    font-size: 0.9rem;
+  }
+  label {
+    cursor: pointer;
+  }
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: $colorWhite;
+    border: 1px solid $colorGreen;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+  }
+}
+
+.subComponentBoxList:hover input ~ .checkmark {
+  background-color: $colorGreen;
+}
+.subComponentBoxList input:checked ~ .checkmark {
+  background-color: $colorGreen;
+}
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.subComponentBoxList input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.subComponentBoxList .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}

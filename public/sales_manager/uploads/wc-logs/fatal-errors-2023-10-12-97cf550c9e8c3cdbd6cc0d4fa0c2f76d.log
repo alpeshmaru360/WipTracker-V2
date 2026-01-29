@@ -1,0 +1,13 @@
+2023-10-12T11:39:11+00:00 CRITICAL Uncaught Error: Call to undefined function wp_admin() in /home/salehiya/domains/salehiya.360websitedemo.com/public_html/salehiya/themes/alliance-child/functions.php:16
+Stack trace:
+#0 /home/salehiya/domains/salehiya.360websitedemo.com/public_html/wp-includes/class-wp-hook.php(310): redirect_home_to_login()
+#1 /home/salehiya/domains/salehiya.360websitedemo.com/public_html/wp-includes/class-wp-hook.php(334): WP_Hook->apply_filters()
+#2 /home/salehiya/domains/salehiya.360websitedemo.com/public_html/wp-includes/plugin.php(517): WP_Hook->do_action()
+#3 /home/salehiya/domains/salehiya.360websitedemo.com/public_html/wp-includes/template-loader.php(13): do_action()
+#4 /home/salehiya/domains/salehiya.360websitedemo.com/public_html/wp-blog-header.php(19): require_once('/home/salehiya/...')
+#5 /home/salehiya/domains/salehiya.360websitedemo.com/public_html/index.php(17): require('/home/salehiya/...')
+#6 {main}
+  thrown in /home/salehiya/domains/salehiya.360websitedemo.com/public_html/salehiya/themes/alliance-child/functions.php on line 16
+
+2023-10-12T12:32:46+00:00 CRITICAL Cannot redeclare custom_login_redirect() (previously declared in /home/salehiya/domains/salehiya.360websitedemo.com/public_html/salehiya/themes/alliance-child/functions.php:25) in /home/salehiya/domains/salehiya.360websitedemo.com/public_html/salehiya/themes/alliance-child/functions.php on line 34
+

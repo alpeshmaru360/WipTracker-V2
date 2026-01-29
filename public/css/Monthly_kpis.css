@@ -1,0 +1,13 @@
+.main_section {
+    flex-grow: 1; 
+    padding: 30px;
+    overflow-y: auto; 
+    margin: 6.5rem 1.5rem!important;
+    max-height: 100%; 
+    
+}
+
+.custom_container{
+    width: 13% !important;
+}
+

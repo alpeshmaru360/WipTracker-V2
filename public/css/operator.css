@@ -1,0 +1,106 @@
+body.menu_side_present.menu_side_left {margin-left: 20px !important;margin-right: 20px !important;}
+.elementor:not(.elementor-bc-flex-widget) .elementor-widget-wrap {display: block !important;}
+@media (max-width: 1023px) {
+    body.menu_side_present.menu_side_left .sc_layouts_row_fixed {left: 40px !important;}
+}
+@media (min-width: 1023px) and (max-width: 1500px) {
+    body.menu_side_present.menu_side_left .sc_layouts_row_fixed {left: 50px !important;}
+}
+@media (min-width: 1280px) and (max-width: 1500px) {
+    body.menu_side_present.menu_side_left .sc_layouts_row_fixed {left: 120px !important;}
+}
+@media (max-width: 767px) {
+    .sc_layouts_login .sc_layouts_item_details {display: inline-block !important;}
+    /* .trx_addons_login_link{display: none !important;} */
+    .elementor-3160 .elementor-element.elementor-element-559c822{padding: 0px 40px 0px 25px !important;}
+
+    .sc_layouts_menu_nav>li.menu-item-has-children>a:after {
+        content: '\e882' !important;
+        font-family: "trx_addons_icons" !important;
+        font-weight: normal !important;
+        transition: color 0.3s ease !important;
+    }
+}
+@media (min-width: 992px) {
+    #cameraButton{display: none;}
+}
+.dataTables_wrapper .dataTables_paginate{margin-top: 0px !important;}
+.dashboard_heading{padding-bottom: 30px;}
+#cameraButton{margin-top: 20px !important;}
+@media (max-width: 768px) {
+  table {display: block;overflow-x: auto;white-space: nowrap;table-layout:fixed;}
+}
+body.menu_side_present .menu_mobile{display: none;}
+.rejectReason{top:100px !important;}
+
+/*included css from product_type_timer_page File - Start*/
+.product_type_timer_page .dataTables_wrapper .dataTables_paginate {margin-top: 0px !important;}
+.product_type_timer_page.dashboard_heading {padding-bottom: 30px;}
+.product_type_timer_page #cameraButton {margin-top: 20px !important;}
+@media (max-width: 768px) {
+    .product_type_timer_page table {display: block;overflow-x: auto;white-space: nowrap;table-layout: fixed;}
+}
+/* New styles for the photos modal */
+.product_type_timer_page #photosModal .modal-body {max-height: 70vh;/* Limit the modal body height */overflow-y: auto;/* Add scroll if there are many photos */}
+.product_type_timer_page #photosContainer .col-md-4 {display: flex;flex-direction: column;align-items: center;padding: 5px;/* Reduced padding for compactness */}
+.product_type_timer_page #photosContainer img {transition: transform 0.2s;/* Add a slight hover effect */}
+.product_type_timer_page #photosContainer img:hover {transform: scale(1.05);/* Slight zoom on hover */}
+.product_type_timer_page #photosContainer p {margin: 0;/* Remove default margin */color: #333;/* Darker text color for better readability */}
+.product_type_timer_page .photosModal-dialog {margin-top: 7% !important;}
+.product_type_timer_page .pdfImageContainer{text-align: center; max-height: 75vh; overflow: auto;}
+.product_type_timer_page .modal{z-index:9999}
+/* Make toolbar responsive */
+.product_type_timer_page .pdf-toolbar{flex-wrap:wrap;gap:10px}
+/* Prevent overflow on tablet/iPad */
+.product_type_timer_page .pdf-toolbar button{margin-bottom:8px}
+/* Fix PDF container responsiveness */
+.product_type_timer_page .pdfImageContainer{width:100%;overflow-x:auto;text-align:center}
+/* Image or Canvas inside PDF */
+.product_type_timer_page .pdfImageContainer canvas,
+.product_type_timer_page .pdfImageContainer img{max-width:100%;height:auto}
+/* Adjust modal for iPad */
+@media (max-width:1024px){ /* iPad */
+    .product_type_timer_page .modal-dialog.modal-xl{max-width:95%!important;margin:0 auto}
+    .product_type_timer_page .project_icon {font-size: 14px;}
+    .product_type_timer_page .gap-2 {gap: 6px !important;}
+}
+.product_type_timer_page .project_icon {white-space: nowrap;}
+@media (max-width: 768px) { /* Mobile */
+    .product_type_timer_page .d-flex.flex-wrap.justify-content-between {
+        flex-direction: column;align-items: flex-start !important;gap: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Keep container vertical but do not stretch BACK button */
+    .product_type_timer_page .d-flex {flex-direction: column !important;width: 100%;}
+    .product_type_timer_page .back-btn {flex-direction: unset !important;}
+    
+    /* BACK button (first button) – keep original size */
+    .product_type_timer_page a.project_icon:first-child{width:auto!important;display:inline-flex!important;align-self:flex-start!important;padding:8px 14px!important;}
+    /* RIGHT SIDE BUTTONS – full width */
+    .product_type_timer_page .right-action-btns a,
+    .product_type_timer_page .right-action-btns button{
+        width:100%!important;margin:6px 0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+        flex-direction:row!important;gap:8px!important;padding:12px!important;border-radius:6px!important;white-space:normal!important;
+    }
+    /* Icon alignment fix */
+    .product_type_timer_page .right-action-btns i {margin: 0 !important;font-size: 14px !important;}
+    /* Text alignment fix */
+    .product_type_timer_page .right-action-btns span {font-size: 14px !important;line-height: 1.3 !important;}
+}
+
+/*included css from product_type_timer_page File - End*/
+
+.operator_dashboard_page .project_check_status.disabled {pointer-events: none;opacity: 0.5;cursor: not-allowed;}
+.me-2 {margin-right: 0.5rem !important;}
+
+.product_qr_page .qr_code {width: 100%;max-width: 80px;height: auto;}
+.product_qr_page .table-scroll-wrapper {overflow-x: auto;max-width: 100%;}
+.product_qr_page .scrollable {min-width: 1000px;}
+
+@media (max-width: 1279px) {
+    .elementor-3160 .elementor-element.elementor-element-9e5daa3 > .elementor-widget-container {
+        margin: 0rem 0rem 0rem 0rem;
+    }
+}

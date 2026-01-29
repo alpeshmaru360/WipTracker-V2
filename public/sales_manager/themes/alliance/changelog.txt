@@ -1,0 +1,209 @@
+Release: v.3.2.1 
+	Fixed:
+    - Theme styles
+
+Version: 3.2.0
+	Update theme core files.
+
+Version: 3.1.0
+	Skin 'default' is updated to the version 1.1.0.
+
+Release: v.3.0 (2.10.0)
+	Updated:
+	- Theme сore
+	- Theme content
+	- Theme design
+	- Theme documentation
+	 
+	Changed:
+	- Theme Builder - Elementor
+	 
+	Removed:
+	- Essential Grid
+	- Booked Appointments
+	- BuddyDrive
+	- Event Organiser
+	- Responsive Poll
+	- WPBakery PageBuilder
+	- WP-Pro-Quiz
+	 
+	Added:
+	- Layout builder (если тема очень старая и ранее там не было CPT Layouts)
+	- BuddyPress Activity ShortCode
+	- BuddyPress Docs
+	- BuddyPress for LearnDash
+	- Democracy Poll
+	- elegro Crypto Payment
+	- Elementor
+	- Knowledge Base for Documents and FAQs
+	- LearnDash LMS
+	- LearnDash LMS - Course Grid
+	- M Chart
+	- M Chart Highcharts Library
+	- MC4WP: Mailchimp for WordPress
+	- Paid Memberships Pro
+	- rtMedia for WordPress, BuddyPress and bbPress
+	- The Events Calendar
+	- WooCommerce
+	- WP Job Manager
+	- WP Job Manager - Resume Manager
+
+Version 2.4.9
+    Added:
+    - WP 5.8 compatibility
+    - PHP 8.0 compatibility
+    - Compatibility with Cookie Information plugin
+
+    Fixed:
+    - Theme styles
+
+    Removed:
+    - Content timeline plugin
+
+Version 2.4.8
+    Added:
+    - WP 5.7 compatibility
+
+    Fixed:
+    - Theme styles
+
+    Changed:
+    - Theme content
+
+Version 2.4.7
+    Fixed:
+    - Update plugins to their latest versions
+    - Improve theme styles
+    Removed:
+    - GDPR Framework plugin
+
+Version 2.4.6
+    Added:
+    - WP 5.5 compatibility
+    - PHP 7.4 compatibility
+    - BP Better Messages plugin
+    - Contact form for resumes
+
+Version 2.4.5
+    Fixed:
+    - Compatibility with PHP 7.4
+    - Update plugins to their latest versions
+
+    Added:
+    - ThemeREX Updater plugin
+
+Version 2.4.4
+    Added:
+    - Contact Form 7 plugin
+
+    Fixed:
+    - Update plugins to their latest versions
+    - Import demo data of Responsive Poll plugin
+    - Import demo data of WP-Pro-Quiz plugin
+    - Import demo data of Event Organiser plugin
+
+    Removed:
+    - Favicon option
+
+Version 2.4.3
+    Fixed:
+    - Update plugins to their latest versions
+    - Courses options
+
+Version 2.4.2
+	Fixed:
+    - Compatibility with PHP 7.3
+    - Compatibility with Wordpress 5.2.2
+    - Update plugins to their latest versions
+    - Google map
+    - Improve theme styles
+	- Subcategory link
+	- Show language selector
+
+Version 2.4.1
+	Fixed:
+	- Update plugins to their latest versions
+	- Compatibility with Gutenberg and other PageBuilders
+
+	Changed:
+	- Move shortcodes, tools and widgets to Universal Services plugin
+
+Version 2.4
+	Fixed:
+	- Login form
+	- Registration form
+	- Compatibility with WordPress 4.9.6
+	- Update plugins to their latest versions
+	- Improve theme styles
+	- Update documentation
+
+	Changed:
+	- Move Importer to Universal Services plugin
+	- Make forms GDPR-compliant
+
+	Added:
+	- GDPR Framework plugin
+
+
+Version 2.3.1
+	Documentation is updated
+	WPBakery Page Builder is updated
+	
+Version 2.3
+	Compatibility with PHP7
+	Plugins updated.
+
+Version 2.2
+	Theme files are updated
+	Booked updated to it last version 
+	Content Timeline updated to it last version 
+	Essential Grid updated to it last version 
+	WPBakery Page Builder updated to it last version
+
+Version 2.1
+	Social login improved
+
+Version 2.0
+	Google Maps updated
+	  
+Version 1.9
+	WPBakery Page Builder updated to it last version
+	  
+Version 1.8
+	WPBakery Page Builder updated to it last version
+	
+Version 1.7.1
+	Widget Calendar fixed
+	
+Version 1.7
+	WPBakery Page Builder updated
+	Fixed 
+	- Menu in the IE browser
+	- Bug's of the single page
+	- Blog responsive
+
+Version 1.6
+	Design of Woocommerce elements been updated
+
+Version 1.5
+	WPBakery Page Builder updated
+	
+Version 1.4
+	Responsive fixed
+	Simple Members Only added
+	
+Version 1.3
+	Theme files bugs fixes
+
+Version 1.2
+	Fixed
+	- Responsive layout 
+	- Menu 
+
+Version 1.1
+	Dummy Data Installer added
+	Color schemes added
+
+Version 1.0
+	Release
+	

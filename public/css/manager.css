@@ -1,0 +1,15 @@
+.h-50px{height: 50px !important;}
+.w-10{width: 10% !important;}
+
+/* .project_status{color: #fff;background-color: #169e88 !important;padding: 7px 7px !important;font-size: 12px !important;border-radius: 15px;} */
+
+.project_link_span{border-radius: 50%;background: #43cbb5;padding: 1px 5px;}
+.abt_dubai_pro_link h6{font-weight: 600 !important;color: #808080e0 !important;}
+.status-image {width: 30px;height: 30px;display: block;margin: 0 auto;}
+.table-scroll-wrapper {display: block;overflow-x: hidden;max-width: 100%;}
+.table-scroll-wrapper.scrollable {overflow-x: auto !important;white-space: nowrap !important;}
+.project_status_screen .process_box{background-color: #68d14678;}
+/* Freeze the first column (row labels) */
+.project_status_screen .sticky-col {position: sticky;left: 1px !important;background-color: #f8f9fa;z-index: 1;min-width: 150px;font-weight: 500;}
+/* Optional: Improve visual when hovering */
+.project_status_screen .table-hover tbody tr:hover .sticky-col {background-color: #e9ecef;}

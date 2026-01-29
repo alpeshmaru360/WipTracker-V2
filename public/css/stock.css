@@ -1,0 +1,60 @@
+.stock_container {max-width: 1200px;margin: 0 auto;padding: 20px;}
+/* Style the table */
+.stock-table {width: 100%;border-collapse: collapse;background-color: rgba(245, 245, 245, 0.8);border-radius: 8px;overflow: hidden;}
+/* Table Header Design */
+/*.stock-table thead tr th {background-color: #169e88 !important;color: #fff !important;}*/
+.stock-table th, 
+.stock-table td {text-align: left;padding: 12px;border: 1px solid #ddd;}
+/* Row Hover Effect */
+.stock-table tbody tr:hover {background-color: rgba(0, 0, 0, 0.05);}
+/* Responsive table design for smaller screens */
+@media (max-width: 768px) {
+    .stock-table th, 
+    .stock-table td {font-size: 14px;padding: 8px;}
+}
+
+/*included css from stock_master_page - Start */
+.stock_master_page table.dataTable thead tr th {border: 1px solid #d9e0e3 !important;}
+.stock_master_page .fa-download {color: white;}
+.stock_master_page .fa-download:hover {color: white;}
+.stock_master_page .stockModal {z-index: 9999 !important;}
+.stock_master_page .stockModal input[type="number"] {border-radius: 3px !important;}
+/* Custom File Upload Styling */
+.stock_master_page .custom-file-upload {position: relative;display: flex;align-items: center;gap: 10px;flex-wrap: wrap;}
+.stock_master_page .custom-file-upload input[type="file"] {display: none;}
+.stock_master_page .file-upload-label {display: inline-flex;align-items: center;padding: 10px 20px;background-color: #28a745;color: white;
+    border-radius: 5px;cursor: pointer;font-size: 14px;font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.stock_master_page .file-upload-label:hover {background-color: #218838; transform: translateY(-2px);}
+.stock_master_page .file-upload-label i {font-size: 16px;}
+.stock_master_page .file-name {font-size: 14px;color: #555;font-style: italic;flex: 1;
+    text-overflow: ellipsis;overflow: hidden;white-space: nowrap;
+}
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .stock_master_page .file-upload-label {padding: 8px 15px;font-size: 13px;}
+    .stock_master_page .file-name {font-size: 13px;}
+}
+.stock_master_page .filter_dropdown .dropdown-toggle{
+    font-size: 15px;border: 0px;font-weight: bold;text-transform: capitalize;
+    background-color: #f8fbfc;color: #000724;padding: 0px !important;text-wrap: auto;
+}
+.stock_master_page .filter_dropdown .dropdown-toggle:hover,
+.stock_master_page .filter_dropdown .dropdown-toggle:focus{
+    background-color: #f8fbfc !important;color: #000724 !important;
+}
+.stock_master_page .filter_dropdown .dropdown-menu{max-height: 300px; overflow-y: auto;z-index: 9999;}
+.stock_master_page .filter_dropdown .dropdown-menu .checkbox_label{cursor: pointer;}
+.stock_master_page .filter_dropdown .dropdown-menu .checkbox_label:active{background-color: #fff;color: #000724;}
+.stock_master_page .filter_dropdown .dropdown-menu .checkbox_label:before{top: 3px !important;}
+.stock_master_page .filter_dropdown .dropdown-toggle.filtered_dd{border:3px solid #169e88 !important;}
+.stock_master_page .btn-danger.delete-button {color: #fff;background-color: #dc3545;border-color: #dc3545;}    
+.stock_master_page.main_section.bg-white.m-4.stock_bg{min-height: 500px;}
+.stock_master_page .stock_reset_btn{padding-top:10px !important;}
+/*included css from stock_master_page - End */
+
+/*included css from stock_master_index_page - Start */
+.stock_master_index_page table tbody tr td{background-color: #fff !important;}
+.stock_master_index_page .project_index_btn:hover{color: white !important;text-decoration: none !important;}
+/*included css from stock_master_index_page - End */

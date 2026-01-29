@@ -1,0 +1,176 @@
+.production_dashboard{-webkit-border-radius: 10px !important;padding: 6px 8px;align-items: center;background-color: #103ea5bf !important;}
+.fs-18{font-size: 18px !important;}
+.production_dashboard_first_column{
+    -webkit-border-radius: 10px !important;padding: 6px 8px;align-items: center;background-color: #16b1167a !important;
+}
+.production_dashboard_second_column{
+    -webkit-border-radius: 10px !important;padding: 6px 8px;align-items: center;background-color: #e3b6637a !important;
+}
+.table_th_bg{background-color: #16b1167a !important;}
+.custom-badge{background-color: #e3b6637a !important;color: black !important;}
+.project_{background-color: transparent !important;border: none !important;padding: 0px !important;}
+.br-5{border-radius: 5px !important;}
+.border-unset{border: unset;}
+.bg-blue{background-color: #285ae2;}
+.float_right{float: right !important;}
+.project_index_btn{
+    box-shadow: var(--theme-var-btn_shadow) var(--theme-color-accent_hover_02);background-color: #169e88 !important;
+    border-color: #169e88 !important;color: white !important;text-decoration: none !important;
+}
+.project_index_btn:hover{color: white;}
+.project_table_heading{border: 1px solid #d9e0e3 !important;}
+#project_table tbody td{padding : 2px 2px !important;}
+.project_status_box{background: #169e88  !important;border-radius: 12px !important;}
+#documentsList li a{color: var(--theme-color-accent_hover);}
+.icon_color{color: var(--theme-color-accent_hover);}
+.download_excel_bom-checkbox, 
+.download_excel_drawing-checkbox, 
+.partial-delivery-checkbox{width: 20px;height: 20px;accent-color: green;clip: unset !important;}
+.project_status_dd{border-radius: 12px !important;border-color: #169e88 !important;font-size: 15px !important;}
+.production_manager_index_page .project_status_dd{padding: 11px 14px !important;}/* A Code: 26-12-2025 */
+
+.select_container{border-radius: 12px !important;border-color: red;}
+.project_approval_dd{border-radius: 12px !important;border-color: #169e88 !important;font-size: 15px !important;}
+.project_priority_dd{border-radius: 12px !important;border-color: #169e88 !important;font-size: 15px !important;}
+.project_table_section{overflow: auto;}
+.placeorder-btn {padding: 2px 8px !important; font-size: 12px !important;white-space: nowrap;}
+.select_container select.supplier-selected {color: #ffffff !important;background-color: #28a745 !important;}
+.select_container select.supplier-selected:focus{color: #ffffff !important;background-color: #28a745 !important;}
+.lh-1{line-height: 1 !important;}
+.lh-sm{line-height: 1.25 !important;}
+.lh-base{line-height: 1.5 !important;}
+.lh-lg{line-height: 2 !important;}
+.is-invalid {border-color: #dc3545 !important;background-color: #fff0f0;}
+
+.add-row-container {margin-top: 1rem;}
+.select2-container {width: 100% !important;}
+.select2-container--default .select2-selection--single {height: 38px;border: 1px solid #ced4da;border-radius: 4px;}
+.select2-container--default .select2-selection--single .select2-selection__rendered {line-height: 38px;padding-left: 10px;color: #495057;}
+.select2-container--default .select2-selection--single .select2-selection__arrow {height: 38px;right: 5px;}
+.select2-container--default .select2-selection--single.is-invalid {border-color: #dc3545 !important;}
+.remove-row {padding: 2px 8px;margin-left: 5px;border: none;}
+.input-group {display: flex;align-items: center;}
+.select2-results__option {padding: 6px 10px;}
+.select2-results__option--highlighted {background-color: #007bff !important;color: white !important;}
+body.menu_side_present .body_wrap {overflow: unset !important;}
+
+/*included css from quality_manager css File - Start*/
+.production_manager_page .card{-webkit-border-radius: 12px;}
+.production_manager_page #monthly_inspection{background-color: #eef6f7 !important;border-radius: 12px;width: 100%; height: 400px;}
+.production_manager_page #monthly_inspection1{background-color: #eef6f7 !important;border-radius: 12px;width: 100%; height: 400px;}
+.production_manager_page #monthly_inspection2{background-color: #eef6f7 !important;border-radius: 12px;width: 100%; height: 400px;}
+/*included css from quality_manager css File - End*/
+
+/*included css from product_tracking_page File - Start*/
+.product_tracking_page div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {background-color: #169e88 !important;color: #fff;}
+.product_tracking_page .filter_dropdown .dropdown-toggle{
+    font-size: 15px;border: 0px;font-weight: bold;text-transform: capitalize;
+    background-color: var(--theme-color-navigate_bg);color: #000724;padding: 0px !important;text-wrap: auto;
+}
+.product_tracking_page .filter_dropdown .dropdown-toggle:hover,
+.product_tracking_page .filter_dropdown .dropdown-toggle:focus{
+    background-color: var(--theme-color-navigate_bg) !important;color: #000724 !important;
+}
+.product_tracking_page .filter_dropdown .dropdown-menu{max-height: 200px; overflow-y: auto;z-index: 9999;}
+.product_tracking_page .filter_dropdown .dropdown-menu .checkbox_label{cursor: pointer;}
+.product_tracking_page .filter_dropdown .dropdown-menu .checkbox_label:active{background-color: #fff;color: #000724;}
+.product_tracking_page .filter_dropdown .dropdown-menu .checkbox_label:before{top: 3px !important;}
+.product_tracking_page .filter_dropdown .dropdown-toggle.filtered_dd{border:3px solid #169e88 !important;}
+
+/* .product_tracking_page.main_section.project_bg{min-height: 500px;} */
+.product_tracking_page .export_reset_btn{background-color: #169e88 !important;border-color: #169e88 !important;color: white !important;}
+.product_tracking_page .dataTables_wrapper {width: 100%;}
+.product_tracking_page .dataTables_wrapper.no-footer .dataTables_scrollBody{border-bottom: 1px solid #fff !important;}
+.product_tracking_page .project_table_heading{border:1px solid #d9e0e3 !important;border-bottom: 0px !important;}
+/*included css from product_tracking_page File - End*/
+
+/*included css from production_manager_index_page File - Start*/
+.production_manager_index_page .dataTables_wrapper {width: 100%;}
+.production_manager_index_page .btn-secondary-integration {background-color: black !important;color: white !important;}
+.production_manager_index_page .Qr_item {text-align: center;}
+.production_manager_index_page .qr_image_center a {width: 55%;}
+.production_manager_index_page a.d-flex.align-items-center.text-decoration-none {margin: auto;}
+.production_manager_index_page .btn-qr-downlaod {width: 50%;}
+.production_manager_index_page .subfolder-drawings {padding-left: 20px;}
+.production_manager_index_page .project_index_btn .fa-fw {font-size: 16px;width: 1em;}
+.production_manager_index_page .filter_dropdown .dropdown-toggle {
+    font-size: 14px;border: 0px;font-weight: 500;background-color: #f8fbfc;color: #000724;padding: 0px !important;text-wrap: auto;
+}
+.production_manager_index_page .filter_dropdown .dropdown-toggle:hover,
+.production_manager_index_page .filter_dropdown .dropdown-toggle:focus {background-color: #f8fbfc !important;color: #000724 !important;}
+.production_manager_index_page .filter_dropdown .dropdown-menu {max-height: 300px;overflow-y: auto;z-index: 9999;}
+.production_manager_index_page .filter_dropdown .dropdown-menu .checkbox_label {cursor: pointer;}
+.production_manager_index_page .filter_dropdown .dropdown-menu .checkbox_label:active {background-color: #fff;color: #000724;}
+.production_manager_index_page .filter_dropdown .dropdown-menu .checkbox_label:before {top: 3px !important;}
+.production_manager_index_page .filter_dropdown .dropdown-toggle.filtered_dd {border: 3px solid #169e88 !important;}
+/* .production_manager_index_page.project_bg {min-height: 500px;} */
+#tracking_table_wrapper,
+#project_table_wrapper{min-height: 500px;}
+.production_manager_index_page .btn-outline-secondary.reset-filter-btn {color: #6c757d !important;background-color: #dee2e6 !important;}
+.production_manager_index_page #documentsModal .modal-dialog {margin-top: 40px !important;}
+.production_manager_index_page #documentsModal .modal-content {margin-top: 40px !important;overflow: hidden;}
+
+/* Modern breadcrumb + header (Bootstrap + Font Awesome) */
+/* Tiny custom styles for a modern breadcrumb */
+.production_manager_index_page .breadcrumb-wrap {
+  background: transparent;border-radius: 10px;padding: 10px 12px;/* box-shadow: 0 6px 18px rgba(22, 28, 37, 0.06); */display: flex;
+  gap: 12px;align-items: center;flex-wrap: wrap;
+}
+.production_manager_index_page .breadcrumb {margin: 0;padding: 0;background: transparent;}
+.production_manager_index_page .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+  content: "\f054"; /* FontAwesome chevron-right */font-family: "Font Awesome 5 Free";font-weight: 900;margin: 0 8px;color: #9aa4b2;
+}
+.production_manager_index_page .breadcrumb .breadcrumb-item a {color: #3b4a60;text-decoration: none;}
+.production_manager_index_page .breadcrumb .breadcrumb-item.active {color: #475569;font-weight: 600;}
+/* Page title */
+.production_manager_index_page .breadcrumb-title {font-size: 1rem;font-weight: 700;color: #16202b;white-space: nowrap;}
+/* Right-side controls (Add button, path display) */
+.production_manager_index_page .breadcrumb-controls {margin-left: auto;display: flex;gap:12px;align-items: center;flex-wrap: nowrap;}
+.production_manager_index_page .path-display-small {
+  font-size: 13px;color: #6b7280;display: flex;gap: 8px;align-items: center;max-width: 45vw;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;
+}
+.production_manager_index_page .breadcrumb-controls .path-display {font-size:14px; color:#555;}
+/* Disabled delete icon style example (keeps consistent with buttons) */
+.production_manager_index_page .btn-disabled {opacity: 0.55;pointer-events: none;}
+/* Responsive tweaks */
+@media (max-width: 575px) {
+  .production_manager_index_page .breadcrumb-wrap { padding: 8px; gap: 8px; }
+  .production_manager_index_page .breadcrumb-title { font-size: 0.95rem; }
+  .production_manager_index_page .path-display-small { display: none; } /* hide long path on very small screens */
+}
+.production_manager_index_page .select_container:after{bottom: calc(50% + 1px) !important;}
+/*included css from production_manager_index_page File - End*/
+
+/*included css from production_manager_inbox_page File - Start*/
+.production_manager_inbox_page .dataTables_wrapper {width: 100%;}
+.production_manager_inbox_page .switch-group label {line-height: 10px !important;}
+.production_manager_inbox_page .cancel-black {background: black;color: white;padding: 10px 15px;}
+/* .production_manager_inbox_page button.btn.btn-secondary {padding: 7px 14px !important;background: black;} */
+.production_manager_inbox_page .reject_bg {background-color: red !important;}
+.production_manager_inbox_page .nameplate_uploaded_img{cursor: pointer; border: 1px solid #ddd; border-radius: 4px;}
+.production_manager_inbox_page .confirm_reject_order:disabled{padding: 10px 15px;}
+.production_manager_inbox_page .reject_loader{position: absolute;right: 35px;}
+/*included css from production_manager_inbox_page File - End*/
+
+/*included css from check_status_screen_page File - Start*/
+.check_status_screen_page #PO_table .table {margin-bottom: 20px;}
+.check_status_screen_page #PO_table .table th {background-color: #f8f9fa;font-weight: bold;}
+.check_status_screen_page .table-scroll-wrapper {overflow-x: auto;max-width: 100%;}
+.check_status_screen_page .scrollable {min-width: 1000px;}
+.check_status_screen_page .qr_code {width: 100%;max-width: 110px;height: auto;}
+.check_status_screen_page .ard_color_red{background-color: #b44a4a !important;}
+.check_status_screen_page .qty-lable{font-size: 12px; color: #333;}
+/*included css from check_status_screen_page File - End*/
+
+/* A Code: 26-12-2025 Start */
+.create_project_page .mask .card,
+.edit_project_page .mask .card{border-radius: 15px;}
+.create_project_page .download_excel_bom-checkbox{width: 20px;height: 20px;accent-color: green;clip: unset !important;position: unset !important;margin-top:5px !important;}
+.create_project_page .download_excel_drawing-checkbox{width: 20px;height: 20px;accent-color: green;clip: unset !important;position: unset !important;margin-top:5px !important;}
+.create_project_page .partial-delivery-checkbox{width: 20px;height: 20px;accent-color: green;clip: unset !important;position: unset !important;margin-top:5px !important;}
+.w-300 {width: 300px !important;}
+/* A Code: 26-12-2025 End */
+
+.create_project_page #quotation-items td input[type="number"] {width: 100% !important;min-width: 70px;}
+.edit_project_page #quotation-items td input[type="number"] {width: 100% !important;min-width: 70px;}
+

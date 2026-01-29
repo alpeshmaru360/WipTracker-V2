@@ -1,0 +1,92 @@
+.pull-right {float: right;}
+.admin_dashboard{
+    background: #eef6f7;color: #0000007a;border: 0;padding: 20px 20px;font-size: 20px;
+    cursor: pointer;-webkit-border-radius: 12px;min-height: 100% !important;
+}
+.role_lable{line-height: 1 !important;}
+.project_approval_section{border-radius: 10px;}
+.project_index_btn{
+    color: var(--theme-color-accent_text);border-color: var(--theme-color-accent_hover);
+    background-color: var(--theme-color-accent_hover);box-shadow: var(--theme-var-btn_shadow) var(--theme-color-accent_hover_02);
+}
+.green-link {color: #169e88;text-decoration: none;}
+.green-link:hover {color: #0e6c5c;}
+.add-button{background-color: #169e88 !important;color: white !important;}
+.edit-buttton{background-color: #169e88 !important;color: white !important;}
+.manager_table{background-color: #f8fbfc !important;}
+.custom-modal .modal-dialog {max-width: 500px;margin: auto;}
+.custom-modal .modal-header {background-color: #169e88 !important;color: #fff;padding: 15px;border-bottom: none;}
+.custom-modal .modal-title {font-size: 1.25rem;font-weight: bold;}
+.custom-modal .modal-body {padding: 20px;}
+.custom-modal .input_field {width: 48%;}
+.custom-modal .d-flex {gap: 4%;}
+.custom-modal .btn {font-size: 0.875rem;padding: 10px 15px;}
+.modal-header .btn-close {background-color: #fff;border: none;}
+.modal-header.bg-primary {color: #fff;}
+.modal-content {border-radius: 8px !important;overflow: hidden;}/* A Code: 26-12-2025 */
+.form-control {border-radius: 6px;}
+.form-select {border-radius: 6px;}
+.modal-footer {border-top: 1px solid #dee2e6;padding: 15px;}
+.btn-primary {background-color: #169e88 !important;border-color: #169e88 !important;}
+.btn-primary:hover {background-color: #169e88 !important;border-color: #169e88 !important;}
+.modal-header{background-color: #169e88 !important;}
+.cancle-button{background-color: black !important;color: white !important }
+.edit-model-header{background-color: #169e88 !important;}
+.delete{background-color: #169e88 !important;border-radius: .25rem;}
+.role-modal{background-color: #169e88 !important;color: white !important }
+.edit-button{background-color: #169e88 !important;color: white !important }
+.edit-modal-title{background-color: #169e88 !important;color: white !important }
+.delete-modal-title{background-color: #169e88 !important;color: white !important }
+input[type="text"], 
+input[type="email"], 
+input[type="password"]{border-radius: 3px !important;}
+[type=button]:not(:disabled), 
+[type=reset]:not(:disabled), 
+[type=submit]:not(:disabled), 
+button:not(:disabled) {border-radius: 3px !important;}
+.select_container select:not(.esg-sorting-select):not([class*="trx_addons_attrib_"]):not([size]) {
+    visibility: visible;border-radius: 3px;padding: 7px;
+}
+.btn:not(:disabled):not(.disabled) {cursor: pointer;padding: 10px 20px;}
+.main-content {margin: 6.5rem 1.5rem !important;}
+
+/*included css from hours_settings_page File - Start*/
+.hours_settings_page #editProcessType:disabled, 
+.hours_settings_page #hrProcessType:disabled, 
+.hours_settings_page #editProductType:disabled {background-color: #e9ecef !important;opacity: 1;}
+.hours_settings_page .process_dd {border-radius: 12px !important;border-color: #169e88 !important;font-size: 15px !important;}
+.hours_settings_page .product_status_dd{overflow: hidden !important; text-overflow: ellipsis; white-space: nowrap;}
+/*included css from hours_settings_page File - End*/
+
+/* A Code: 15-12-2025 Start */
+
+/*included css from manage_user_page File - Start*/
+.manage_user_page .profile-pic {object-fit: cover;object-position: center;height: 100px;width: 100px;border-radius: 50%;}
+.cursor-pointer{cursor: pointer;}
+.toggle_eye_icon{cursor: pointer;top: 35px;right: 15px;}
+input[readonly] + .toggle_eye_icon {opacity: 0.5;pointer-events: none;}
+.edit_pass[readonly]:focus {
+    background-color: #e9ecef !important;
+    opacity: 1;
+    box-shadow: none !important;
+    border-color: #ced4da !important;
+    cursor: not-allowed;
+} 
+@media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 996px) {
+    .manage_user_page .profile-pic{height: 50px;width: 50px;}
+}
+@media only screen 
+  and (min-device-width: 996px) 
+  and (max-device-width: 1064px) {
+    .manage_user_page .profile-pic{height: 60px;width: 50px;}
+}
+@media only screen 
+  and (min-device-width: 1064px)
+  and (max-device-width: 1364px) {
+    .manage_user_page .profile-pic{height: 60px;width: 50px;}
+}
+/*included css from manage_user_page File - End*/
+
+/* A Code: 15-12-2025 End */
