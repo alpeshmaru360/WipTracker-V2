@@ -15,7 +15,6 @@ use App\Services\DashboardService;
 
 class QualityActionController extends Controller
 {
-    // Alpesh test [2]
     //after click on place order from inbox screen this function is called
     public function qualityAction(){
         return view('quality_manager.quality_action_form');
