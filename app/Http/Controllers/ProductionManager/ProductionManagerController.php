@@ -1409,20 +1409,15 @@ class ProductionManagerController extends Controller
         $project = Project::where('id', $id)
             ->with('product')
             ->with('productsProcess')
-            ->with('projectStatus')
             ->with('InitialInspection')
-            ->with([
-                'purchaseOrders' => function ($query) {
-                    $query->with([
-                        'purchaseOrderTables' => function ($subQuery) {
-                            $subQuery->orderBy('id', 'desc');
-                        }
-                    ])
-                        ->where('is_production_engineer_approved', 1) // Mandatory condition
-                        ->whereIn('is_production_manager_approved', [0, 1]) // Allows both 0 and 1
-                        ->orderBy('id', 'desc');
-                }
-            ])
+            ->with(['purchaseOrders' => function ($query) {
+                $query->with(['purchaseOrderTables' => function ($subQuery) {
+                    $subQuery->orderBy('id', 'desc');
+                }])
+                ->where('is_production_engineer_approved', 1) // Mandatory condition
+                ->whereIn('is_production_manager_approved', [0, 1]) // Allows both 0 and 1
+                ->orderBy('id', 'desc');
+            }])
             ->first();
 
         $project_no = Project::where('id', $id)->value('project_no');
@@ -1438,22 +1433,7 @@ class ProductionManagerController extends Controller
             ->where('lable', 'StandardProcessTimes')
             ->where('key', 'create_new_project')
             ->where('is_deleted', 0)
-            ->value('value');
-
-        // Fetch the hours threshold for BOM and drawings
-        $bom_drawings_hours = DB::table('admin_hours_management')
-            ->where('lable', 'StandardProcessTimes')
-            ->where('key', 'bom_drawings')
-            ->where('is_deleted', 0)
-            ->value('value');
-
-        $check_bom_place_po_hours = AdminHoursManagement::where('lable', 'StandardProcessTimes')->where('key', 'check_the_bom_and_place_po')->where('is_deleted', '0')->value('value');
-
-        $intial_inspection_hours = DB::table('admin_hours_management')
-            ->where('lable', 'StandardProcessTimes')
-            ->where('key', 'initial_inspection')
-            ->where('is_deleted', 0)
-            ->value('value');
+            ->value('value');      
 
         $final_inspection_hours = DB::table('admin_hours_management')
             ->where('lable', 'StandardProcessTimes')
@@ -1473,21 +1453,19 @@ class ProductionManagerController extends Controller
             ->where('is_deleted', 0)
             ->value('value');
 
-        $total_hours = $create_project_hours + $bom_drawings_hours + $check_bom_place_po_hours + $intial_inspection_hours + $final_inspection_hours + $request_mrf_hours + $prepare_pl_hours;
+        $total_hours = $create_project_hours + $final_inspection_hours + $request_mrf_hours + $prepare_pl_hours;        
 
         return view('production_manager.check_project_status', compact(
             'project',
             'intial_inspection',
             'stdTimes',
             'create_project_hours',
-            'bom_drawings_hours',
-            'check_bom_place_po_hours',
-            'intial_inspection_hours',
             'final_inspection_hours',
             'request_mrf_hours',
             'prepare_pl_hours',
             'total_hours'
-        ));
+        )); 
+        
     }
 
     public function project_edit_form($id)
