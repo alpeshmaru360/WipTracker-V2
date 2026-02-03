@@ -112,7 +112,45 @@ class InboxService
          ───────────────────────────────────────────────────────────── */
         if ($role === 'Production Engineer') {
 
-            
+            // // 1  WI-Track projects awaiting quotation reference [Pending WITrack Order]
+            // $wiTrackPending = DB::table('projects')
+            //     ->where('isWITrack_project', 1)
+            //     ->where('inbox_production_eng_WiTrack_project_created', 1)
+            //     ->where('isWITrack_project_cancelled', '!=', 1)
+            //     ->whereNull('assembly_quotation_ref')
+            //     ->count();
+
+            // 1  WI-Track projects awaiting quotation reference [Pending WITrack Order]
+            $wiTrackPending = DB::table('projects')
+                ->where('isWITrack_project', 1)
+                ->where('inbox_production_eng_WiTrack_project_created', 1)
+                ->where('isWITrack_project_cancelled', '!=', 1)
+                ->where('is_rejected_by_pro_eng', '!=', 1)
+                ->whereNull('assembly_quotation_ref')
+                ->count();
+
+            // 2  Rejected WI-Track projects [Rejected WITrack Order by Production Engineer]       
+            $wiTrackRejected = DB::table('projects')
+                ->where('isWITrack_project', '1')
+                ->where('is_rejected_by_pro_eng', '1')
+                ->count();
+
+            // 3  Cancelled WI-Track projects [Cancelled Orders From WITrack Tool]
+            $wiTrackCancelled = DB::table('projects')
+                ->where('isWITrack_project', 1)
+                ->where('isWITrack_project_cancelled', 1)
+                ->count();
+
+            // 4  Purchase Orders waiting for Production-Engineer approval [Pending Purchase Order Approvals]
+            $pendingPO = DB::table('purchase_order')
+                ->where('is_production_engineer_approved', 0)
+                ->count();          
+
+            // Combine the actionable queues
+            $count = $wiTrackPending
+                   + $wiTrackRejected
+                   + $wiTrackCancelled
+                   + $pendingPO;
         }
 
         /* ─────────────────────────────────────────────────────────────

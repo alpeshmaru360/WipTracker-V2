@@ -4,15 +4,20 @@ namespace App\Http\Controllers\QualityManager;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\ProjectStatus;
 use App\Models\Project;
 use App\Models\ProductsOfProjects;
 use App\Models\QtyOfProduct;
+use App\Models\NCR;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderTable;
 use App\Models\InitialInspectionName;
 use App\Models\InitialInspectionTable;
 use App\Models\FinalInspection;
 use App\Models\FinalInspectionTable;
+use App\Models\StockMasterModule;
+use PDF;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -22,22 +27,46 @@ use App\Services\DashboardService;
 class QualityManagerController extends Controller
 {
 
-    public function dashboard(DashboardService $dashboardService)
-    {
+    public function dashboard(DashboardService $dashboardService){
         // Common Dashboard Service
         $role = auth()->user()->role;
-        $dashboardData = $dashboardService->getDashboardData($role);
+        $dashboardData = $dashboardService->getDashboardData($role);       
 
         $page_title = "";
+        // Non-Conformities chart data
+        $purchaseOrders = PurchaseOrder::with(['poNCR' => function ($query) {
+            $query->where('is_nonconformity_corrected', 1);
+        }])->get();
 
-        // NCR flow removed
+        // Process data grouped by supplier
         $categories = [];
 
+        foreach ($purchaseOrders as $po) {
+            if ($po->poNCR->count() > 0) { // Only consider orders with at least one corrected non-conformity
+                $supplier = $po->supplier ?? 'Unknown Supplier'; // Default to 'Unknown Supplier' if null
+
+                if (!isset($categories[$supplier])) {
+                    $categories[$supplier] = 0;
+                }
+
+                $categories[$supplier] += $po->poNCR->count(); // Count the number of NCR records
+            }
+        }
         return view('quality_manager.dashboard', compact('dashboardData', 'page_title', 'categories'));
     }
 
-    public function inbox()
-    {
+    public function ncr(){
+        $page_title = "Non-Conformance Report";
+        $ncrRecords = NCR::orderBy('id', 'desc')
+            ->get()
+            ->map(function ($ncr) {
+                $ncr->pdf_url = asset('ncr_pdf/NCR-' . $ncr->cia_no . '-' . $ncr->updated_at->timestamp . '.pdf');
+                return $ncr;
+            });
+        return view('quality_manager.ncr', compact('page_title', 'ncrRecords'));
+    }
+
+    public function inbox(){
         $page_title = "Pending Purchase Orders";
 
         // Fetch the hours for initial inspection from admin_hours_management
@@ -93,7 +122,7 @@ class QualityManagerController extends Controller
                     if (!$requestDate->isValid()) {
                         throw new \Exception("Invalid actual_received_date: {$inspection->actual_received_date}");
                     }
-                    $deadline = $this->calculateInspectionDeadline($requestDate, (int) $initialInspectionHours);
+                    $deadline = $this->calculateInspectionDeadline($requestDate, (int)$initialInspectionHours);
                     $inspection->deadline = $deadline->format('d-m-y H:i'); // Ensure consistent format
                 } catch (\Exception $e) {
                     $inspection->deadline = 'N/A';
@@ -111,8 +140,7 @@ class QualityManagerController extends Controller
     }
 
     //after click on place order from inbox screen this function is called
-    public function quality_create_form(Request $request)
-    {
+    public function quality_create_form(Request $request){
         // Decode URL-encoded JSON
         $potIdsRaw = $request->input('pot_ids');
         $decodedPotIds = json_decode(urldecode($potIdsRaw), true);
@@ -144,7 +172,7 @@ class QualityManagerController extends Controller
         if ($project_no == "N/A") {
             $project_no = null;
         }
-        $purchaseOrderTableid = $request->input('id');
+        $purchaseOrderTableid =  $request->input('id');
         $purchaseOrderId = PurchaseOrder::where('po_number', $request->input('po_number'))->where('project_no', $project_no)->pluck('id')->first();
 
         // Modified query to fetch only relevant PurchaseOrderTable rows
@@ -154,13 +182,13 @@ class QualityManagerController extends Controller
                 $query->where('is_parent', 0)
                     // Include parent rows only if they have no child rows
                     ->orWhere(function ($subQuery) {
-                    $subQuery->where('is_parent', 1)
-                        ->whereNotExists(function ($existsQuery) {
-                            $existsQuery->select(DB::raw(1))
-                                ->from('purchase_order_table as child')
-                                ->whereColumn('child.parent_id', 'purchase_order_table.id');
-                        });
-                })
+                        $subQuery->where('is_parent', 1)
+                            ->whereNotExists(function ($existsQuery) {
+                                $existsQuery->select(DB::raw(1))
+                                    ->from('purchase_order_table as child')
+                                    ->whereColumn('child.parent_id', 'purchase_order_table.id');
+                            });
+                    })
                     // Ensure the row with the current ID is included if it's relevant
                     ->orWhere('id', $purchaseOrderTableid);
             })
@@ -169,8 +197,7 @@ class QualityManagerController extends Controller
         return view('quality_manager.create_quality', $data);
     }
 
-    public function getProjectDetails($productId)
-    {
+    public function getProjectDetails($productId){
         // Get the product with its related project
         $product = ProductsOfProjects::with('projects')
             ->where('id', $productId)
@@ -189,8 +216,7 @@ class QualityManagerController extends Controller
     }
 
     // Quality Initial Inspection Creation form submitting in this function
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         // Validate the request
         $request->validate([
             'po_number' => 'required|string',
@@ -239,35 +265,35 @@ class QualityManagerController extends Controller
                 $filePath = "project_document/{$projectFolder}/Quality/Incoming Inspection/{$request->po_number}/{$fileName}";
             }
 
-            $articleNos = (array) ($request->artical_no_group ?? [$request->artical_no ?? '-']);
+            $articleNos   = (array) ($request->artical_no_group ?? [$request->artical_no ?? '-']);
             $descriptions = (array) ($request->description_group ?? [$request->description]);
-            $quantities = (array) ($request->quantity_group ?? [$request->quantity]);
+            $quantities   = (array) ($request->quantity_group ?? [$request->quantity]);
             //$projectNos   = (array) ($request->project_no_group ?? [$request->project_number]);
 
             foreach ($articleNos as $index => $articleNo) {
                 $description = $descriptions[$index] ?? null;
-                $quantity = $quantities[$index] ?? 0;
+                $quantity    = $quantities[$index] ?? 0;
 
                 if (empty($articleNo) || empty($description)) {
                     continue; // skip invalid rows
                 }
 
                 InitialInspectionTable::create([
-                    'po_number' => $request->po_number,
-                    'supplier' => $request->supplier,
-                    'artical_no' => $articleNo,
-                    'project_no' => $request->project_number,
-                    'project_name' => $request->project_name,
-                    'pump_type' => $request->pump_type,
-                    'reports_docs' => $filePath ?? null,
-                    'description' => $description,
-                    'quantity' => $quantity,
+                    'po_number'           => $request->po_number,
+                    'supplier'            => $request->supplier,
+                    'artical_no'          => $articleNo,
+                    'project_no'          => $request->project_number,
+                    'project_name'        => $request->project_name,
+                    'pump_type'           => $request->pump_type,
+                    'reports_docs'        => $filePath ?? null,
+                    'description'         => $description,
+                    'quantity'            => $quantity,
                     'ini_inspection_date' => now(),
                 ]);
 
-                // Step 1: Get all PO IDs from purchase_order table for given project number
+               // Step 1: Get all PO IDs from purchase_order table for given project number
                 $project_number = $request->project_number === 'N/A' ? null : $request->project_number;
-                $poIds = PurchaseOrder::where('project_no', $project_number)->where('po_number', $request->po_number)->pluck('id');
+                $poIds = PurchaseOrder::where('project_no', $project_number)->where('po_number',$request->po_number)->pluck('id');
 
                 // Step 2: Update records in purchase_order_table using these IDs
                 PurchaseOrderTable::whereIn('po_id', $poIds)
@@ -319,7 +345,7 @@ class QualityManagerController extends Controller
 
             foreach ($articleNos as $index => $articleNo) {
                 $description = $descriptions[$index] ?? null;
-                $quantity = $quantities[$index] ?? 0;
+                $quantity    = $quantities[$index] ?? 0;
 
                 if (empty($articleNo) || empty($description)) {
                     continue; // Skip invalid or empty entries
@@ -333,32 +359,32 @@ class QualityManagerController extends Controller
 
                 if ($record) {
                     // Update existing record
-                    $newQty = $record->qty + $quantity;
+                    $newQty          = $record->qty + $quantity;
                     $newAvailableQty = $record->available_qty + $quantity;
 
                     DB::table('stock_master_module')
                         ->where('article_number', $articleNo)
                         ->where('item_desc', $description)
                         ->update([
-                            'qty' => $newQty,
+                            'qty'           => $newQty,
                             'available_qty' => $newAvailableQty,
-                            'updated_at' => now(),
+                            'updated_at'    => now(),
                         ]);
                 } else {
                     // Insert a new record
                     DB::table('stock_master_module')->insert([
-                        'item_desc' => $description,
-                        'article_number' => $articleNo,
-                        'adder_code' => '',
-                        'qty' => $quantity,
-                        'hold_qty' => 0,
-                        'available_qty' => $quantity,
-                        'minimum_required_qty' => 5,
-                        'std_time' => 0,
-                        'price' => 0.00,
-                        'total_price' => 0.00,
-                        'created_at' => now(),
-                        'updated_at' => now(),
+                        'item_desc'             => $description,
+                        'article_number'        => $articleNo,
+                        'adder_code'            => '',
+                        'qty'                   => $quantity,
+                        'hold_qty'              => 0,
+                        'available_qty'         => $quantity,
+                        'minimum_required_qty'  => 5,
+                        'std_time'              => 0,
+                        'price'                 => 0.00,
+                        'total_price'           => 0.00,
+                        'created_at'            => now(),
+                        'updated_at'            => now(),
                     ]);
                 }
             }
@@ -368,14 +394,13 @@ class QualityManagerController extends Controller
         }
     }
 
-    public function quality()
-    {
+    public function quality(){
         $page_title = "Initial Inspection";
         $initialInspectionData = DB::table('initial_inspection_data as ini')
             ->join('purchase_order as po', function ($join) {
                 $join->on('po.po_number', '=', 'ini.po_number')
-                    ->on('po.supplier', '=', 'ini.supplier')
-                    ->on('po.project_no', '=', 'ini.project_no');
+                     ->on('po.supplier', '=', 'ini.supplier')
+                     ->on('po.project_no', '=', 'ini.project_no');
             })
             ->join('purchase_order_table as poT', function ($join) {
                 $join->on('poT.po_id', '=', 'po.id');
@@ -396,37 +421,36 @@ class QualityManagerController extends Controller
             )
             ->orderBy('ini.id', 'desc')
             ->get();
-
+            
         $finalInspectionQuery = FinalInspectionTable::with('pumpType')->orderBy('id', 'desc');
         $finalInspectionData = $finalInspectionQuery->get();
 
         return view('quality_manager.quality', compact('page_title', 'initialInspectionData', 'finalInspectionData'));
     }
-
-    public function showInitialItemList(Request $request)
-    {
+    
+    public function showInitialItemList(Request $request){
         $actualReceivedDate = $request->input('actual_received_date');
         $poNumber = $request->input('po_number');
         $supplier = $request->input('item_supplier');
-        $projectNo = $request->input('project_no');
+        $projectNo = $request->input('project_no');  
 
         // A Code: 20-01-2026 Start
-        $itemsRecords = DB::table('initial_inspection_data as ini')
-            ->join('purchase_order_table as pot', function ($join) {
-                $join->on('pot.artical_no', '=', 'ini.artical_no')
-                    ->on('pot.description', '=', 'ini.description');
-            })
-            ->where('ini.po_number', $poNumber)
-            ->where('ini.project_no', $projectNo)
-            ->where('ini.supplier', $supplier)
-            ->whereDate('pot.actual_received_date', '=', $actualReceivedDate)
-            ->select(
-                'ini.artical_no',
-                'ini.description',
-                'ini.quantity',
+        $itemsRecords = DB::table('initial_inspection_data as ini') 
+            ->join('purchase_order_table as pot', function ($join) { 
+                $join->on('pot.artical_no', '=', 'ini.artical_no') 
+                        ->on('pot.description', '=', 'ini.description'); 
+            }) 
+            ->where('ini.po_number', $poNumber) 
+            ->where('ini.project_no', $projectNo) 
+            ->where('ini.supplier', $supplier) 
+            ->whereDate('pot.actual_received_date', '=', $actualReceivedDate) 
+            ->select( 
+                'ini.artical_no', 
+                'ini.description', 
+                'ini.quantity', 
                 DB::raw('MIN(pot.actual_received_date) as actual_received_date'),
                 'pot.is_parent'
-            )
+            ) 
             //->groupBy('ini.artical_no', 'ini.description', 'ini.quantity') 
             ->groupBy(
                 'ini.id', // just added on 20-01-2026
@@ -437,13 +461,12 @@ class QualityManagerController extends Controller
             //->orderBy('ini.id', 'asc') 
             ->orderBy('ini.artical_no', 'asc') // just added on 20-01-2026
             ->get();
-        // A Code: 20-01-2026 End  
+         // A Code: 20-01-2026 End  
 
         return response()->json($itemsRecords);
     }
 
-    public function uploadInitialReport(Request $request)
-    {
+    public function uploadInitialReport(Request $request){
         $request->validate([
             'inspection_id' => 'required|exists:initial_inspection_data,id',
             'reports_docs' => 'required|file|mimes:doc,docx|max:2048',
@@ -487,8 +510,7 @@ class QualityManagerController extends Controller
         return redirect()->back()->with('success', 'Initial report uploaded successfully.');
     }
 
-    public function final_inspection_form(Request $request)
-    {
+    public function final_inspection_form(Request $request){
         $data = [
             'id' => $request->input('id'),
             'project_no' => $request->input('project_no', 'N/A'),
@@ -506,8 +528,7 @@ class QualityManagerController extends Controller
         return view('quality_manager.create_final_inspection', $data);
     }
 
-    public function store_finalinspection(Request $request)
-    {
+    public function store_finalinspection(Request $request){
         // Validate the request
         $request->validate([
             'project_no' => 'required|string',
@@ -641,15 +662,216 @@ class QualityManagerController extends Controller
         }
     }
 
-    public function addNCR()
-    {
+    public function addNCR(){
         $page_title = "Non-Conformance Report";
         $cia_no = $this->generateCIANumber();
         return view('quality_manager.add_ncr', compact('page_title', 'cia_no'));
     }
 
-    public function getProjectName(Request $request)
-    {
+    private function generateCIANumber(){
+        $currentYear = Carbon::now()->year;
+        $lastNCR = NCR::whereYear('created_at', $currentYear)->orderBy('id', 'desc')->first();
+
+        if ($lastNCR) {
+            $lastCIANumber = $lastNCR->cia_no;
+            $lastNumber = intval(substr($lastCIANumber, 4, 3));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+
+        return 'CIA-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT) . '-' . $currentYear;
+    }
+
+    public function generatePDF(Request $request){
+        $validationRules = [
+            'cia_no' => 'required',
+            'related_dep' => 'required',
+            'ncr_type' => 'required',
+            'project_no' => 'required',
+            'project' => 'required',
+            'po' => 'required',
+            'material_description' => 'required',
+            'ncr_description' => 'required',
+            'article_number' => 'required',
+            'quantity' => 'required|numeric',
+            'name_surname' => 'required',
+            'signature' => 'required|image',
+            'detected_department' => 'required',
+            'activity_schedule_type' => 'required|array',
+            'root_cause' => 'nullable',
+            'action_to_prevent_misuse' => 'nullable',
+            'planned_action_date' => 'nullable|date',
+            'related_authorized_personnel' => 'nullable',
+            'related_authorized_personnel_signature' => 'nullable|image',
+            'quality_management_representative' => 'nullable',
+            'action_follow_up' => 'nullable|in:Nonconformity is corrected,Nonconformity is not corrected,Additional Time',
+            'corrective_preventive_action' => 'nullable',
+            'follow_up' => 'nullable',
+            'action_closed_date' => 'nullable|date',
+            'related_authorized_personnel_final' => 'nullable',
+            'quality_management_representative_date' => 'nullable',
+            'ncr_photos' => 'nullable|array',
+            'ncr_photos.*' => 'image|mimes:jpeg,png,jpg,gif',
+        ];
+
+        $validatedData = $request->validate($validationRules);
+        try {
+            $ncrData = $this->saveNCR($validatedData, $request);            
+
+            // New logic to update estimated_readiness_added_NCR
+            $project = Project::where('project_no', $validatedData['project_no'])->first();
+
+            if ($project && is_null($project->estimated_readiness_added_NCR)) {
+                // Fetch ncr_creation and ncr_closing_time from admin_hours_management
+                $adminHours = AdminHoursManagement::whereIn('key', ['ncr_creation', 'ncr_closing_time'])
+                    ->where('is_deleted', 0)
+                    ->pluck('value', 'key');
+
+                $ncrCreationHours = (int) $adminHours['ncr_creation'];
+                $ncrClosingHours = (int) $adminHours['ncr_closing_time'];
+                $totalHours = $ncrCreationHours + $ncrClosingHours - 1;
+
+                // Get the estimated readiness date
+                $estimatedReadiness = Carbon::parse($project->estimated_readiness);
+
+                // Calculate the new estimated readiness added NCR date
+                $newEstimatedDate = $this->addBusinessHours($estimatedReadiness, $totalHours);
+
+                // Update the project
+                $project->estimated_readiness_added_NCR = $newEstimatedDate;
+                $project->save();
+            }
+
+            $signaturePath = public_path($ncrData['signature']);
+            $signaturePath2 = public_path($ncrData['related_authorized_personnel_signature']);
+
+            $ncrData['signature'] = $signaturePath;
+            $ncrData['related_authorized_personnel_signature'] = $signaturePath2;
+            $pdf = PDF::loadView('quality_manager.ncr_pdf', $ncrData)
+                ->setOption('enable-local-file-access', true)
+                ->setOption('images', true);
+
+            $pdfDirectory = public_path('ncr_pdf');
+            if (!file_exists($pdfDirectory)) {
+                mkdir($pdfDirectory, 0755, true);
+            }
+
+            $filename = 'NCR-' . $ncrData['cia_no'] . '-' . time() . '.pdf';
+            $pdfPath = $pdfDirectory . '/' . $filename;
+
+
+            $pdf->save($pdfPath);
+
+            if (!file_exists($pdfPath)) {
+                throw new \Exception("Failed to save PDF file.");
+            }
+            $mainSignature = NCR::where('id');
+
+            $pdfUrl = asset('ncr_pdf/' . $filename);
+         
+            return response()->json([
+                'success' => true,
+                'message' => 'NCR generated and saved successfully',
+                'pdf_url' => $pdfUrl,
+                'redirect_url' => route('NCR')
+            ]);
+        } catch (\Exception $e) {
+            Log::error('NCR generation failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate NCR: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function saveNCR($data, $request){
+        $ncrData = [
+            'cia_no' => $data['cia_no'],
+            'related_dep' => $data['related_dep'],
+            'ncr_type' => $data['ncr_type'],
+            'project_no' => $data['project_no'],
+            'project' => $data['project'],
+            'po' => $data['po'],
+            'material_description' => $data['material_description'],
+            'ncr_description' => $data['ncr_description'],
+            'article_number' => $data['article_number'],
+            'quantity' => $data['quantity'],
+            'name_surname' => $data['name_surname'],
+            'detected_department' => $data['detected_department'],
+            'activity_schedule_type' => $data['activity_schedule_type'],
+            'root_cause' => $data['root_cause'],
+            'action_to_prevent_misuse' => $data['action_to_prevent_misuse'],
+            'planned_action_date' => $data['planned_action_date'],
+            'related_authorized_personnel' => $data['related_authorized_personnel'],
+            'quality_management_representative' => $data['quality_management_representative'],
+            'corrective_preventive_action' => $data['corrective_preventive_action'],
+            'follow_up' => $data['follow_up'],
+            'action_closed_date' => $data['action_closed_date'],
+            'related_authorized_personnel_final' => $data['related_authorized_personnel_final'],
+            'quality_management_representative_date' => $data['quality_management_representative_date'],
+            'is_nonconformity_corrected' => false,
+            'is_nonconformity_not_corrected' => false,
+            'is_additional_time' => false,
+        ];
+
+        // Handle signature upload
+        if ($request->hasFile('signature')) {
+            $signature = $request->file('signature');
+            $signatureName = $data['cia_no'] . '-' . time() . '.' . $signature->getClientOriginalExtension();
+            $signature->move(public_path('signatures/main'), $signatureName);
+            $ncrData['signature'] = 'signatures/main/' . $signatureName;
+        }
+
+        // Handle related authorized personnel signature upload
+        if ($request->hasFile('related_authorized_personnel_signature')) {
+            $signature = $request->file('related_authorized_personnel_signature');
+            $signatureName = $data['cia_no'] . '-' . time() . '.' . $signature->getClientOriginalExtension();
+            $signature->move(public_path('signatures/related'), $signatureName);
+            $ncrData['related_authorized_personnel_signature'] = 'signatures/related/' . $signatureName;
+        }
+
+        // Handle NCR photos upload
+        $ncrPhotos = [];
+        if ($request->hasFile('ncr_photos')) {
+            foreach ($request->file('ncr_photos') as $photo) {
+                $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+                $photo->move(public_path('ncr_photos'), $photoName);
+                $ncrPhotos[] = 'ncr_photos/' . $photoName;
+            }
+        }
+
+        $ncrData['ncr_photos'] = json_encode($ncrPhotos);
+
+        $ncr = NCR::create($ncrData);
+
+        return $ncrData;
+    }
+
+    private function addBusinessHours($startDate, $hours){
+        $currentDate = Carbon::parse($startDate);
+        $totalHours = $hours;
+
+        while ($totalHours > 0) {
+            // Check if the current day is a weekday (Monday to Friday)
+            if ($currentDate->isWeekday()) {
+                $remainingHoursInDay = 8; // Assuming a standard 8-hour workday
+                if ($totalHours >= $remainingHoursInDay) {
+                    $totalHours -= $remainingHoursInDay;
+                    $currentDate->addDay(); // Move to the next day
+                } else {
+                    $currentDate->addHours($totalHours); // Add remaining hours
+                    $totalHours = 0; // Hours consumed
+                }
+            } else {
+                // Skip weekends (Saturday and Sunday)
+                $currentDate->addDay();
+            }
+        }
+        return $currentDate->toDateTimeString();
+    }
+
+    public function getProjectName(Request $request){
         $projectNo = $request->query('project_no');
         $project = Project::where('project_no', $projectNo)->first();
         if ($project) {
@@ -659,8 +881,184 @@ class QualityManagerController extends Controller
         }
     }
 
-    public function deleteImage(Request $request)
-    {
+    public function updateRemarks(Request $request){
+        $request->validate([
+            'id' => 'required|exists:ncr,id',
+            'remark' => 'required|string'
+        ]);
+        $ncr = NCR::findOrFail($request->id);
+        $ncr->timestamps = false;
+        $ncr->remark = $request->remark;
+        $ncr->save();
+        return response()->json(['success' => true, 'message' => 'Remarks updated successfully']);
+    }
+
+    public function edit($id){
+        $ncrData = NCR::findOrFail($id);
+        if ($ncrData->is_nonconformity_corrected) {
+            $ncrData->action_follow_up = 'Nonconformity is corrected';
+        } elseif ($ncrData->is_nonconformity_not_corrected) {
+            $ncrData->action_follow_up = 'Nonconformity is not corrected';
+        } elseif ($ncrData->is_additional_time) {
+            $ncrData->action_follow_up = 'Additional Time';
+        } else {
+            $ncrData->action_follow_up = null; // or set a default value
+        }
+        $page_title = "Edit Non-Conformance Report";
+        return view('quality_manager.edit_ncr', compact('page_title', 'ncrData'));
+    }
+
+    public function update(Request $request, $id){
+        $validationRules = [
+            'cia_no' => 'required',
+            'related_dep' => 'required',
+            'ncr_type' => 'required',
+            'project_no' => 'nullable',
+            'project' => 'required',
+            'po' => 'required',
+            'material_description' => 'required',
+            'ncr_description' => 'required',
+            'article_number' => 'required',
+            'quantity' => 'required|numeric',
+            'name_surname' => 'required',
+            'signature' => 'nullable|image',
+            'detected_department' => 'required',
+            'activity_schedule_type' => 'required|array',
+            'root_cause' => 'nullable',
+            'action_to_prevent_misuse' => 'nullable',
+            'planned_action_date' => 'nullable|date',
+            'related_authorized_personnel' => 'nullable',
+            'related_authorized_personnel_signature' => 'nullable|image',
+            'quality_management_representative' => 'nullable',
+            'action_follow_up' => 'nullable|in:Nonconformity is corrected,Nonconformity is not corrected,Additional Time',
+            'corrective_preventive_action' => 'nullable',
+            'follow_up' => 'nullable',
+            'action_closed_date' => 'nullable|date',
+            'related_authorized_personnel_final' => 'nullable',
+            'quality_management_representative_date' => 'nullable',
+            'ncr_photos' => 'nullable|array',
+            'ncr_photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'removed_photos' => 'nullable|array',
+        ];
+
+        // Validate the request data
+        $validatedData = $request->validate($validationRules);
+        try {
+            $ncr = NCR::findOrFail($id);
+            $ncrData = $this->updateNCR($ncr, $validatedData, $request);
+            // Generate the new PDF
+            $pdf = PDF::loadView('quality_manager.ncr_pdf', $ncrData)->setOption('enable-local-file-access', true);;
+            // Save the PDF
+            $pdfDirectory = public_path('ncr_pdf');
+            if (!file_exists($pdfDirectory)) {
+                mkdir($pdfDirectory, 0755, true);
+            }
+            $filename = 'NCR-' . $ncrData['cia_no'] . '-' . time() . '.pdf';
+            $pdfPath = $pdfDirectory . '/' . $filename;
+            $pdf->save($pdfPath);
+            if (!file_exists($pdfPath)) {
+                throw new \Exception("Failed to save PDF file.");
+            }
+            $pdfUrl = asset('ncr_pdf/' . $filename);
+            // Return a success response with the new PDF URL
+            return response()->json([
+                'success' => true,
+                'message' => 'NCR updated and PDF generated successfully',
+                'pdf_url' => $pdfUrl,
+                'redirect_url' => route('NCR')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update NCR: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function updateNCR($ncr, $data, $request){
+        $ncrData = [
+            'cia_no' => $data['cia_no'],
+            'related_dep' => $data['related_dep'],
+            'ncr_type' => $data['ncr_type'],
+            'project_no' => $data['project_no'],
+            'project' => $data['project'],
+            'po' => $data['po'],
+            'material_description' => $data['material_description'],
+            'ncr_description' => $data['ncr_description'],
+            'article_number' => $data['article_number'],
+            'quantity' => $data['quantity'],
+            'name_surname' => $data['name_surname'],
+            'detected_department' => $data['detected_department'],
+            'activity_schedule_type' => $data['activity_schedule_type'],
+            'root_cause' => $data['root_cause'],
+            'action_to_prevent_misuse' => $data['action_to_prevent_misuse'],
+            'planned_action_date' => $data['planned_action_date'],
+            'related_authorized_personnel' => $data['related_authorized_personnel'],
+            'quality_management_representative' => $data['quality_management_representative'],
+            'corrective_preventive_action' => $data['corrective_preventive_action'],
+            'follow_up' => $data['follow_up'],
+            'action_closed_date' => $data['action_closed_date'],
+            'related_authorized_personnel_final' => $data['related_authorized_personnel_final'],
+            'quality_management_representative_date' => $data['quality_management_representative_date'],
+            'is_nonconformity_corrected' => false,
+            'is_nonconformity_not_corrected' => false,
+            'is_additional_time' => false,
+        ];
+
+        // Handle signature upload
+        if ($request->hasFile('signature')) {
+            if ($ncr->signature && file_exists(public_path($ncr->signature))) {
+                unlink(public_path($ncr->signature));
+            }
+            $signature = $request->file('signature');
+            $signatureName = $data['cia_no'] . '-' . time() . '.' . $signature->getClientOriginalExtension();
+            $signature->move(public_path('signatures/main'), $signatureName);
+            $ncrData['signature'] = 'signatures/main/' . $signatureName;
+        }
+
+        // Handle related authorized personnel signature upload
+        if ($request->hasFile('related_authorized_personnel_signature')) {
+            if ($ncr->related_authorized_personnel_signature && file_exists(public_path($ncr->related_authorized_personnel_signature))) {
+                unlink(public_path($ncr->related_authorized_personnel_signature));
+            }
+            $signature = $request->file('related_authorized_personnel_signature');
+            $signatureName = $data['cia_no'] . '-' . time() . '.' . $signature->getClientOriginalExtension();
+            $signature->move(public_path('signatures/related'), $signatureName);
+            $ncrData['related_authorized_personnel_signature'] = 'signatures/related/' . $signatureName;
+        }
+
+        // Handle NCR photos upload
+        $ncrPhotos = json_decode($ncr->ncr_photos, true) ?? [];
+        if ($request->hasFile('ncr_photos')) {
+            foreach ($request->file('ncr_photos') as $photo) {
+                $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+                $photo->move(public_path('ncr_photos'), $photoName);
+                $ncrPhotos[] = 'ncr_photos/' . $photoName;
+            }
+        }
+
+        // Handle removed photos
+        if ($request->has('removed_photos')) {
+            foreach ($request->input('removed_photos') as $removedPhoto) {
+                if (($key = array_search($removedPhoto, $ncrPhotos)) !== false) {
+                    unset($ncrPhotos[$key]);
+                    if (file_exists(public_path($removedPhoto))) {
+                        unlink(public_path($removedPhoto));
+                    }
+                }
+            }
+        }
+
+        $ncrData['ncr_photos'] = json_encode(array_values($ncrPhotos));
+        $ncr->update($ncrData);
+        // Prepare response data
+        $ncrData['ncr_photos'] = array_map(function ($photo) {
+            return url($photo);
+        }, json_decode($ncrData['ncr_photos'], true));
+        return $ncrData;
+    }
+
+    public function deleteImage(Request $request){
         try {
             // Retrieve inspection_id and image from the request body
             $inspection_id = $request->input('inspection_id');
@@ -719,8 +1117,7 @@ class QualityManagerController extends Controller
         }
     }
 
-    public function uploadInspectionImages(Request $request)
-    {
+    public function uploadInspectionImages(Request $request){
         try {
             // Validate the request
             $request->validate([
@@ -802,8 +1199,7 @@ class QualityManagerController extends Controller
         }
     }
 
-    public function uploadFinalReport(Request $request)
-    {
+    public function uploadFinalReport(Request $request){
         $request->validate([
             'inspection_id' => 'required|exists:final_inspection_data,id',
             'reports_docs' => 'required|file|mimes:doc,docx',
@@ -854,8 +1250,7 @@ class QualityManagerController extends Controller
         }
     }
 
-    public function uploadTestReport(Request $request)
-    {
+    public function uploadTestReport(Request $request){
         $request->validate([
             'inspection_id' => 'required|exists:final_inspection_data,id',
             'test_reports_docs' => 'required|file|mimes:doc,docx',
@@ -905,9 +1300,8 @@ class QualityManagerController extends Controller
             return redirect()->back()->with('error', 'Failed to upload Test report: ' . $e->getMessage());
         }
     }
-
-    private function calculateInspectionDeadline($startDate, $hours)
-    {
+    
+    private function calculateInspectionDeadline($startDate, $hours){
         $currentDate = Carbon::parse($startDate);
         // Add hours directly (24 hours = 1 day, 48 hours = 2 days, etc.)
         $currentDate->addHours($hours);

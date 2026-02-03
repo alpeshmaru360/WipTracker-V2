@@ -10,6 +10,7 @@ use App\Http\Controllers\Roles\RolesController;
 use App\Http\Controllers\Setting\SettingController;
 use App\Http\Controllers\Setting\GeneralSettingController;
 use App\Http\Controllers\Setting\CurrencyConverterController;
+use App\Http\Controllers\Setting\KpiSettingController;
 use App\Http\Controllers\Setting\ProductTypesController;
 use App\Http\Controllers\Setting\ProductionTeamDetailsController;
 use App\Http\Controllers\Setting\InitialInspectionController;
@@ -19,6 +20,8 @@ use App\Http\Controllers\Setting\ProcurementStdTimeController;
 use App\Http\Controllers\Setting\StockHistoryController;
 use App\Http\Controllers\ProductionManager\PurchaseOrderController;
 use App\Http\Controllers\ProductionManager\ProductionManagerController;
+use App\Http\Controllers\ProductionManager\KpiReport\KpiReportController;
+use App\Http\Controllers\ProductionManager\KpiReport\ReportController;
 use App\Http\Controllers\AssemblyManager\AssemblyManagerController;
 use App\Http\Controllers\QualityManager\QualityManagerController;
 use App\Http\Controllers\ProcurementManager\ProcurementManagerController;
@@ -151,6 +154,9 @@ Route::middleware(['\App\Http\Middleware\CheckManagerRole:Admin'])->group(functi
     Route::get('/currency-converter', [CurrencyConverterController::class, 'index'])->name('currency');
     Route::put('/currency-converter/update', [CurrencyConverterController::class, 'update'])->name('currency.update');
 
+    Route::get('/kpi-setting', [KpiSettingController::class, 'index'])->name('kpisetting');
+    Route::post('/kpi/update', [KpiSettingController::class, 'update'])->name('kpi.update');
+
     Route::get('production-team-details', [ProductionTeamDetailsController::class, 'create'])->name('production.team.details');
     Route::post('production-team-details', [ProductionTeamDetailsController::class, 'store'])->name('production.team.store');
     Route::get('/production-team-details/edit/{id}', [ProductionTeamDetailsController::class, 'edit'])->name('production.team.edit');
@@ -214,7 +220,13 @@ Route::namespace('App\Http\Controllers\AssemblyManager')
 Route::namespace('App\Http\Controllers\QualityManager')
     ->middleware('\App\Http\Middleware\CheckManagerRole:Quality Engineer')
     ->group(function () {
-        Route::get('quality_manager/dashboard', 'QualityManagerController@dashboard')->name('QualityManagerDashboard');  
+        Route::get('quality_manager/dashboard', 'QualityManagerController@dashboard')->name('QualityManagerDashboard');
+        Route::get('quality_manager/ncr', 'QualityManagerController@ncr')->name('NCR');
+        Route::get('quality_manager/addNCR', 'QualityManagerController@addNCR')->name('addNCR');
+        Route::get('quality_manager/ncr/edit/{id}', 'QualityManagerController@edit')->name('editNCR');
+        Route::put('/ncr/update/{id}', [QualityManagerController::class, 'update'])->name('updateNCR');
+        Route::post('/update-ncr-remarks', [QualityManagerController::class, 'updateRemarks'])->name('updateNCRRemarks');
+        Route::post('/ncr/generate', 'QualityManagerController@generatePDF')->name('ncr.generate');   
 
         Route::get('quality_manager/quality/create_form', 'QualityManagerController@quality_create_form')->name('QualityManagerQualityCreate');
         Route::get('quality_manager/quality/final_inspection_form', 'QualityManagerController@final_inspection_form')->name('QualityManagerFinalinspectionCreate');
@@ -366,6 +378,18 @@ Route::namespace('App\Http\Controllers\ProductionManager')->group(function () {
         Route::post('/update-purchase-order', [PurchaseOrderController::class, 'updatePurchaseOrder']);
         Route::post('/upload', [PurchaseOrderController::class, 'upload'])->name('upload');
     });
+
+    Route::middleware('\App\Http\Middleware\CheckManagerRole:Production Engineer')->group(function () {
+        Route::get('product_engineer/kpi-reports', [KpiReportController::class, 'index'])->name('kpi-reports');
+        Route::post('product_engineer/kpi-reports/allocate', [KpiReportController::class, 'allocateProject'])->name('kpi-reports.allocate');
+        Route::get('product_engineer/manpower-efficiency', [KpiReportController::class, 'manpowerEfficiency'])->name('kpi-reports.manpower-efficiency');
+        Route::get('product_engineer/throughput-time', [KpiReportController::class, 'throughputTime'])->name('kpi-reports.throughput-time');
+        Route::get('product_engineer/delivery-on-time', [KpiReportController::class, 'deliveryOnTime'])->name('kpi-reports.delivery-on-time');
+        Route::get('product_engineer/finished-goods-per-employee-hour', [KpiReportController::class, 'finishedGoodsPerEmployeeHour'])->name('kpi-reports.finished-goods');
+        Route::get('product_engineer/coverage-rate', [KpiReportController::class, 'coverageRate'])->name('kpi-reports.coverage-rate');
+        Route::get('product_engineer/vsi', [KpiReportController::class, 'vsi'])->name('kpi-reports.vsi');
+        Route::get('product_engineer/monthly-kpis', [KpiReportController::class, 'monthlyKpis'])->name('kpi-reports.monthly-kpis');
+    });
 });
 
 // Designer Engineer Routes
@@ -457,7 +481,9 @@ Route::namespace('App\Http\Controllers\Operator')->group(function () {
 
 // User Routes
 Route::namespace('App\Http\Controllers\User')
+    ->middleware('\App\Http\Middleware\CheckManagerRole:User')
     ->group(function () {
+        Route::get('user/dashboard', 'UserController@dashboard')->name('UserDashboard');
         Route::get('clear_table', 'UserController@truncate_table')->name('TruncateTable');
     });
 
@@ -473,4 +499,12 @@ Route::namespace('App\Http\Controllers\StockMaster')->group(function () {
         Route::put('Stock/update/{id}', 'StockMasterController@update')->name('StockMaster.Stock.update');
         Route::delete('Stock/delete/{id}', 'StockMasterController@destroy')->name('StockMaster.Stock.destroy');
     });
+});
+
+// Expected Orders Routes
+Route::namespace('App\Http\Controllers\ExpectedOrders')->middleware('\App\Http\Middleware\CheckManagerRole:Sale Manager')->group(function () {
+    Route::get('/expected-orders/dashboard', 'ExpectedOrdersController@dashboard')->name('ExpectedOrdersDashboard');
+    Route::get('/expected_orders', 'ExpectedOrdersController@index')->name('ExpectedOrders');
+    Route::post('expected_orders/create', 'ExpectedOrdersController@project_create')->name('ExpectedOrdersCreate');
+    Route::post('/expected-orders/pdf', 'ExpectedOrdersController@generatePDF')->name('expectedOrders.pdf');
 });

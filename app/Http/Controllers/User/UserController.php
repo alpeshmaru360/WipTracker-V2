@@ -19,6 +19,21 @@ use Illuminate\Support\Facades\Log;// A Code: 15-12-2025 Code
 use DB;
 class UserController extends Controller
 {
+    public function dashboard(){
+        $page_title = "Orders Status";
+        if(Auth::check()){
+            $user_id = Auth::user()->id;
+            if($user_id)
+            {
+                $project = Project::orderBy('id','desc')->get();
+                return view('user.dashboard',compact('project','page_title'));
+            }
+        }
+        else{
+            return view('auth.login');
+        }
+    }
+
     public function index(){
         $users = User::orderBy('id', 'desc')->get();
         $roles = Role::where('status', 'active')->get();

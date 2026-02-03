@@ -14,7 +14,6 @@ class ProductType extends Model
         'project_type_name',
         'product_family_number',
         'limitation_per_shift',
-        'estimated_product_type_weeks',
         'operator_id',
         'is_active'
     ];
