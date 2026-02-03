@@ -302,7 +302,7 @@ class DashboardService
         );
 
     }
-
+    
     /* ──────────────────────────────────────────────────────────── */
     private function buildEmpty(): array
     {
@@ -310,3 +310,5 @@ class DashboardService
     }
 
 }
+
+// Test
