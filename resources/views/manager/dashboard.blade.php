@@ -18,6 +18,9 @@
                     $projects   = $data['projects']   ?? collect();
  
                     // Individual status maps keyed by project_id
+                    $purchase_process_status     = $data['purchase_process_status']     ?? [];
+                    $items_received_status       = $data['items_received_status']       ?? [];
+                    $initial_inspection_status   = $data['initial_inspection_status']   ?? [];
                     $material_requisition_status = $data['material_requisition_status'] ?? [];
                     $assembly_status             = $data['assembly_status']             ?? [];
                     $final_inspection_status     = $data['final_inspection_status']     ?? [];
@@ -29,10 +32,13 @@
                      | This lets us loop instead of copy‑pasting 9 chunks.
                      */
                     $statusRows = [
-                        'Project Completion'   => 'packing_status',
+                        'Packing'              => 'packing_status',
                         'Final Inspection'     => 'final_inspection_status',
                         'Assembly'             => 'assembly_status',
                         'Material Requisition' => 'material_requisition_status',
+                        'Initial Inspection'   => 'initial_inspection_status',
+                        'Items Received'       => 'items_received_status',
+                        'Purchase Process'     => 'purchase_process_status',
                         'Project Creation'     => 'project_creation_status',
                     ];
  
