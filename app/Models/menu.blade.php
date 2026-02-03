@@ -123,12 +123,6 @@
                         <span>QUALITY</span>
                     </a>
                 </li>
-
-                <li id="mobile-menu-item-9581" class="icon-window-maximize menu-item menu-item-type-custom menu-item-object-custom menu-item-9581">
-                    <a title="KPI REPORTS"  rel="noopener">
-                        <span>KPI REPORTS</span>
-                    </a>
-                </li>
                     
                 <li id="mobile-menu-item-9581" class="icon-chat-empty menu-item menu-item-type-custom menu-item-object-custom menu-item-9581">
                     <a title="CHAT"  rel="noopener">
