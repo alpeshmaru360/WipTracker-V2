@@ -10,7 +10,6 @@ use App\Http\Controllers\Roles\RolesController;
 use App\Http\Controllers\Setting\SettingController;
 use App\Http\Controllers\Setting\GeneralSettingController;
 use App\Http\Controllers\Setting\CurrencyConverterController;
-use App\Http\Controllers\Setting\KpiSettingController;
 use App\Http\Controllers\Setting\ProductTypesController;
 use App\Http\Controllers\Setting\ProductionTeamDetailsController;
 use App\Http\Controllers\Setting\InitialInspectionController;
@@ -20,8 +19,6 @@ use App\Http\Controllers\Setting\ProcurementStdTimeController;
 use App\Http\Controllers\Setting\StockHistoryController;
 use App\Http\Controllers\ProductionManager\PurchaseOrderController;
 use App\Http\Controllers\ProductionManager\ProductionManagerController;
-use App\Http\Controllers\ProductionManager\KpiReport\KpiReportController;
-use App\Http\Controllers\ProductionManager\KpiReport\ReportController;
 use App\Http\Controllers\AssemblyManager\AssemblyManagerController;
 use App\Http\Controllers\QualityManager\QualityManagerController;
 use App\Http\Controllers\ProcurementManager\ProcurementManagerController;
@@ -153,9 +150,6 @@ Route::middleware(['\App\Http\Middleware\CheckManagerRole:Admin'])->group(functi
 
     Route::get('/currency-converter', [CurrencyConverterController::class, 'index'])->name('currency');
     Route::put('/currency-converter/update', [CurrencyConverterController::class, 'update'])->name('currency.update');
-
-    Route::get('/kpi-setting', [KpiSettingController::class, 'index'])->name('kpisetting');
-    Route::post('/kpi/update', [KpiSettingController::class, 'update'])->name('kpi.update');
 
     Route::get('production-team-details', [ProductionTeamDetailsController::class, 'create'])->name('production.team.details');
     Route::post('production-team-details', [ProductionTeamDetailsController::class, 'store'])->name('production.team.store');
@@ -371,18 +365,6 @@ Route::namespace('App\Http\Controllers\ProductionManager')->group(function () {
         Route::get('/api/get-project-name/{project_number}', [PurchaseOrderController::class, 'getProjectName']);
         Route::post('/update-purchase-order', [PurchaseOrderController::class, 'updatePurchaseOrder']);
         Route::post('/upload', [PurchaseOrderController::class, 'upload'])->name('upload');
-    });
-
-    Route::middleware('\App\Http\Middleware\CheckManagerRole:Production Engineer')->group(function () {
-        Route::get('product_engineer/kpi-reports', [KpiReportController::class, 'index'])->name('kpi-reports');
-        Route::post('product_engineer/kpi-reports/allocate', [KpiReportController::class, 'allocateProject'])->name('kpi-reports.allocate');
-        Route::get('product_engineer/manpower-efficiency', [KpiReportController::class, 'manpowerEfficiency'])->name('kpi-reports.manpower-efficiency');
-        Route::get('product_engineer/throughput-time', [KpiReportController::class, 'throughputTime'])->name('kpi-reports.throughput-time');
-        Route::get('product_engineer/delivery-on-time', [KpiReportController::class, 'deliveryOnTime'])->name('kpi-reports.delivery-on-time');
-        Route::get('product_engineer/finished-goods-per-employee-hour', [KpiReportController::class, 'finishedGoodsPerEmployeeHour'])->name('kpi-reports.finished-goods');
-        Route::get('product_engineer/coverage-rate', [KpiReportController::class, 'coverageRate'])->name('kpi-reports.coverage-rate');
-        Route::get('product_engineer/vsi', [KpiReportController::class, 'vsi'])->name('kpi-reports.vsi');
-        Route::get('product_engineer/monthly-kpis', [KpiReportController::class, 'monthlyKpis'])->name('kpi-reports.monthly-kpis');
     });
 });
 
