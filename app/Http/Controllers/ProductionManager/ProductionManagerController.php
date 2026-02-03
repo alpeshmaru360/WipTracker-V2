@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\ProductionManager;
-
+//test
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -36,7 +36,8 @@ use Illuminate\Support\Facades\Log;
 
 class ProductionManagerController extends Controller
 {
-    public function dashboard(DashboardService $dashboardService){
+    public function dashboard(DashboardService $dashboardService)
+    {
         $role = auth()->user()->role;
         $dashboardData = $dashboardService->getDashboardData($role);
         $page_title = "";
@@ -51,7 +52,8 @@ class ProductionManagerController extends Controller
         ));
     }
 
-    public function generateAndDownloadQRCode($projectId, $projectName){
+    public function generateAndDownloadQRCode($projectId, $projectName)
+    {
         $qrContent = route('QRPage', ['product_id' => $projectId, 'redirect' => '0']);
         $fileName = $projectName . '_QrCode.png';
         $filePath = public_path($fileName);
@@ -72,7 +74,8 @@ class ProductionManagerController extends Controller
         return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $page_title = "PROJECT STATUS";
 
         $query = Project::select('*')
@@ -85,7 +88,7 @@ class ProductionManagerController extends Controller
         if ($request->filled('priority') && $request->priority != "2") {
             $query->where('is_priotize', $request->priority);
         }
-        $projectfilter = (object)[];
+        $projectfilter = (object) [];
         $last_filter_column = $request->input('last_filter_column');
         if (isset($last_filter_column)) {
             $projectfilter = $query->with('product')->whereNotNull('assembly_quotation_ref')->where('is_deleted', 0)->get(); // A Code: 26-12-2025
@@ -107,7 +110,8 @@ class ProductionManagerController extends Controller
 
         foreach ($filters as $key => $values) {
             $values = array_filter((array) $values); // Convert and skip empty values
-            if (empty($values)) continue;
+            if (empty($values))
+                continue;
 
             switch ($key) {
                 case 'filter_col_1': // wip_project_create_date
@@ -181,14 +185,16 @@ class ProductionManagerController extends Controller
         return view('production_manager.index', compact('page_title', 'project', 'filters', 'projectfilter', 'last_filter_column'));
     }
 
-    public function getProjectExecutionImageList(Request $request, $projectId){
+    public function getProjectExecutionImageList(Request $request, $projectId)
+    {
         $bomData = ProductsOfProjects::where('project_id', $projectId)
             ->select('cart_model_name', 'description', 'full_article_number', 'qty')
             ->get();
         return response()->json(['imageList' => $bomData]);
     }
 
-    public function getProjectExecutionImages(Request $request, $projectId, $articleNumber, $qtyNo){
+    public function getProjectExecutionImages(Request $request, $projectId, $articleNumber, $qtyNo)
+    {
         $project = Project::find($projectId);
         if (!$project) {
             return response()->json(['success' => false, 'message' => 'Project not found'], 404);
@@ -211,7 +217,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function uploadProjectExecutionImage(Request $request){
+    public function uploadProjectExecutionImage(Request $request)
+    {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
             'article_number' => 'required|string',
@@ -262,7 +269,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function deleteProjectExecutionImage(Request $request){
+    public function deleteProjectExecutionImage(Request $request)
+    {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
             'file_path' => 'required|string'
@@ -283,11 +291,11 @@ class ProductionManagerController extends Controller
 
         // 2. Extract article_number and qty_no from file_path
         // Example path: project_document/24-27/Project Execution/images/68318403/2/20251027_150022_img.png
-        $segments = explode('/', str_replace('\\', '/', $relativePath));        
+        $segments = explode('/', str_replace('\\', '/', $relativePath));
 
-        $projectNo     = $segments[1] ?? null; // e.g. 24-27
+        $projectNo = $segments[1] ?? null; // e.g. 24-27
         $articleNumber = $segments[4] ?? null; // e.g. 68318403
-        $qtyNo         = $segments[5] ?? null; // e.g. 1
+        $qtyNo = $segments[5] ?? null; // e.g. 1
 
         if (!$projectNo || !$articleNumber || !$qtyNo) {
             return response()->json([
@@ -326,7 +334,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function getProjectExecutionMRFList(Request $request, $projectId){
+    public function getProjectExecutionMRFList(Request $request, $projectId)
+    {
         $mrfData = ProductsOfProjects::where('project_id', $projectId)
             ->select('cart_model_name', 'description', 'full_article_number')
             ->get();
@@ -334,7 +343,8 @@ class ProductionManagerController extends Controller
         return response()->json(['mrfList' => $mrfData]);
     }
 
-    public function getProjectExecutionWorkOrdersList(Request $request, $projectId){
+    public function getProjectExecutionWorkOrdersList(Request $request, $projectId)
+    {
         $workOrdersData = ProductsOfProjects::where('project_id', $projectId)
             ->select('cart_model_name', 'description', 'full_article_number')
             ->get();
@@ -343,7 +353,8 @@ class ProductionManagerController extends Controller
     }
 
     // Project Execution Documents (MRF, Full_Order_PL, Work Orders)
-    public function getProjectExecutionDocs(Request $request, $projectId, $type, $articleNumber = null){
+    public function getProjectExecutionDocs(Request $request, $projectId, $type, $articleNumber = null)
+    {
         $validTypes = ['MRF', 'Full_Order_PL', 'Work Orders'];
         if (!in_array($type, $validTypes)) {
             return response()->json(['success' => false, 'message' => 'Invalid document type'], 400);
@@ -381,7 +392,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function uploadProjectExecutionDoc(Request $request){
+    public function uploadProjectExecutionDoc(Request $request)
+    {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
             'type' => 'required|in:MRF,Full_Order_PL,Work Orders',
@@ -416,7 +428,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function deleteProjectExecutionDoc(Request $request){
+    public function deleteProjectExecutionDoc(Request $request)
+    {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
             'file_path' => 'required|string'
@@ -434,9 +447,10 @@ class ProductionManagerController extends Controller
             'message' => 'Document not found'
         ], 404);
     }
-    
+
     // Quality Documents Methods
-    public function getQualityDocs(Request $request, $projectId, $type, $articleNumber = null, $qtyNo = null){
+    public function getQualityDocs(Request $request, $projectId, $type, $articleNumber = null, $qtyNo = null)
+    {
         $validTypes = ['Final Inspection', 'Incoming Inspection', 'Test Reports'];
         if (!in_array($type, $validTypes)) {
             return response()->json(['success' => false, 'message' => 'Invalid document type'], 400);
@@ -479,7 +493,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function getProjectById($id){
+    public function getProjectById($id)
+    {
         $project = Project::find($id);
         if ($project) {
             return response()->json(['success' => true, 'project' => $project]);
@@ -487,7 +502,8 @@ class ProductionManagerController extends Controller
         return response()->json(['success' => false, 'message' => 'Project not found'], 404);
     }
 
-    public function uploadQualityDoc(Request $request){
+    public function uploadQualityDoc(Request $request)
+    {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
             'type' => 'required|in:Final Inspection,Incoming Inspection,Test Reports',
@@ -534,7 +550,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function deleteQualityDoc(Request $request){
+    public function deleteQualityDoc(Request $request)
+    {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
             'file_path' => 'required|string'
@@ -556,7 +573,8 @@ class ProductionManagerController extends Controller
         ], 404);
     }
 
-    public function getIncomingInspectionPOs(Request $request){
+    public function getIncomingInspectionPOs(Request $request)
+    {
         $projectId = $request->input('id');
         $project = Project::find($projectId);
 
@@ -583,7 +601,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function getIncomingInspectionDocs(Request $request){
+    public function getIncomingInspectionDocs(Request $request)
+    {
         $projectId = $request->input('id');
         $poNumber = $request->input('po_number');
         $project = Project::find($projectId);
@@ -614,7 +633,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function deleteIncomingInspectionDoc(Request $request){
+    public function deleteIncomingInspectionDoc(Request $request)
+    {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
             'file_path' => 'required|string'
@@ -633,8 +653,9 @@ class ProductionManagerController extends Controller
             'message' => 'Document not found'
         ], 404);
     }
-    
-    public function getProjectsBOM(Request $request){
+
+    public function getProjectsBOM(Request $request)
+    {
         $projectId = $request->projectId;
         $bomData = ProductsOfProjects::where('project_id', $projectId)
             ->select('full_article_number', 'description', 'cart_model_name', 'project_id', 'bom_path', 'bom_req_estimation_manager')
@@ -646,7 +667,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function downloadBOM($projectId){
+    public function downloadBOM($projectId)
+    {
         $bomData = ProductsOfProjects::where('project_id', $projectId)
             ->select('full_article_number', 'description', 'cart_model_name', 'project_id', 'bom_path', 'bom_req_estimation_manager', 'quantity')
             ->get();
@@ -654,7 +676,8 @@ class ProductionManagerController extends Controller
         return Excel::download(new BOMExport($bomData), 'BOM-' . $projectId . '.xlsx');
     }
 
-    private function fetchBOM($item_id, $item_name){
+    private function fetchBOM($item_id, $item_name)
+    {
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_URL => 'https://wilo.360websitedemo.com/api/getBOM',
@@ -668,7 +691,8 @@ class ProductionManagerController extends Controller
         return $response;
     }
 
-    public function project_create_form(Request $request){
+    public function project_create_form(Request $request)
+    {
         $project_name = $request->project_name;
         $product_type = ProductType::where('is_active', 1)->whereNotNull('project_type_name')->get(); // Exclude null project_type_name
 
@@ -708,7 +732,8 @@ class ProductionManagerController extends Controller
         }
     }
 
-    public function project_create(Request $request){        
+    public function project_create(Request $request)
+    {
         $main_project_name = $request->main_pro_name;
         $auth_id = "0";
         if (Auth::check()) {
@@ -716,13 +741,10 @@ class ProductionManagerController extends Controller
         }
 
         $admin_setting = AdminSetting::where('key', 'project_number_prefix')->first();
-        $project_number_prefix = $admin_setting->value ?? '26-'; // A Code: 19-01-2026
+        $project_number_prefix = $admin_setting->value ?? '24-';
         $existing_count = Project::where('project_no', 'like', $project_number_prefix . '%')->count();
         $next_project_number = $existing_count + 1;
         $project_no = $project_number_prefix . $next_project_number;
-
-        $total_hours = 0;
-        $projects_type = $request->product_type;
 
         if ($main_project_name == "wip_tracker") {
             $project = new Project;
@@ -732,51 +754,60 @@ class ProductionManagerController extends Controller
             $project->article_no = rand(1000000, 99999999);
             $project->sales_name = $request->sales_person;
             $project->customer_ref = $request->customer_ref;
-            $project->sales_order_number = $request->sales_order_number; // A Code: 26-12-2025
-            $project->currency = $request->currency; // A Code: 26-12-2025
 
-            if ($main_project_name == "wip_tracker") {
-                if ($request->hasFile('customer_documents')) {
-                    $filePaths = [];
-                    $baseDir = public_path("project_document/customer_documents");
-                    if (!File::exists($baseDir)) {
-                        File::makeDirectory($baseDir, 0777, true);
-                    }
-                    foreach ($request->file('customer_documents') as $file) {
-                        $fileName = time() . '-' . Str::random(2) . '-' . $file->getClientOriginalName();
-                        $file->move($baseDir, $fileName);
-                        $filePaths[] = "project_document/customer_documents/{$fileName}";
-                    }
+            if ($request->hasFile('customer_documents')) {
+                $filePaths = [];
+                $baseDir = public_path("project_document/customer_documents");
+                if (!File::exists($baseDir)) {
+                    File::makeDirectory($baseDir, 0777, true);
                 }
+                foreach ($request->file('customer_documents') as $file) {
+                    $fileName = time() . '-' . Str::random(2) . '-' . $file->getClientOriginalName();
+                    $file->move($baseDir, $fileName);
+                    $filePaths[] = "project_document/customer_documents/{$fileName}";
+                }
+                $project->documents = json_encode($filePaths);
+            } else {
+                $project->documents = json_encode([]);
             }
-
-            $project->documents = json_encode($filePaths ?? []);
         } else {
             $project = Project::find($request->id);
         }
+
         $project->project_no = $project_no;
         $project->assembly_quotation_ref = $request->assembly_quotation_ref;
         $project->wip_project_create_date = now();
         $project->is_created_by = $auth_id;
+
         if ($request->has('quotation_items')) {
             if ($request->quotation_items[0]['quotation_from_pricing_tool'] == 1) {
                 $project->is_pricing_tool_quotation_number = "1";
             }
         }
+
         $project->save();
         $projects_id = $project->id;
-        // Project Status Screen
-        $project_status = new ProjectStatus;
-        $project_status->project_id = $projects_id;
-        $project_status->project_creation = now();
-        $project_status->save();
 
         if ($request->has('quotation_items')) {
-            $final_estimated_date = null;
+            // Collect all product types from quotation items
+            $allProductTypes = [];
+            $anyDrawingRequested = false;
+
             foreach ($request->quotation_items as $val_projects) {
                 $product_type = $val_projects['product_type'];
                 $qty = $val_projects['qty'];
-                $keyword_bom_mapping = [];
+
+                // Collect product types
+                if (!in_array($product_type, $allProductTypes)) {
+                    $allProductTypes[] = $product_type;
+                }
+
+                // Check if any drawing is requested
+                if (isset($val_projects['download_excel_drawing']) && $val_projects['download_excel_drawing'] == 1) {
+                    $anyDrawingRequested = true;
+                }
+
+                // Fetch product type keywords for procurement
                 $product_type_keyword = ProcurementStandardTime::with('product_type_name')
                     ->whereHas('product_type_name', function ($query) use ($product_type) {
                         $query->where('project_type_name', '=', $product_type);
@@ -787,18 +818,22 @@ class ProductionManagerController extends Controller
                             'project_type_name' => $item->product_type_name->project_type_name ?? '',
                             'keyword' => $item->keyword ?? '',
                             'value' => $item->total_days ?? 0,
-                            'cart_model_name' => $item->cart_model_name ?? 0,
+                            'cart_model_name' => $item->cart_model_name ?? '',
                         ];
                     });
-                $keywords_by_cart_model = $product_type_keyword->groupBy('cart_model_name')->map(function ($group) {
-                    return $group->map(function ($item) {
-                        return [
-                            'keyword' => $item['keyword'],
-                            'total_days' => $item['value'],
-                        ];
-                    })->toArray();
-                })->toArray();
 
+                $keywords_by_cart_model = $product_type_keyword
+                    ->groupBy('cart_model_name')
+                    ->map(function ($group) {
+                        return $group->map(function ($item) {
+                            return [
+                                'keyword' => $item['keyword'],
+                                'total_days' => $item['value'],
+                            ];
+                        })->toArray();
+                    })->toArray();
+
+                // Save product details
                 $projectProcessStdTime = new ProductsOfProjects;
                 $projectProcessStdTime->project_id = $projects_id;
                 $projectProcessStdTime->quotation_number = $request->assembly_quotation_ref;
@@ -806,22 +841,16 @@ class ProductionManagerController extends Controller
                 $projectProcessStdTime->article_number = $val_projects['full_article_number'];
                 $projectProcessStdTime->full_article_number = $val_projects['full_article_number'];
                 $projectProcessStdTime->description = $val_projects['description'];
-                $projectProcessStdTime->qty = $val_projects['qty'];
-                if (isset($val_projects['cart_model_name'])) {
-                    $projectProcessStdTime->cart_model_name = $val_projects['cart_model_name'];
-                } else {
-                    $projectProcessStdTime->cart_model_name = null;
-                }
-                $projectProcessStdTime->product_type = $val_projects['product_type'];
+                $projectProcessStdTime->qty = $qty;
+                $projectProcessStdTime->cart_model_name = $val_projects['cart_model_name'] ?? null;
+                $projectProcessStdTime->product_type = $product_type;
                 $projectProcessStdTime->bom_req_estimation_manager = $val_projects['download_excel_bom'];
                 $projectProcessStdTime->drawing_req_estimation_manager = $val_projects['download_excel_drawing'];
                 $projectProcessStdTime->delivery = $val_projects['partial_delivery'];
-                if ($val_projects['download_excel_bom'] == 3 && $request->quotation_items[0]['quotation_from_pricing_tool'] == 1) {
-                    $projectProcessStdTime->bom_check_procurement_manager = "1";
-                }
-                //
                 $projectProcessStdTime->unit_price = $val_projects['unit_price'];
                 $projectProcessStdTime->total_price = $val_projects['total_price'];
+
+                // Currency conversion
                 $setting_key = '1_AED_TO_' . strtoupper($project->currency);
                 if ($project->currency !== 'N/A') {
                     $rate = AdminSetting::where('key', $setting_key)->value('value') ?? 1;
@@ -831,546 +860,111 @@ class ProductionManagerController extends Controller
                     $projectProcessStdTime->currency_wise_sales_unit_value = $val_projects['unit_price'];
                     $projectProcessStdTime->currency_wise_sales_total_value = $val_projects['total_price'];
                 }
-                //
+
                 $projectProcessStdTime->save();
                 $product_id = $projectProcessStdTime->id;
 
-                // Generate QR codes for this product (one per unit of quantity)
+                // Generate QR codes
                 $qrPaths = $this->generateProductQrCode($project_no, $val_projects['full_article_number']);
-                $projectProcessStdTime->qr_codes = json_encode($qrPaths); // Store as JSON
+                $projectProcessStdTime->qr_codes = json_encode($qrPaths);
                 $projectProcessStdTime->save();
-                // This if condition is for Std assembly quotation number and else for non-std quotation number
-                if ($val_projects['download_excel_bom'] == 3 && $request->quotation_items[0]['quotation_from_pricing_tool'] == 1) {
-                    $curl = curl_init();
-                    curl_setopt_array($curl, array(
-                        CURLOPT_URL => 'https://wilo.360websitedemo.com/api/getBOM',
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_ENCODING => '',
-                        CURLOPT_MAXREDIRS => 10,
-                        CURLOPT_TIMEOUT => 0,
-                        CURLOPT_FOLLOWLOCATION => true,
-                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                        CURLOPT_CUSTOMREQUEST => 'POST',
-                        CURLOPT_POSTFIELDS => http_build_query([
-                            'item_id' => $val_projects['item_id'],
-                            'item_name' => $val_projects['cart_model_name']
-                        ]),
-                        CURLOPT_HTTPHEADER => array(
-                            'Content-Type: application/x-www-form-urlencoded'
-                        ),
-                    ));
 
-                    $response = curl_exec($curl);
-                    curl_close($curl);
-                    $decodedResponse = json_decode($response);
-                    if ($decodedResponse == null) {
-                        
-                    }
-                    if ($decodedResponse && isset($decodedResponse->data)) {
-                        $csvContent = "Quotation Number,Full Article Number,Item ID,Item Name\n";
-                        $csvContent .= "{$request->assembly_quotation_ref},{$val_projects['full_article_number']},{$val_projects['item_id']},{$val_projects['product_type']}\n\n";
+                // Calculate product-wise estimated date (for individual product tracking)
+                $total_days_for_std_process = 1;
+                $current_cart_model = $val_projects['cart_model_name'] ?? '';
 
-                        $current_cart_model = $val_projects['cart_model_name'] ?? '';
-                        if (!isset($keyword_bom_mapping[$current_cart_model])) {
-                            $keyword_bom_mapping[$current_cart_model] = [];
-                        }
-
-                        if ($val_projects['cart_model_name'] == "Atmos") {
-                            if (!empty($decodedResponse->data->items)) {
-                                $csvContent .= "Items:\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                foreach ($decodedResponse->data->items as $item) {
-                                    if (property_exists($item, 'item_description')) {
-                                        $bom_items = new ProductBOMItem;
-                                        $bom_items->project_id = $projects_id;
-                                        $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                        $bom_items->full_article_no = $val_projects['full_article_number'];
-                                        $bom_items->product_id = $product_id;
-                                        $bom_items->cart_model_name = "Atmos";
-                                        $bom_items->item_desc = $item->item_description;
-                                        $bom_items->item_qty = $item->qty;
-                                        // $bom_items->wilo_article_no = empty($item->wilo_artilce_no) || $item->wilo_artilce_no == 0 ? '-' : $item->wilo_artilce_no;
-                                        $bom_items->wilo_article_no = empty($item->wilo_artilce_no) || $item->wilo_artilce_no == 0 
-                                        ? '-' : str_replace(' ', '', $item->wilo_artilce_no);
-
-                                        $bom_items->product_qty = $val_projects['qty'];
-                                        $bom_items->total_required_qty = $item->qty * $val_projects['qty'];
-                                        $bom_items->save();
-
-                                        $csvContent .= "{$item->item_description},{$item->wilo_artilce_no},,{$item->unit_price},{$item->qty},{$item->total_price}\n";
-                                    }
-                                }
-                            }
-
-                            if (!empty($decodedResponse->data->atmosBOMitemsSupervisor)) {
-                                $cart = $decodedResponse->data->atmosCart;
-                                if ($cart->is_accesories_manual != "1") {
-                                    $supervisor = $decodedResponse->data->atmosBOMitemsSupervisor;
-
-                                    $bom_items = new ProductBOMItem;
-                                    $bom_items->project_id = $projects_id;
-                                    $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                    $bom_items->full_article_no = $val_projects['full_article_number'];
-                                    $bom_items->product_id = $product_id;
-                                    $bom_items->cart_model_name = "Atmos";
-                                    $bom_items->item_desc = $supervisor->item_description;
-                                    $bom_items->item_qty = $supervisor->qty;
-                                    $bom_items->wilo_article_no = $supervisor->wilo_artilce_no;
-                                    $bom_items->wilo_article_no = empty($supervisor->wilo_artilce_no) || $supervisor->wilo_artilce_no == 0 ? '-' : $supervisor->wilo_artilce_no;
-                                    $bom_items->product_qty = $val_projects['qty'];
-                                    $bom_items->total_required_qty = $item->qty * $val_projects['qty'];
-                                    $bom_items->save();
-
-                                    $csvContent .= "{$supervisor->item_description},{$supervisor->wilo_artilce_no},,{$supervisor->unit_price},{$supervisor->qty},{$supervisor->total_price}\n";
-                                }
-                            }
-
-                            if (!empty($decodedResponse->data->adderData)) {
-                                $csvContent .= "Atmos Adder ids Details::\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                foreach ($decodedResponse->data->adderData as $item) {
-                                    $bom_items = new ProductBOMItem;
-                                    $bom_items->project_id = $projects_id;
-                                    $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                    $bom_items->cart_model_name = "Atmos";
-                                    $bom_items->full_article_no = $val_projects['full_article_number'];
-                                    $bom_items->product_id = $product_id;
-                                    $bom_items->item_desc = $item->name;
-                                    $bom_items->item_qty = 1;
-                                    $bom_items->product_qty = $val_projects['qty'];
-                                    $bom_items->total_required_qty = 1 * $val_projects['qty'];
-                                    $bom_items->save();
-
-                                    // $bom_items->wilo_article_no = $item->wilo_article_no;
-                                    $csvContent .= "{$item->name},,{$item->id},{$item->price},1,{$item->price}\n";
-                                }
-                            }
-
-                            if (!empty($decodedResponse->data->atmosCart)) {
-
-                                $cart = $decodedResponse->data->atmosCart;
-                                $accesories_price = $cart->accesories_price;
-                                // if($cart->is_bareshaft_selection != "1"){
-                                $csvContent .= "Atmos Cart Item Description :\n";
-                                $csvContent .= "Item Description,Article No., Adder code, Unit Price, Qty, Total Price\n";
-                                $itemDesc = sprintf(
-                                    '%sKW %sP %s %sV %sHz %s %s Speed',
-                                    $cart->power,
-                                    $cart->no_of_pole,
-                                    $cart->efficiency,
-                                    $cart->voltage,
-                                    $cart->frequency,
-                                    $cart->brand,
-                                    $cart->application == 1 ? 'Constant' : 'Variable'
-                                );
-
-                                $bom_items = new ProductBOMItem;
-                                $bom_items->project_id = $projects_id;
-                                $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                $bom_items->cart_model_name = "Atmos";
-                                $bom_items->full_article_no = $val_projects['full_article_number'];
-                                $bom_items->product_id = $product_id;
-                                $bom_items->item_desc = $itemDesc;
-                                $bom_items->item_qty = $cart->qty;
-                                $bom_items->product_qty = $val_projects['qty'];
-                                $bom_items->total_required_qty = $cart->qty * $val_projects['qty'];
-                                $bom_items->save();
-
-                                // $bom_items->wilo_article_no = $item->wilo_article_no;
-
-                                $csvContent .= "{$itemDesc},,,{$accesories_price},{$cart->qty},{$accesories_price}\n";
-                                // }
-                            }
-
-                            if (!empty($decodedResponse->data->atmosCart)) {
-                                $cart = $decodedResponse->data->atmosCart;
-                                if ($cart->is_accesories_manual == "1") {
-
-                                    $bom_items = new ProductBOMItem;
-                                    $bom_items->project_id = $projects_id;
-                                    $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                    $bom_items->cart_model_name = "Atmos";
-                                    $bom_items->full_article_no = $val_projects['full_article_number'];
-                                    $bom_items->product_id = $product_id;
-                                    $bom_items->item_desc = "Accessories-Manual";
-                                    $bom_items->item_qty = 1;
-                                    // $bom_items->wilo_article_no = $item->wilo_article_no;
-                                    $bom_items->product_qty = $val_projects['qty'];
-                                    $bom_items->total_required_qty = $item->qty * $val_projects['qty'];
-                                    $bom_items->save();
-
-                                    $csvContent .= "\nAtmos Cart Accessories-Manual Details:\n";
-                                    $csvContent .= "Item Description,Article No., Adder code, Unit Price, Qty, Total Price \n";
-                                    $csvContent .= `Accessories-Manual, -- ,  ,{$accesories_price},1,{$accesories_price}\n`;
-                                }
-                            }
-
-                            if (!empty($decodedResponse->data->atmosCart)) {
-                                $cart = $decodedResponse->data->atmosCart;
-                                if ($cart->is_accesories_manual == "1") {
-
-                                    $bom_items = new ProductBOMItem;
-                                    $bom_items->project_id = $projects_id;
-                                    $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                    $bom_items->cart_model_name = "Atmos";
-                                    $bom_items->full_article_no = $val_projects['full_article_number'];
-                                    $bom_items->product_id = $product_id;
-                                    $bom_items->item_desc = $cart->pump_name;
-                                    $bom_items->item_qty = $cart->qty;
-                                    $bom_items->wilo_article_no = $cart->full_article_number;
-                                    $bom_items->product_qty = $val_projects['qty'];
-                                    $bom_items->total_required_qty = $item->qty * $val_projects['qty'];
-                                    $bom_items->save();
-
-                                    $csvContent .= "\nAtmos Cart Pump Details:\n";
-                                    $csvContent .= "Item Description,Article No., Adder code, Unit Price, Qty, Total Price \n";
-                                    $csvContent .= `{$cart->pump_name},{$cart->full_article_number},  ,{$cart->price},{$cart->qty},{$cart->total_price}\n`;
-                                }
-                            }
-
-                            // Add other Atmos specific sections...
-                        } elseif ($val_projects['cart_model_name'] == "SCP") {
-                            // Add SCP specific items
-                            if (!empty($decodedResponse->data->items)) {
-                                $csvContent .= "Items:\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                foreach ($decodedResponse->data->items as $item) {
-                                    $bom_items = new ProductBOMItem;
-                                    $bom_items->project_id = $projects_id;
-                                    $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                    $bom_items->cart_model_name = "SCP";
-                                    $bom_items->full_article_no = $val_projects['full_article_number'];
-                                    $bom_items->product_id = $product_id;
-                                    $bom_items->item_desc = $item->item_description;
-                                    $bom_items->item_qty = $item->qty;
-                                    // $bom_items->wilo_article_no = $item->wilo_artilce_no;
-                                    $bom_items->wilo_article_no = empty($item->wilo_artilce_no) || $item->wilo_artilce_no == 0 ? '-' : $item->wilo_artilce_no;
-                                    $bom_items->product_qty = $val_projects['qty'];
-                                    $bom_items->total_required_qty = $item->qty * $val_projects['qty'];
-                                    $bom_items->save();
-
-                                    $csvContent .= "{$item->item_description},{$item->wilo_artilce_no},,{$item->unit_price},{$item->qty},{$item->total_price}\n";
-                                }
-                            }
-
-                            if (!empty($decodedResponse->data->adderData)) {
-                                $csvContent .= "SCP Adder ids Details::\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                foreach ($decodedResponse->data->adderData as $item) {
-                                    $bom_items = new ProductBOMItem;
-                                    $bom_items->project_id = $projects_id;
-                                    $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                    $bom_items->cart_model_name = "SCP";
-                                    $bom_items->full_article_no = $val_projects['full_article_number'];
-                                    $bom_items->product_id = $product_id;
-                                    $bom_items->item_desc = $item->name;
-                                    $bom_items->item_qty = 1;
-                                    $bom_items->product_qty = $val_projects['qty'];
-                                    $bom_items->total_required_qty = 1 * $val_projects['qty'];
-                                    $bom_items->save();
-
-                                    $csvContent .= "{$item->name},,{$item->id},{$item->price},1,{$item->price}\n";
-                                }
-                            }
-
-                            if (!empty($decodedResponse->data->scpCart)) {
-                                $csvContent .= "SCP Cart Details:\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                $item = $decodedResponse->data->scpCart;
-                                $motor_price = $decodedResponse->data->motor_price;
-                                $itemDesc = sprintf(
-                                    '%sKW %sP %s %sV %sHz %s %s Speed',
-                                    $item->power,
-                                    $item->no_of_pole,
-                                    $item->efficiency,
-                                    $item->voltage,
-                                    $item->frequency,
-                                    $item->brand,
-                                    $item->application == 1 ? 'Constant' : 'Variable'
-                                );
-
-                                $bom_items = new ProductBOMItem;
-                                $bom_items->project_id = $projects_id;
-                                $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                $bom_items->cart_model_name = "SCP";
-
-                                $bom_items->wilo_article_no = $decodedResponse->data->scp_master_motor_prices_article_number;
-                                $bom_items->full_article_no = $decodedResponse->data->scp_master_motor_prices_article_number;
-                                $bom_items->product_id = $product_id;
-                                $bom_items->item_desc = $decodedResponse->data->scp_master_motor_prices_item_desc;
-                                $bom_items->item_qty = $item->qty;
-                                $bom_items->product_qty = $val_projects['qty'];
-                                $bom_items->total_required_qty = $item->qty * $val_projects['qty'];
-                                $bom_items->save();
-
-                                $csvContent .= "{$itemDesc},,,{$motor_price},{$item->qty},{$motor_price}\n";
-                            }
-
-                            if (!empty($decodedResponse->data->scpCart)) {
-                                $bom_items->cart_model_name = "SCP";
-                                $csvContent .= "SCP Cart Details:\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                $item = $decodedResponse->data->scpCart;
-
-                                $bom_items = new ProductBOMItem;
-                                $bom_items->project_id = $projects_id;
-                                $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                $bom_items->cart_model_name = "SCP";
-                                $bom_items->full_article_no = $val_projects['full_article_number'];
-                                $bom_items->product_id = $product_id;
-                                $bom_items->item_desc = $item->pump_name;
-                                $bom_items->item_qty = $item->qty;
-                                $bom_items->wilo_article_no = $decodedResponse->data->article_number;
-                                $bom_items->product_qty = $val_projects['qty'];
-                                $bom_items->total_required_qty = $item->qty * $val_projects['qty'];
-                                $bom_items->save();
-
-                                $csvContent .= "{$item->pump_name},{$item->article_number},,{$item->bare_pump_price},{$item->qty},{$item->bare_pump_price}\n";
-                            }
-                        } elseif ($val_projects['cart_model_name'] == "Control Panel") {
-                            if (!empty($decodedResponse->data->items)) {
-                                $csvContent .= "Items:\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                foreach ($decodedResponse->data->items as $item) {
-
-                                    $bom_items = new ProductBOMItem;
-                                    $bom_items->project_id = $projects_id;
-                                    $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                    $bom_items->cart_model_name = "Control Panel";
-                                    $bom_items->full_article_no = $val_projects['full_article_number'];
-                                    $bom_items->product_id = $product_id;
-                                    $bom_items->item_desc = $item->item_description;
-                                    $bom_items->item_qty = $item->qty;
-                                    $bom_items->wilo_article_no = empty($item->wilo_artilce_no) || $item->wilo_artilce_no == 0 ? '-' : $item->wilo_artilce_no;
-                                    $bom_items->product_qty = $val_projects['qty'];
-                                    $bom_items->total_required_qty = $item->qty * $val_projects['qty'];
-                                    $bom_items->save();
-
-                                    $csvContent .= "{$item->item_description},{$item->wilo_artilce_no},,{$item->price},{$item->qty},{$item->total_price}\n";
-                                }
-                            }
-                        } elseif ($val_projects['cart_model_name'] == "Booster") {
-                            if (!empty($decodedResponse->data->boosterCartData)) {
-                                $csvContent .= "Items:\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                $pump_qty = $decodedResponse->data->boosterCartData->booster_cp_data[0]->no_of_pump_id;
-                                $boosterCartData = $decodedResponse->data->boosterCartData;
-                                $total_price = $boosterCartData->pump_price * $pump_qty;
-
-                                $bom_items = new ProductBOMItem;
-                                $bom_items->project_id = $projects_id;
-                                $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                $bom_items->cart_model_name = "Booster";
-                                $bom_items->full_article_no = $val_projects['full_article_number'];
-                                $bom_items->product_id = $product_id;
-                                $bom_items->item_desc = $boosterCartData->model_no;
-                                $bom_items->item_qty = $pump_qty;
-                                $bom_items->wilo_article_no = empty($boosterCartData->booster_article_number) || $boosterCartData->booster_article_number == 0 ? '-' : $boosterCartData->booster_article_number;
-
-                                $bom_items->product_qty = $val_projects['qty'];
-                                $bom_items->total_required_qty = $pump_qty * $val_projects['qty'];
-                                $bom_items->save();
-                                $csvContent .= "{$boosterCartData->model_no},{$boosterCartData->booster_article_number},,{$boosterCartData->pump_price},{$pump_qty},{$total_price}\n";
-                            }
-
-                            if (!empty($decodedResponse->data->items)) {
-                                $csvContent .= "Items:\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                foreach ($decodedResponse->data->items as $item) {
-
-                                    $bom_items = new ProductBOMItem;
-                                    $bom_items->project_id = $projects_id;
-                                    $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                    $bom_items->cart_model_name = "Booster";
-                                    $bom_items->full_article_no = $val_projects['full_article_number'];
-                                    $bom_items->product_id = $product_id;
-                                    $bom_items->item_desc = $item->item_description;
-                                    $bom_items->item_qty = $item->qty;
-                                    $bom_items->wilo_article_no = empty($item->wilo_artilce_no) || $item->wilo_artilce_no == 0 ? '-' : $item->wilo_artilce_no;
-                                    $bom_items->product_qty = $val_projects['qty'];
-                                    $bom_items->total_required_qty = $item->qty * $val_projects['qty'];
-                                    $bom_items->save();
-                                    $total_price = $item->price * $item->qty;
-                                    $csvContent .= "{$item->item_description},{$item->wilo_artilce_no},,{$item->price},{$item->qty},{$total_price}\n";
-                                }
-                            }
-
-                            if (!empty($decodedResponse->data->cpBoosterItems)) {
-                                $csvContent .= "Items:\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                foreach ($decodedResponse->data->cpBoosterItems as $item) {
-
-                                    $bom_items = new ProductBOMItem;
-                                    $bom_items->project_id = $projects_id;
-                                    $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                    $bom_items->cart_model_name = "Booster";
-                                    $bom_items->full_article_no = $val_projects['full_article_number'];
-                                    $bom_items->product_id = $product_id;
-                                    $bom_items->item_desc = $item->item_description;
-                                    $bom_items->item_qty = $item->qty;
-                                    $bom_items->wilo_article_no = empty($item->wilo_artilce_no) || $item->wilo_artilce_no == 0 ? '-' : $item->wilo_artilce_no;
-                                    $bom_items->product_qty = $val_projects['qty'];
-                                    $bom_items->total_required_qty = $item->qty * $val_projects['qty'];
-                                    $bom_items->save();
-                                    $total_price = $item->price * $item->qty;
-                                    $csvContent .= "{$item->item_description},{$item->wilo_artilce_no},,{$item->price},{$item->qty},{$item->total_price}\n";
-                                }
-                            }
-                        } elseif ($val_projects['cart_model_name'] == "Fire-Fighting") {
-                            if (!empty($decodedResponse->data->items)) {
-                                $csvContent .= "Items:\n";
-                                $csvContent .= "Item Description,Article No.,Adder code,Unit Price,Qty,Total Price\n";
-                                foreach ($decodedResponse->data->items as $item) {
-
-                                    $bom_items = new ProductBOMItem;
-                                    $bom_items->project_id = $projects_id;
-                                    $bom_items->quotation_no = $request->assembly_quotation_ref;
-                                    $bom_items->cart_model_name = "Fire-Fighting";
-                                    $bom_items->full_article_no = $val_projects['full_article_number'];
-                                    $bom_items->product_id = $product_id;
-                                    $bom_items->item_desc = $item->description;
-                                    $bom_items->item_qty = $item->qty;
-                                    $bom_items->wilo_article_no = empty($item->article_number) || $item->article_number == 0 ? '-' : $item->article_number;
-                                    $bom_items->product_qty = $val_projects['qty'];
-                                    $bom_items->total_required_qty = (float) $item->qty * (float) $val_projects['qty'];
-                                    $bom_items->save();
-                                    $csvContent .= "{$item->description},{$item->article_number},,\"{$item->unit_price}\",{$item->qty},\"{$item->total_price}\"\n";
-                                }
-                            }
-                        }
-
-                        $bom_items = ProductBOMItem::where('project_id', $projects_id)
-                            ->where('product_id', $product_id)
-                            ->where('quotation_no', $request->assembly_quotation_ref)
-                            ->where('cart_model_name', $current_cart_model)
-                            ->get();
-
-                        $matching_items = '';
-                        $total_days_for_std_process = 1;
-                        $max_total_days = 0;
-                        if (isset($keywords_by_cart_model[$current_cart_model])) {
-                            foreach ($keywords_by_cart_model[$current_cart_model] as $item) {
-                                $keyword = $item['keyword'];
-                                $total_days = $item['total_days'];
-                                //ALL matching keyword are fetching by this below query = Tested = Riddhi
-                                $matching_items = $bom_items->filter(function ($bom_item) use ($keyword) {
-                                    return stripos($bom_item->item_desc, $keyword) !== false;
-                                    // Case-insensitive match
-                                })->pluck('item_desc', 'wilo_article_no')->toArray();
-                                if (!empty($matching_items)) {
-                                    $in_stock_items = [];
-                                    $out_of_stock_items = [];
-                                    $is_in_stock = false;
-                                    $is_any_out_of_stock = false;
-
-                                    foreach ($matching_items as $wilo_article_no => $item_desc) {
-                                        $exists_in_stock = StockMasterModule::where('item_desc', $item_desc)
-                                            ->exists();
-                                        if ($exists_in_stock) {
-                                            $in_stock_items[] = $item_desc;
-                                            $is_in_stock = true;
-                                        } else {
-                                            $out_of_stock_items[] = $item_desc;
-                                        }
-                                    }
-                                    $keyword_bom_mapping[$current_cart_model][$keyword] = [
-                                        'total_days' => $total_days,
-                                        'matching_items' => $matching_items ?: ['Not found in BOM items'],
-                                        'in_stock_items' => $in_stock_items,
-                                        'out_of_stock_items' => $out_of_stock_items,
-                                    ];                               
-                                    if (count($out_of_stock_items) === 0 && count($in_stock_items) > 0) {
-                                        // All matched items are in stock
-                                        $keyword_bom_mapping[$current_cart_model][$keyword]['total_days'] = 1;
-                                        $total_days_for_std_process = 1;
-                                    } else {
-                                        // At least one matched item is out of stock
-                                        $keyword_bom_mapping[$current_cart_model][$keyword]['total_days'] = $total_days;
-                                        $max_total_days = max($max_total_days, $total_days);
-                                        $total_days_for_std_process = $max_total_days;
-                                    } 
-                                    $keyword_bom_mapping[$current_cart_model][$keyword]['total_days'] = $is_in_stock ? 1 : $total_days;
-                                } else {
-                                }
-                            }
-                        }
-                        $filename = 'BOM_' . $request->assembly_quotation_ref . '_' . $val_projects['full_article_number'] . '_' . time() . '.csv';
-
-                        if (!File::exists(public_path('bom_files'))) {
-                            File::makeDirectory(public_path('bom_files'), 0777, true);
-                        }
-                        File::put(public_path('bom_files/' . $filename), $csvContent);
-                        $projectProcessStdTime->bom_path = 'bom_files/' . $filename;
-                        $projectProcessStdTime->bom_upload_date = now();
-                        $projectProcessStdTime->save();
-                    }
-                } else {
-                    $current_cart_model = $val_projects['cart_model_name'] ?? '';
-                    $non_std_data = ProcurementStandardTime::with('product_type_name')
-                        ->whereHas('product_type_name', function ($query) use ($product_type) {
-                            $query->where('project_type_name', '=', $product_type);
-                        })
-                        ->where('is_non_std_quotation_number', 1)
-                        ->where('cart_model_name', $current_cart_model)
-                        ->first();
-                    $total_days_for_std_process = 1;
-                    if ($non_std_data) {
-                        $keyword = $non_std_data->keyword ?? '';
-                        $total_days = $non_std_data->total_days ?? 0;
-
-                        // Check if the keyword exists in StockMaster (adjust field if needed)
-                        $is_in_stock = StockMasterModule::where('item_desc', $keyword)->exists();
-
-                        if ($is_in_stock) {
-                            $total_days_for_std_process = 1; // Set to 1 if in stock
-                        } else {
-                            $total_days_for_std_process = $total_days; // Use the fetched total_days if not in stock
-                        }
-                    } else {
+                if (isset($keywords_by_cart_model[$current_cart_model])) {
+                    foreach ($keywords_by_cart_model[$current_cart_model] as $item) {
+                        $total_days_for_std_process = max($total_days_for_std_process, $item['total_days']);
                     }
                 }
 
-                $get_product_wise_estimated_date = get_product_wise_estimated_date($product_type, $total_days_for_std_process, $qty);
+                $get_product_wise_estimated_date = get_product_wise_estimated_date(
+                    $product_type,
+                    $total_days_for_std_process,
+                    $qty
+                );
 
-                if (!$final_estimated_date || $get_product_wise_estimated_date > $final_estimated_date) {
-                    $final_estimated_date = $get_product_wise_estimated_date;
-                }
                 $projectProcessStdTime->estimated_readiness_date = $get_product_wise_estimated_date;
                 $projectProcessStdTime->save();
 
-                $product_type = $val_projects['product_type'] ?? null;
-                if ($product_type) {
-                    for ($i = 0; $i < $val_projects['qty']; $i++) {
-                        $qty_of_product = new QtyOfProduct;
-                        $qty_of_product->project_id = $projects_id;
-                        $qty_of_product->product_id = $product_id;
-                        $qty_of_product->qty_number = $i + 1;
-                        $qty_of_product->save();
-                    }
-                    $admin_hours_setting = AdminHoursManagement::where('product_type', '=', $product_type)->where('is_deleted', '0')->get();
-                    for ($i = 0; $i < $val_projects['qty']; $i++) {
-                        foreach ($admin_hours_setting as $admin_hour) {
-                            $add_project_time = new ProjectProcessStdTime;
-                            $add_project_time->projects_id = $projects_id;
-                            $add_project_time->product_id = $product_id;
-                            $add_project_time->order_qty = $i + 1;
-                            $add_project_time->project_type_name = $admin_hour->product_type;
-                            $add_project_time->project_process_name = $admin_hour->process_name;
-                            $add_project_time->process_std_time = $admin_hour->value;
-                            $add_project_time->save();
-                        }
+                // Create quantity records
+                for ($i = 0; $i < $qty; $i++) {
+                    $qty_of_product = new QtyOfProduct;
+                    $qty_of_product->project_id = $projects_id;
+                    $qty_of_product->product_id = $product_id;
+                    $qty_of_product->qty_number = $i + 1;
+                    $qty_of_product->save();
+                }
+
+                // Create process standard time records
+                $admin_hours_setting = AdminHoursManagement::where('product_type', '=', $product_type)
+                    ->where('is_deleted', '0')
+                    ->get();
+
+                for ($i = 0; $i < $qty; $i++) {
+                    foreach ($admin_hours_setting as $admin_hour) {
+                        $add_project_time = new ProjectProcessStdTime;
+                        $add_project_time->projects_id = $projects_id;
+                        $add_project_time->product_id = $product_id;
+                        $add_project_time->order_qty = $i + 1;
+                        $add_project_time->project_type_name = $admin_hour->product_type;
+                        $add_project_time->project_process_name = $admin_hour->process_name;
+                        $add_project_time->process_std_time = $admin_hour->value;
+                        $add_project_time->save();
                     }
                 }
             }
-            if ($final_estimated_date) {
-                $project->estimated_readiness = $final_estimated_date;
-                $project->save();
-            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | NEW ESTIMATED READINESS DATE CALCULATION
+            |--------------------------------------------------------------------------
+            | This replaces the old calculation logic with the new requirements:
+            | 
+            | PROJECT TYPE DETERMINATION:
+            | - If is_pricing_tool_quotation_number == "1" → Standard Project
+            | - Otherwise → Non-Standard Project
+            | 
+            | STANDARD PROJECT LOGIC:
+            | - Add BOM/Drawing days ONLY if drawing is requested
+            | - Add Final Inspection days
+            | - Add product type weeks (highest among all products)
+            | - Skip weekends in calculation
+            | 
+            | NON-STANDARD PROJECT LOGIC:
+            | - ALWAYS add BOM/Drawing days (regardless of drawing request)
+            | - Do NOT add Final Inspection days
+            | - Add product type weeks (highest among all products)
+            | - Skip weekends in calculation
+            |--------------------------------------------------------------------------
+            */
+
+            // Determine project type based on is_pricing_tool_quotation_number
+            // Standard = pricing tool quotation, Non-Standard = manually created
+            $projectType = ($project->is_pricing_tool_quotation_number == "1") ? 'Standard' : 'Non-Standard';
+
+            // Calculate the estimated readiness date
+            $projectCreationDate = Carbon::parse($project->wip_project_create_date);
+            $estimatedReadinessDate = $this->calculateEstimatedReadinessDate(
+                $projectType,
+                $anyDrawingRequested,
+                $allProductTypes,
+                $projectCreationDate
+            );
+
+            // Update the project with the calculated estimated readiness date
+            $project->estimated_readiness = $estimatedReadinessDate;
+            $project->save();
         }
-        return redirect()->route('ProductionManagerProjectIndex')->with('success', 'Project Added Successfully.');
+
+        return redirect()
+            ->route('ProductionManagerProjectIndex')
+            ->with('success', 'Project Added Successfully.');
     }
 
-    protected function generateProductQrCode($project_no, $full_article_number){
+    protected function generateProductQrCode($project_no, $full_article_number)
+    {
         // Fetch the product
         $product = ProductsOfProjects::where('project_id', function ($query) use ($project_no) {
             $query->select('id')->from('projects')->where('project_no', $project_no)->firstOrFail();
@@ -1442,7 +1036,8 @@ class ProductionManagerController extends Controller
         return $qrCodePaths;
     }
 
-    public function showProductDetails($project_no, $full_article_number, $qty_index = null){
+    public function showProductDetails($project_no, $full_article_number, $qty_index = null)
+    {
         // Fetch the project
         $project = Project::where('project_no', $project_no)->with('projectStatus')->firstOrFail();
 
@@ -1519,7 +1114,8 @@ class ProductionManagerController extends Controller
         ));
     }
 
-    public function getProjectQrCodes(Request $request, $projectId, $articleNumber){
+    public function getProjectQrCodes(Request $request, $projectId, $articleNumber)
+    {
         $project = Project::find($projectId);
         if (!$project) {
             return response()->json(['success' => false, 'message' => 'Project not found'], 404);
@@ -1544,7 +1140,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function downloadAllProjectQrCodes($projectId){
+    public function downloadAllProjectQrCodes($projectId)
+    {
         try {
             // Fetch project and products
             $project = Project::findOrFail($projectId);
@@ -1607,7 +1204,8 @@ class ProductionManagerController extends Controller
         }
     }
 
-    public function downloadAllQrCodes(Request $request, $projectId, $articleNumber){
+    public function downloadAllQrCodes(Request $request, $projectId, $articleNumber)
+    {
         $project = Project::find($projectId);
         if (!$project) {
             return response()->json(['success' => false, 'message' => 'Project not found'], 404);
@@ -1646,7 +1244,8 @@ class ProductionManagerController extends Controller
         return response()->download($zipFilePath, $zipFileName)->deleteFileAfterSend(true);
     }
 
-    public function getProjectDocuments(Request $request){
+    public function getProjectDocuments(Request $request)
+    {
         $projectId = $request->input('id');
         $folder = $request->input('folder');
         $subfolder = $request->input('subfolder'); // Add subfolder parameter to handle BOE, INVOICE, OA, PO
@@ -1753,7 +1352,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function getProjectDocumentsForInbox(Request $request){
+    public function getProjectDocumentsForInbox(Request $request)
+    {
         $projectId = $request->input('id');
         $folder = $request->input('folder');
         $subfolder = $request->input('subfolder'); // Add subfolder parameter if needed
@@ -1804,20 +1404,25 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function check_project_status($id){
+    public function check_project_status($id)
+    {
         $project = Project::where('id', $id)
             ->with('product')
             ->with('productsProcess')
             ->with('projectStatus')
             ->with('InitialInspection')
-            ->with(['purchaseOrders' => function ($query) {
-                $query->with(['purchaseOrderTables' => function ($subQuery) {
-                    $subQuery->orderBy('id', 'desc');
-                }])
-                    ->where('is_production_engineer_approved', 1) // Mandatory condition
-                    ->whereIn('is_production_manager_approved', [0, 1]) // Allows both 0 and 1
-                    ->orderBy('id', 'desc');
-            }])
+            ->with([
+                'purchaseOrders' => function ($query) {
+                    $query->with([
+                        'purchaseOrderTables' => function ($subQuery) {
+                            $subQuery->orderBy('id', 'desc');
+                        }
+                    ])
+                        ->where('is_production_engineer_approved', 1) // Mandatory condition
+                        ->whereIn('is_production_manager_approved', [0, 1]) // Allows both 0 and 1
+                        ->orderBy('id', 'desc');
+                }
+            ])
             ->first();
 
         $project_no = Project::where('id', $id)->value('project_no');
@@ -1885,13 +1490,15 @@ class ProductionManagerController extends Controller
         ));
     }
 
-    public function project_edit_form($id){
+    public function project_edit_form($id)
+    {
         $project = Project::find($id);
         $documents = json_decode($project->documents);
         return view('production_manager.edit_project', compact('documents', 'project'));
     }
 
-    public function project_update(Request $request){
+    public function project_update(Request $request)
+    {
         $project = Project::find($request->id);
 
         if (!$project) {
@@ -1964,7 +1571,8 @@ class ProductionManagerController extends Controller
         return back()->with('success', 'Project Updated Successfully.');
     }
 
-    public function get_quotation_items(Request $request){
+    public function get_quotation_items(Request $request)
+    {
         $quotation_number = $request->quotation_number;
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -1988,12 +1596,13 @@ class ProductionManagerController extends Controller
     }
 
     //This function is called when production engineer clicks on download the BOM
-    public function getBOM(Request $request){
+    public function getBOM(Request $request)
+    {
         $quotation_number = $request->quotation_number;
         $full_article_number = $request->full_article_number;
 
-        $item_id =  $request->item_id;
-        $item_name =  $request->item_name;
+        $item_id = $request->item_id;
+        $item_name = $request->item_name;
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://wilo.360websitedemo.com/api/getBOM',
@@ -2011,15 +1620,16 @@ class ProductionManagerController extends Controller
         ));
         $response = curl_exec($curl);
         curl_close($curl);
-        $decodedResponse = json_decode($response);  
+        $decodedResponse = json_decode($response);
         return response()->json($decodedResponse);
     }
 
-    public function getBOMForCheckStatus(Request $request){
+    public function getBOMForCheckStatus(Request $request)
+    {
         dd("testt");
-        $quotation_number =  $request->quotation_number;
-        $full_article_number =  $request->full_article_number;
-        $cart_model_name =  $request->cart_model_name;
+        $quotation_number = $request->quotation_number;
+        $full_article_number = $request->full_article_number;
+        $cart_model_name = $request->cart_model_name;
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://wilo.360websitedemo.com/api/getBOMCheckStatus',
@@ -2041,82 +1651,15 @@ class ProductionManagerController extends Controller
         return response()->json($decodedResponse);
     }
 
-    public function inbox(){
+    public function inbox()
+    {
         $page_title = "PROJECT STATUS";
 
-        // Fetch the hours from admin_hours_management
-        $hoursData = DB::table('admin_hours_management')
-            ->where('lable', 'StandardProcessTimes')
-            ->where('key', 'create_new_project')
-            ->where('is_deleted', 0)
-            ->first();
-
-        // Convert hours to days (ceiling of hours / 24)
-        $hours = $hoursData ? (int)$hoursData->value : 24; // Default to 24 hours if not found
-        $daysToAdd = ceil($hours / 24); // Convert hours to days, e.g., 24 → 1, 25 → 2
-
-        $pendingWITrackProjects = Project::orderBy('id', 'desc')
-            ->where('isWITrack_project', '1')
-            ->where('inbox_production_eng_WiTrack_project_created', '1')
-            ->where('isWITrack_project_cancelled', '!=', '1')
-            ->where('is_rejected_by_pro_eng', '!=', '1')
-            ->whereNull('assembly_quotation_ref')
-            ->get()
-            ->map(function ($project) use ($daysToAdd) {
-                // Calculate deadline: Add days to created_at, skipping weekends
-                $deadline = $this->calculateDeadline($project->created_at, $daysToAdd);
-                $project->deadline = $deadline;
-                return $project;
-            });
-
-        $rejectedWITrackProjects = Project::orderBy('rejection_date', 'desc')
-            ->where('isWITrack_project', '1')
-            ->where('is_rejected_by_pro_eng', '1')
-            ->get();
-
-        // Fetch Cancellation Orders from WITrack
-        $cancelledWITrackProjects = Project::orderBy('id', 'desc')
-            ->where('isWITrack_project', '1')
-            ->where('isWITrack_project_cancelled', '1') // Only cancelled orders
-            ->get();
-
-        $pendingPurchaseOrders = DB::table('purchase_order as po')
-            ->where('po.is_production_engineer_approved', 0)
-            ->select('po.id as po_id', 'po.po_number', 'po.project_no', 'po.project_name', 'po.supplier', 'po.order_date')
-            ->get();
-            
-        $pendingNameplateProductCreationAsPerQtyWise = QtyOfProduct::orderBy('id', 'desc')->where('is_qty_product_assembled', '1')
-            ->whereIn('nameplate_create_inbox_to_pro_eng', ['1', '2'])
-            ->where('is_final_inspection_started', '0')->with('projects')->with('products')
-            ->get();
-
-        $completed_projects = Project::whereNull('deleted_at')->where('status', '2')->get();
-
-        return view('production_manager.inbox', compact('pendingWITrackProjects', 'cancelledWITrackProjects', 'pendingPurchaseOrders', 'pendingNameplateProductCreationAsPerQtyWise', 'page_title', 'completed_projects', 'rejectedWITrackProjects'));
+        return view('production_manager.inbox', compact('page_title'));
     }
 
-    private function calculateDeadline($startDate, $days){
-        $currentDate = $startDate->copy();
-        $daysRemaining = $days;
-
-        while ($daysRemaining > 0) {
-            $currentDate->addDay();
-
-            // Skip Saturday (6) and Sunday (0)
-            if ($currentDate->dayOfWeek != 0 && $currentDate->dayOfWeek != 6) {
-                $daysRemaining--;
-            }
-        }
-
-        // Ensure the final date is not a weekend
-        while ($currentDate->dayOfWeek == 0 || $currentDate->dayOfWeek == 6) {
-            $currentDate->addDay();
-        }
-
-        return $currentDate->format('d-m-y');
-    }
-
-    public function approve(Request $request, $id){
+    public function approve(Request $request, $id)
+    {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
         $purchaseOrder->is_production_engineer_approved = 1;
         $purchaseOrder->approved_remarks_production_engineer = $request->remarks;
@@ -2128,8 +1671,9 @@ class ProductionManagerController extends Controller
 
         return response()->json(['success' => 'Purchase order approved successfully!']);
     }
-    
-    public function reject(Request $request, $id){
+
+    public function reject(Request $request, $id)
+    {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
         $purchaseOrder->is_production_engineer_approved = 2;
         $purchaseOrder->rejection_reason_production_engineer = $request->reason;
@@ -2142,12 +1686,14 @@ class ProductionManagerController extends Controller
         return response()->json(['success' => 'Purchase order rejected successfully!']);
     }
 
-    public function view($id){
+    public function view($id)
+    {
         $purchaseOrder = PurchaseOrder::with('purchaseOrderTables')->findOrFail($id);
         return view('assembly_manager.view_po', compact('purchaseOrder'));
     }
 
-    public function upload_nameplate_img(Request $request){
+    public function upload_nameplate_img(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'id' => 'required|integer',
@@ -2206,7 +1752,8 @@ class ProductionManagerController extends Controller
         }
     }
 
-    public function getNamePlateImages(Request $request, $projectId, $articleNumber, $qtyNo){
+    public function getNamePlateImages(Request $request, $projectId, $articleNumber, $qtyNo)
+    {
         $project = Project::find($projectId);
         if (!$project) {
             return response()->json(['success' => false, 'message' => 'Project not found'], 404);
@@ -2233,7 +1780,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function updateCheckStatus(Request $request){
+    public function updateCheckStatus(Request $request)
+    {
         $id = $request->input('id');
         $type = $request->input('type');
         $checked = $request->input('checked');
@@ -2253,7 +1801,8 @@ class ProductionManagerController extends Controller
         }
     }
 
-    public function getWIPPhotos(Request $request){
+    public function getWIPPhotos(Request $request)
+    {
         $projectId = $request->input('id');
         $project = Project::find($projectId);
 
@@ -2300,7 +1849,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function getProjectsDrawings(Request $request){
+    public function getProjectsDrawings(Request $request)
+    {
         $projectId = $request->input('projectId');
         $folder = $request->input('folder');
         $subsubfolder = $request->input('subsubfolder');
@@ -2358,7 +1908,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function downloadDrawing($projectId, $articleNumber, $type){
+    public function downloadDrawing($projectId, $articleNumber, $type)
+    {
         // Validate project
         $project = Project::find($projectId);
         if (!$project) {
@@ -2394,75 +1945,8 @@ class ProductionManagerController extends Controller
         return response()->json(['success' => false, 'message' => "No {$type} drawing found for article number {$articleNumber}"], 404);
     }
 
-    public function rejectOrder(Request $request){
-        $request->validate([
-            'project_id' => 'required|exists:projects,id',
-            'reason' => 'required|string',
-        ]);
-        $user = Auth::user();
-        if ($user->role !== 'Production Engineer') {
-            return response()->json(['error' => 'Unauthorized. Only Production Engineers can reject orders.'], 403);
-        }
-        $projectId = $request->project_id;
-        $reason = $request->reason;
-        $project = Project::findOrFail($projectId);
-        DB::table('projects')
-            ->where('id', $projectId)
-            ->update([
-                'is_rejected_by_pro_eng' => 1,
-                'rejection_selected_reason' => $reason,
-                'rejection_date' => Carbon::now()->toDateTimeString(),
-            ]);
-
-        // Fetch production team members
-        $productionTeam = DB::table('production_team_details')
-            ->select('name', 'email')
-            ->get();
-
-        // Send personalized email to each production team member
-        foreach ($productionTeam as $member) {
-            $formData = [
-                'name' => $member->name,
-                'project_name' => $project->project_name,
-                'witrack_no' => $project->witrack_no ?? 'N/A',
-                'sales_name' => $project->sales_name ?? 'N/A',
-                'customer_name' => $project->customer_name ?? 'N/A',
-                'country' => $project->country ?? 'N/A',
-                'reason' => $reason,
-                'rejection_date' => $project->rejection_date,
-                'project_no' => $project->project_no,
-            ];
-
-            Mail::to($member->email)->send(new ProjectRejectedNotification($formData));
-        }
-
-        // Existing API call
-        if ($projectId) {
-            $response = Http::post(route('api.reject-project'), [
-                'projectId' => $projectId
-            ]);
-        }
-
-        return response()->json(['success' => 'Order rejected successfully']);
-    }
-
-    public function getRejectionDetails(Request $request){
-        $request->validate([
-            'project_id' => 'required|exists:projects,id',
-        ]);
-
-        $project = DB::table('projects')
-            ->select('rejection_date', 'rejection_selected_reason')
-            ->where('id', $request->project_id)
-            ->first();
-
-        return response()->json([
-            'rejection_date' => $project->rejection_date ? Carbon::parse($project->rejection_date)->format('d-m-y') : null,
-            'rejection_reason' => $project->rejection_selected_reason,
-        ]);
-    }
-
-    public function getCancellationDetails(Request $request){
+    public function getCancellationDetails(Request $request)
+    {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
         ]);
@@ -2477,7 +1961,8 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function getProjectExecutionPartialOrderPLList($projectId){
+    public function getProjectExecutionPartialOrderPLList($projectId)
+    {
         try {
             $project = Project::findOrFail($projectId);
             $products = ProductsOfProjects::where('project_id', $projectId)->get();
@@ -2509,7 +1994,8 @@ class ProductionManagerController extends Controller
         }
     }
 
-    public function getPartialOrderPLDocs($projectId, $articleNumber, $qtyNo){
+    public function getPartialOrderPLDocs($projectId, $articleNumber, $qtyNo)
+    {
         try {
             $project = Project::findOrFail($projectId);
             $projectNo = $project->project_no;
@@ -2550,14 +2036,16 @@ class ProductionManagerController extends Controller
         }
     }
 
-    public function getNamePlateList($projectId){
+    public function getNamePlateList($projectId)
+    {
         $products = ProductsOfProjects::where('project_id', $projectId)
             ->select('cart_model_name', 'description', 'full_article_number', 'qty')
             ->get();
         return response()->json(['namePlateList' => $products]);
     }
 
-    public function exportCSV(Request $request){
+    public function exportCSV(Request $request)
+    {
         $query = Project::select('*')
             ->orderByRaw("CAST(SUBSTRING_INDEX(project_no, '-', 1) AS UNSIGNED) DESC")
             ->orderByRaw("CAST(SUBSTRING_INDEX(project_no, '-', -1) AS UNSIGNED) DESC");
@@ -2586,7 +2074,8 @@ class ProductionManagerController extends Controller
 
         foreach ($filters as $key => $values) {
             $values = array_filter((array) $values); // Convert and skip empty values
-            if (empty($values)) continue;
+            if (empty($values))
+                continue;
 
             switch ($key) {
                 case 'filter_col_1': // wip_project_create_date
@@ -2706,12 +2195,13 @@ class ProductionManagerController extends Controller
     }
 
     // A Code: 10-01-2026 Start
-    public function project_delete(Request $request, $id){
-        
+    public function project_delete(Request $request, $id)
+    {
+
         // Role check
-        if (! (Auth::user()->role === 'Admin' || Auth::user()->is_admin_login)) {
+        if (!(Auth::user()->role === 'Admin' || Auth::user()->is_admin_login)) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Unauthorized access.'
             ], 403);
         }
@@ -2777,12 +2267,12 @@ class ProductionManagerController extends Controller
                 DB::table('assigned_products_operators')->where('project_id', $id)->delete();
                 DB::table('project_process_std_time')->where('projects_id', $id)->delete();
                 DB::table('stock_history')->where('project_id', $id)->delete();
-            });            
+            });
 
             session()->flash('success', 'Project Deleted Successfully.');
             return response()->json([
-                'status'   => true,
-                'message'  => 'Project Deleted Successfully.',
+                'status' => true,
+                'message' => 'Project Deleted Successfully.',
                 'redirect' => route('ProductionManagerProjectIndex')
             ]);
 
@@ -2790,17 +2280,177 @@ class ProductionManagerController extends Controller
 
             Log::error('Project Delete Failed', [
                 'project_id' => $id,
-                'error'      => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
 
             session()->flash('error', 'Project delete failed. Please try again.');
-            
+
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Project delete failed. Please try again.'
             ], 500);
         }
     }
     // A Code: 10-01-2026 End
+
+    private function calculateEstimatedReadinessDate($projectType, $drawingRequested, $productTypes, $projectCreationDate)
+    {
+        // Initialize total days counter
+        $totalDays = 0;
+
+        /*
+        |--------------------------------------------------------------------------
+        | STEP 1: Determine if BOM/Drawing days should be added
+        |--------------------------------------------------------------------------
+        */
+        $shouldAddBomDrawing = false;
+
+        if ($projectType === 'Standard') {
+            // For Standard projects: Only add if drawing is requested
+            if ($drawingRequested) {
+                $shouldAddBomDrawing = true;
+            }
+        } else {
+            // For Non-Standard projects: ALWAYS add BOM/Drawing hours
+            // This is mandatory regardless of whether drawing is requested or not
+            $shouldAddBomDrawing = true;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | STEP 2: Add BOM/Drawing days if required
+        |--------------------------------------------------------------------------
+        | Fetch hours from admin_hours_management table where:
+        | - lable = 'StandardProcessTimes'
+        | - key = 'bom_drawings'
+        | - is_deleted = 0
+        | 
+        | Convert hours to days: 8 hours = 1 day
+        | Example: 24 hours = 24/8 = 3 days
+        */
+        if ($shouldAddBomDrawing) {
+            $bomDrawingHours = AdminHoursManagement::where('lable', 'StandardProcessTimes')
+                ->where('key', 'bom_drawings')
+                ->where('is_deleted', 0)
+                ->value('value');
+
+            if ($bomDrawingHours) {
+                // Convert hours to days using ceiling to round up
+                // Example: 8 hours = 1 day, 9 hours = 2 days (rounded up)
+                $bomDrawingDays = ceil($bomDrawingHours / 8);
+                $totalDays += $bomDrawingDays;
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | STEP 3: Add Final Inspection days (ONLY for Standard projects)
+        |--------------------------------------------------------------------------
+        | Fetch hours from admin_hours_management table where:
+        | - lable = 'StandardProcessTimes'
+        | - key = 'final_inspection'
+        | - is_deleted = 0
+        | 
+        | Convert hours to days: 8 hours = 1 day
+        | Example: 36 hours = 36/8 = 4.5 = 5 days (rounded up)
+        */
+        if ($projectType === 'Standard') {
+            $finalInspectionHours = AdminHoursManagement::where('lable', 'StandardProcessTimes')
+                ->where('key', 'final_inspection')
+                ->where('is_deleted', 0)
+                ->value('value');
+
+            if ($finalInspectionHours) {
+                // Convert hours to days using ceiling to round up
+                $finalInspectionDays = ceil($finalInspectionHours / 8);
+                $totalDays += $finalInspectionDays;
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | STEP 4: Find the highest estimated weeks from all product types
+        |--------------------------------------------------------------------------
+        | Loop through all product types in the project and find which one
+        | has the highest estimated_product_type_weeks value.
+        | 
+        | Example:
+        | - Product Type A: 2 weeks
+        | - Product Type B: 3 weeks
+        | - Product Type C: 1 week
+        | Result: Use 3 weeks (the maximum)
+        */
+        $maxWeeks = 0;
+
+        foreach ($productTypes as $productTypeName) {
+            // Find the product type record from database
+            $productTypeRecord = ProductType::where('project_type_name', $productTypeName)
+                ->where('is_active', 1)
+                ->first();
+
+            // Check if record exists and has estimated weeks
+            if ($productTypeRecord && $productTypeRecord->estimated_product_type_weeks) {
+                $weeks = (int) $productTypeRecord->estimated_product_type_weeks;
+
+                // Keep track of the maximum weeks
+                if ($weeks > $maxWeeks) {
+                    $maxWeeks = $weeks;
+                }
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | STEP 5: Convert weeks to days and add to total
+        |--------------------------------------------------------------------------
+        | 1 week = 7 days (including weekends initially, but they'll be skipped
+        | in the addBusinessDays function)
+        | 
+        | Example: 3 weeks = 3 × 7 = 21 days
+        */
+        $weekDays = $maxWeeks * 7;
+        $totalDays += $weekDays;
+
+        /*
+        |--------------------------------------------------------------------------
+        | STEP 6: Calculate final date by adding business days
+        |--------------------------------------------------------------------------
+        | Use the addBusinessDays function to add the total calculated days
+        | to the project creation date, automatically skipping weekends.
+        | 
+        | Example:
+        | - Project creation: 29-01-2026 (Wednesday)
+        | - Total days: 24
+        | - Result: Add 24 business days, skipping all Saturdays and Sundays
+        */
+        $estimatedDate = $this->addBusinessDays($projectCreationDate, $totalDays);
+
+        return $estimatedDate;
+    }
+
+    private function addBusinessDays($startDate, $days)
+    {
+        // Create a copy of the start date to avoid modifying the original
+        $currentDate = $startDate->copy();
+
+        // Track how many business days we still need to add
+        $daysToAdd = $days;
+
+        // Loop until we've added all required business days
+        while ($daysToAdd > 0) {
+            // Move to the next day
+            $currentDate->addDay();
+
+            // Check if this day is a weekday (not Saturday or Sunday)
+            // Carbon::SATURDAY = 6, Carbon::SUNDAY = 0
+            if ($currentDate->dayOfWeek != Carbon::SATURDAY && $currentDate->dayOfWeek != Carbon::SUNDAY) {
+                // It's a weekday, so count it
+                $daysToAdd--;
+            }
+            // If it's a weekend, the loop continues without decrementing daysToAdd
+        }
+
+        return $currentDate;
+    }
 
 }
