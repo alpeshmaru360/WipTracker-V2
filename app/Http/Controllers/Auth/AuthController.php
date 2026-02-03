@@ -37,9 +37,6 @@ class AuthController extends Controller
                 case 'Procurement Specialist':
                     return redirect()->intended(route('ProcurementManagerDashboard'));
                     break;
-                case 'Sale Manager':
-                    return redirect()->intended(route('ExpectedOrdersDashboard'));
-                    break;
                 case 'Production Engineer':
                     return redirect()->intended(route('ProductionManagerDashboard'));
                     break;
@@ -54,9 +51,6 @@ class AuthController extends Controller
                     break;    
                 case '3rd Party Operator':
                     return redirect()->intended(route('OperatorDashboard'));
-                    break;
-                case 'User':
-                    return redirect()->intended(route('UserDashboard'));
                     break;
                 case 'Estimation Manager':
                     return redirect()->intended(route('EstimationManagerDashboard'));
@@ -80,13 +74,11 @@ class AuthController extends Controller
             'Assembly Manager'       => 'AssemblyManagerDashboard',
             'Quality Engineer'       => 'QualityManagerDashboard',
             'Procurement Specialist' => 'ProcurementManagerDashboard',
-            'Sale Manager'           => 'ExpectedOrdersDashboard',
             'Production Engineer'    => 'ProductionManagerDashboard',
             'Designer Engineer'      => 'DesignerEngineerDashboard',
             'Production Superwisor'  => 'ProductionSuperwisorDashboard',
             'Wilo Operator'          => 'OperatorDashboard',
             '3rd Party Operator'     => 'OperatorDashboard',
-            'User'                   => 'UserDashboard',
             'Estimation Manager'     => 'EstimationManagerDashboard',
         ];
 

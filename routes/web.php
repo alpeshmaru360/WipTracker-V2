@@ -220,13 +220,7 @@ Route::namespace('App\Http\Controllers\AssemblyManager')
 Route::namespace('App\Http\Controllers\QualityManager')
     ->middleware('\App\Http\Middleware\CheckManagerRole:Quality Engineer')
     ->group(function () {
-        Route::get('quality_manager/dashboard', 'QualityManagerController@dashboard')->name('QualityManagerDashboard');
-        Route::get('quality_manager/ncr', 'QualityManagerController@ncr')->name('NCR');
-        Route::get('quality_manager/addNCR', 'QualityManagerController@addNCR')->name('addNCR');
-        Route::get('quality_manager/ncr/edit/{id}', 'QualityManagerController@edit')->name('editNCR');
-        Route::put('/ncr/update/{id}', [QualityManagerController::class, 'update'])->name('updateNCR');
-        Route::post('/update-ncr-remarks', [QualityManagerController::class, 'updateRemarks'])->name('updateNCRRemarks');
-        Route::post('/ncr/generate', 'QualityManagerController@generatePDF')->name('ncr.generate');   
+        Route::get('quality_manager/dashboard', 'QualityManagerController@dashboard')->name('QualityManagerDashboard');  
 
         Route::get('quality_manager/quality/create_form', 'QualityManagerController@quality_create_form')->name('QualityManagerQualityCreate');
         Route::get('quality_manager/quality/final_inspection_form', 'QualityManagerController@final_inspection_form')->name('QualityManagerFinalinspectionCreate');
@@ -481,9 +475,7 @@ Route::namespace('App\Http\Controllers\Operator')->group(function () {
 
 // User Routes
 Route::namespace('App\Http\Controllers\User')
-    ->middleware('\App\Http\Middleware\CheckManagerRole:User')
     ->group(function () {
-        Route::get('user/dashboard', 'UserController@dashboard')->name('UserDashboard');
         Route::get('clear_table', 'UserController@truncate_table')->name('TruncateTable');
     });
 
@@ -499,12 +491,4 @@ Route::namespace('App\Http\Controllers\StockMaster')->group(function () {
         Route::put('Stock/update/{id}', 'StockMasterController@update')->name('StockMaster.Stock.update');
         Route::delete('Stock/delete/{id}', 'StockMasterController@destroy')->name('StockMaster.Stock.destroy');
     });
-});
-
-// Expected Orders Routes
-Route::namespace('App\Http\Controllers\ExpectedOrders')->middleware('\App\Http\Middleware\CheckManagerRole:Sale Manager')->group(function () {
-    Route::get('/expected-orders/dashboard', 'ExpectedOrdersController@dashboard')->name('ExpectedOrdersDashboard');
-    Route::get('/expected_orders', 'ExpectedOrdersController@index')->name('ExpectedOrders');
-    Route::post('expected_orders/create', 'ExpectedOrdersController@project_create')->name('ExpectedOrdersCreate');
-    Route::post('/expected-orders/pdf', 'ExpectedOrdersController@generatePDF')->name('expectedOrders.pdf');
 });
