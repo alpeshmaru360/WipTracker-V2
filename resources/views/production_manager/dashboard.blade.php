@@ -35,52 +35,6 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card shadow-sm p-4">
-                    <h4 class="fw-bold mb-4">Previous Month KPI</h4>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th class="text-center">Manpower efficiency (TA/TP) [%]</th>
-                                    <th class="text-center">T</th>
-                                    <th class="text-center">A</th>
-                                </tr>
-                            </thead>
-                            <tbody>                                
-                                <tr>
-                                    <td>Throughput Time</td>
-                                    <td class="text-center"></td>
-                                    <td class="text-center"></td>
-                                </tr>
-                                <tr>
-                                    <td>Delivery on time [%]</td>
-                                    <td class="text-center"></td>
-                                    <td class="text-center"></td>
-                                </tr>
-                                <tr>
-                                    <td>Finished goods per employee hour [pcs/hr]</td>
-                                    <td class="text-center"></td>
-                                    <td class="text-center"></td>
-                                </tr>
-                                <tr>
-                                    <td>Coverage Rate</td>
-                                    <td class="text-center"></td>
-                                    <td class="text-center"></td>
-                                </tr>
-                                <tr>
-                                    <td>VSI</td>
-                                    <td class="text-center"></td>
-                                    <td class="text-center"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="row mt-4">
             <div class="col-md-12 mb-4">
                 <div class="card shadow-sm p-4">
