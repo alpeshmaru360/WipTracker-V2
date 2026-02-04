@@ -334,15 +334,6 @@ class ProductionManagerController extends Controller
         ]);
     }
 
-    public function getProjectExecutionMRFList(Request $request, $projectId)
-    {
-        $mrfData = ProductsOfProjects::where('project_id', $projectId)
-            ->select('cart_model_name', 'description', 'full_article_number')
-            ->get();
-
-        return response()->json(['mrfList' => $mrfData]);
-    }
-
     public function getProjectExecutionWorkOrdersList(Request $request, $projectId)
     {
         $workOrdersData = ProductsOfProjects::where('project_id', $projectId)
@@ -352,10 +343,10 @@ class ProductionManagerController extends Controller
         return response()->json(['workOrdersList' => $workOrdersData]);
     }
 
-    // Project Execution Documents (MRF, Full_Order_PL, Work Orders)
+    // Project Execution Documents (Full_Order_PL, Work Orders)
     public function getProjectExecutionDocs(Request $request, $projectId, $type, $articleNumber = null)
     {
-        $validTypes = ['MRF', 'Full_Order_PL', 'Work Orders'];
+        $validTypes = ['Full_Order_PL', 'Work Orders'];
         if (!in_array($type, $validTypes)) {
             return response()->json(['success' => false, 'message' => 'Invalid document type'], 400);
         }
@@ -365,7 +356,7 @@ class ProductionManagerController extends Controller
             return response()->json(['success' => false, 'message' => 'Project not found'], 404);
         }
 
-        $directory = ($type === 'MRF' || $type === 'Work Orders') && $articleNumber
+        $directory = ($type === 'Work Orders') && $articleNumber
             ? public_path("project_document/{$project->project_no}/Project Execution/{$type}/{$articleNumber}")
             : public_path("project_document/{$project->project_no}/Project Execution/{$type}");
         $files = [];
@@ -375,7 +366,7 @@ class ProductionManagerController extends Controller
             foreach ($allFiles as $file) {
                 $files[] = [
                     'name' => $file->getFilename(),
-                    'path' => ($type === 'MRF' || $type === 'Work Orders') && $articleNumber
+                    'path' => ($type === 'Work Orders') && $articleNumber
                         ? "project_document/{$project->project_no}/Project Execution/{$type}/{$articleNumber}/{$file->getFilename()}"
                         : "project_document/{$project->project_no}/Project Execution/{$type}/{$file->getFilename()}",
                     'size' => $file->getSize(),
@@ -396,14 +387,14 @@ class ProductionManagerController extends Controller
     {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
-            'type' => 'required|in:MRF,Full_Order_PL,Work Orders',
-            'article_number' => 'required_if:type,MRF,Work Orders|string',
+            'type' => 'required|in:Full_Order_PL,Work Orders',
+            'article_number' => 'required_if:type,Work Orders|string',
             'document' => 'required|mimes:pdf,doc,docx,xls,xlsx|max:10240'
         ]);
 
         $project = Project::find($request->project_id);
         $type = $request->type;
-        $articleNumber = ($type === 'MRF' || $type === 'Work Orders') ? $request->article_number : null;
+        $articleNumber = ($type === 'Work Orders') ? $request->article_number : null;
         $directory = $articleNumber
             ? public_path("project_document/{$project->project_no}/Project Execution/{$type}/{$articleNumber}")
             : public_path("project_document/{$project->project_no}/Project Execution/{$type}");
@@ -1092,9 +1083,9 @@ class ProductionManagerController extends Controller
         // Pass total quantity explicitly
         $totalQty = $product->qty;
 
-        // Fetch initial_inspection, request_mrf, and final_inspection
+        // Fetch initial_inspection, and final_inspection
         $initial_inspection = $product->initial_inspection_date ?? null;
-        $request_mrf = $product->mrf_request_date ?? null;
+        
         $final_inspection = $product->final_inspection_date ?? null;
 
         return view('production_manager.product_qr', compact(
@@ -1108,7 +1099,6 @@ class ProductionManagerController extends Controller
             'qty_index',
             'totalQty',
             'initial_inspection',
-            'request_mrf',
             'final_inspection',
             'lastAction' // New variable passed to the view
         ));
@@ -1461,11 +1451,6 @@ class ProductionManagerController extends Controller
             ->where('is_deleted', 0)
             ->value('value');
 
-        $request_mrf_hours = DB::table('admin_hours_management')
-            ->where('lable', 'StandardProcessTimes')
-            ->where('key', 'request_mrf_to_warehouse')
-            ->where('is_deleted', 0)
-            ->value('value');
 
         $prepare_pl_hours = DB::table('admin_hours_management')
             ->where('lable', 'StandardProcessTimes')
@@ -1473,7 +1458,7 @@ class ProductionManagerController extends Controller
             ->where('is_deleted', 0)
             ->value('value');
 
-        $total_hours = $create_project_hours + $bom_drawings_hours + $check_bom_place_po_hours + $intial_inspection_hours + $final_inspection_hours + $request_mrf_hours + $prepare_pl_hours;
+        $total_hours = $create_project_hours + $bom_drawings_hours + $check_bom_place_po_hours + $intial_inspection_hours + $final_inspection_hours + $prepare_pl_hours;
 
         return view('production_manager.check_project_status', compact(
             'project',
@@ -1484,7 +1469,6 @@ class ProductionManagerController extends Controller
             'check_bom_place_po_hours',
             'intial_inspection_hours',
             'final_inspection_hours',
-            'request_mrf_hours',
             'prepare_pl_hours',
             'total_hours'
         ));

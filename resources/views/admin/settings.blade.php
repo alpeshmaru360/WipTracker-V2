@@ -152,17 +152,6 @@
 
                                                 <div class="row mt-3 m-4">
                                                     <div class="col-3 col-md-6 col-lg-6 col-xl-3">
-                                                        <label class="form-label" for="">Request MRF to warehouse <span class="text-danger">*</span></label>
-                                                    </div>
-                                                    <div class="col-3 col-md-6 col-lg-6 col-xl-7">
-                                                        <input required type="number" step="0.001" name="request_mrf_to_warehouse" value="{{$request_mrf_to_warehouse}}" class="w-100 pb-2 pt-2"/>
-                                                    </div>
-                                                    <div class="col-3 col-md-6 col-lg-6 col-xl-2">
-                                                    </div>
-                                                </div>
-
-                                                <div class="row mt-3 m-4">
-                                                    <div class="col-3 col-md-6 col-lg-6 col-xl-3">
                                                         <label class="form-label" for="">Initial Inspection <span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-3 col-md-6 col-lg-6 col-xl-7">

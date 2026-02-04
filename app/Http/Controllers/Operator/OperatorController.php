@@ -65,8 +65,7 @@ class OperatorController extends Controller
                     ->exists();
 
                 if (!$rows_exist) {
-                    // Scenario: No rows exist
-                    $val->mrf_date_auth = false; // Disable button
+                    
                 } else {
                     // Check for non-stock rows
                     $has_non_stock = DB::table('stock_bom_po')
@@ -76,16 +75,14 @@ class OperatorController extends Controller
                         ->exists();
 
                     if (!$has_non_stock) {
-                        // Scenario 1: All rows are 'stock'
-                        $val->mrf_date_auth = true; // Enable button
+                        
                     } else {                   
                         $has_atleast_one_ready = DB::table('stock_bom_po')
                             ->where('project_id', $val->project_id)
                             ->where('product_id', $val->product_id)
                             ->where('select_option', '!=', 'stock')
-                            ->whereNotNull('mrf_ready_date')
+                            
                             ->exists();                     
-                        $val->mrf_date_auth = $has_atleast_one_ready;
                     }
                 }
             }

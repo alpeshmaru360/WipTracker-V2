@@ -274,90 +274,9 @@ class DashboardService
 
             $material_requisition_hours = DB::table('admin_hours_management')
                 ->where('lable', 'StandardProcessTimes')
-                ->where('key', 'request_mrf_to_warehouse')
                 ->where('is_deleted', 0)
                 ->value('value') ?? 24;
-           
-            $mrf_done_at = DB::table('stock_bom_po')
-                ->where('project_id', $project->id)
-                ->where('is_email_sent', 2)
-                ->max('mrf_email_sent_date');
 
-            if($allAreStock){
-                $startDateMRFProcess = DB::table('products_of_projects')
-                    ->join('stock_bom_po', 'products_of_projects.id', '=', 'stock_bom_po.product_id')
-                    ->where('products_of_projects.project_id', $project->id)
-                    ->where('products_of_projects.bom_check_procurement_manager', 3)
-                    ->where('stock_bom_po.po_added', 1)
-                    ->whereNotNull('stock_bom_po.processed_at')
-                    ->max('stock_bom_po.processed_at');
-
-                // Get Deadline for Material Requisition
-                $startDateMRF = Carbon::parse($startDateMRFProcess);   
-                $material_requisition_deadline = calculateDeadline($startDateMRF,$material_requisition_hours)->format('Y-m-d H:i:s'); 
-
-                $entries = DB::table('stock_bom_po')
-                    ->where('project_id', $project->id)
-                    ->whereNotNull('po_no')
-                    ->pluck('is_email_sent');
-
-                $total = $entries->count();
-
-                $completed = 0;
-                foreach ($entries as $val) {
-                    if ($val == 2) {
-                        $completed++;
-                    }
-                }    
-
-                if ($total === 0) {
-                    // Process Pending
-                    $material_requisition_status[$project->id] = 'none';
-                } elseif ($completed === $total) {
-                    // Process Completed Done – check if completed within deadline
-                    $material_requisition_status[$project->id] = ($mrf_done_at > $material_requisition_deadline) ? 'red' : 'green';
-                } elseif ($completed > 0) {
-                    // Process Partially Done
-                    $material_requisition_status[$project->id] = 'yellow';
-                } else {
-                    $material_requisition_status[$project->id] = 'none';
-                }                    
-
-            }else{
-                // Get Deadline for Material Requisition
-                $startDateMRF = Carbon::parse($initial_inspection_done_at);   
-                $material_requisition_deadline = calculateDeadline($startDateMRF,$material_requisition_hours)->format('Y-m-d H:i:s'); 
-
-                $entries = DB::table('stock_bom_po')
-                    ->where('project_id', $project->id)
-                    ->where('select_option', '!=', 'stock')
-                    ->where('po_no', '!=', 'N/A')
-                    ->whereNotNull('po_no')
-                    ->pluck('is_email_sent');
-
-                $total = $entries->count();
-
-                $completed = 0;
-                foreach ($entries as $val) {
-                    if ($val == 2) {
-                        $completed++;
-                    }
-                }            
-
-                if ($total === 0) {
-                    // Process Pending
-                    $material_requisition_status[$project->id] = 'none';
-                } elseif ($completed === $total) {
-                    // Process Completed Done – check if completed within deadline
-                    $material_requisition_status[$project->id] = ($mrf_done_at > $material_requisition_deadline) ? 'red' : 'green';
-                } elseif ($completed > 0) {
-                    // Process Partially Done
-                    $material_requisition_status[$project->id] = 'yellow';
-                } else {
-                    $material_requisition_status[$project->id] = 'none';
-                }
-            }           
-                      
 
             /* ─────────────────────────────────────────────────────────────
              |  Assembly Status
@@ -515,7 +434,6 @@ class DashboardService
             
         );
     }
-
     /* ──────────────────────────────────────────────────────────── */
     private function buildEmpty(): array
     {

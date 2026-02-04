@@ -120,26 +120,6 @@ class InboxService
          ───────────────────────────────────────────────────────────── */
         if ($role === 'Production Superwisor') {
 
-            // 1  Pending Projects (email not sent but PO exists) [Pending MRF (Completed Initial Inspection)]
-            $pendingProjects = DB::table('products_of_projects as pop')
-                ->join('stock_bom_po as sbp', function ($join) {
-                    $join->on('sbp.product_id', '=', 'pop.id')
-                         ->on('sbp.project_id', '=', 'pop.project_id');
-                })
-                ->where('sbp.is_email_sent', 0)
-                ->whereNotNull('sbp.po_no')
-                ->count();        
-
-            // 5  Ready MRF (email sent = 2 but PO exists) [Ready MRF (Full Or Partial)]
-            $readyMRF = DB::table('products_of_projects as pop')
-                ->join('stock_bom_po as sbp', function ($join) {
-                    $join->on('sbp.product_id', '=', 'pop.id')
-                         ->on('sbp.project_id', '=', 'pop.project_id');
-                })
-                ->where('sbp.is_email_sent', 2)
-                ->whereNotNull('sbp.po_no')
-                ->count();           
-
             // 6  Fully Delivered Projects [Orders]
             $deliveredProjects = DB::table('products_of_projects')
                 ->where('delivery', 1)
@@ -181,9 +161,7 @@ class InboxService
                 ->selectRaw('COUNT(DISTINCT pop.project_id) as total')
                 ->value('total');
 
-            $count = $pendingProjects
-                   + $readyMRF
-                   + $deliveredProjects
+            $count = $deliveredProjects
                    + $partialDeliveries
                    + $pdfRequests
                    + $assembledQty
