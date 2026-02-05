@@ -10,20 +10,16 @@ $role = Auth::user()->role;
 
 <div class="menu_mobile menu_mobile_narrow is_opened">
     @if($role != "User" && !preg_match('/^Operator[0-9]*$/', $role))
-
     @php
-        // A Code: 22-12-2025 Start
         $dashboardRoutes = [
             'Admin' => 'AdminDashboard',
             'Assembly Manager' => 'AssemblyManagerDashboard',
             'Quality Engineer' => 'QualityManagerDashboard',
             'Procurement Specialist' => 'ProcurementManagerDashboard',
-            'Sale Manager' => 'ExpectedOrdersDashboard',
             'Production Engineer' => 'ProductionManagerDashboard',
             'Designer Engineer' => 'DesignerEngineerDashboard',
             'Production Superwisor' => 'ProductionSuperwisorDashboard',
             'Operator' => 'OperatorDashboard',
-            'User' => 'UserDashboard',
             'Estimation Manager' => 'EstimationManagerDashboard',
         ];
 
@@ -33,7 +29,6 @@ $role = Auth::user()->role;
 
         // List of all dashboard routes for active state detection
         $allDashboardRoutes = array_values($dashboardRoutes); 
-        // A Code: 22-12-2025 End
     @endphp
 
     <div class="menu_mobile_inner">
@@ -42,7 +37,6 @@ $role = Auth::user()->role;
                 <span class="theme_button_close_icon"></span>
             </a>
 
-            {{-- A Code: 22-12-2025 Start --}}
             <a class="sc_layouts_logo" href="{{ route($dashboardRoute) }}">               
                 <img width="418" 
                     height="224" 
@@ -51,8 +45,6 @@ $role = Auth::user()->role;
                     alt="Wilo Logo"
                     sizes="(max-width: 600px) 100vw, 418px" />
             </a>    
-             {{-- A Code: 22-12-2025 End --}}
-
         </div>
 
         <nav class="menu_mobile_nav_area" itemscope="itemscope" itemtype="">

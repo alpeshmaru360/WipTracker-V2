@@ -83,8 +83,8 @@
 						<thead>
 							<tr>
 								<th scope="col" class="project_table_heading">Qty</th>
-								<th scope="col" class="project_table_heading">Project creation</th>								
-								<th scope="col" class="project_table_heading">Request MRF to warehouse</th>
+								<th scope="col" class="project_table_heading">Project creation</th>		
+								<th scope="col" class="project_table_heading">BOM, drawings</th>						
 								@php
 								// Get unique process names
 								$processNames = $project['productsProcess']
@@ -650,7 +650,5 @@
 		});
 	});
 </script>
-
 <script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.min.js"></script>
-
 @endsection
