@@ -43,12 +43,6 @@
                         <td>{{ $val->projects ? $val->product['description'] : 'N/A' }}</td>                        
                         <td>{{ $val->qty }}</td>
                         <td>{{ $val->projects && $val->projects['estimated_readiness'] ? \Carbon\Carbon::parse($val->projects['estimated_readiness'])->format('d-M-Y') : 'N/A' }}</td>
-                        {{--<td>
-                            <a class="project_check_status pt-1 pb-1 ml-3 {{ !$val->mrf_date_auth ? 'disabled' : '' }}"
-                            href="{{ route('OperatorProductType', ['product_id' => $val->product_id, 'redirect' => 1]) }}">
-                                <i class="p-1 m-1 fa fa-eye project_view_icon"></i>
-                            </a>
-                        </td>--}}
                         <td>
                             <a class="project_check_status pt-1 pb-1 ml-3"
                             href="{{ route('OperatorProductType', ['product_id' => $val->product_id, 'redirect' => 1]) }}">

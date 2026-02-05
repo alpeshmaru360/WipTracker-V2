@@ -155,7 +155,6 @@
                         <th scope="col" class="project_table_heading">BOM, drawings</th>
                         <th scope="col" class="project_table_heading">Check the BOM and place PO</th>                        
                         <th scope="col" class="project_table_heading">Initial Inspection</th>
-                        <th scope="col" class="project_table_heading">Request MRF to warehouse</th>
                         @foreach($processNames as $processName)
                         <th scope="col" class="project_table_heading">{{ $processName }}</th>
                         @endforeach
@@ -197,14 +196,6 @@
                             : '--';
                             @endphp
                             {{ $intailinspectionDate }}
-                        </td>
-                        <td>
-                            @php
-                            $mrfRequestDate = $request_mrf
-                            ? \Carbon\Carbon::parse($request_mrf)->format('d F Y h:i A')
-                            : '--';
-                            @endphp
-                            {{ $mrfRequestDate }}
                         </td>
                         @foreach($processNames as $processName)
                         @php

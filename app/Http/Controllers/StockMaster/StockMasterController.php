@@ -79,8 +79,7 @@ class StockMasterController extends Controller
                             ->whereRaw("CONVERT(purchase_order_table.artical_no USING utf8mb4) = CONVERT(? USING utf8mb4)", [$stock->article_number])
                             ->whereRaw("CONVERT(purchase_order_table.description USING utf8mb4) = CONVERT(? USING utf8mb4)", [$stock->item_desc])
                             ->where(function ($query) {
-                                $query->whereNull('stock_bom_po.mrf_ready_date')
-                                    ->orWhereNull('stock_bom_po.id'); // include rows not in stock_bom_po
+                                $query->WhereNull('stock_bom_po.id'); // include rows not in stock_bom_po
                             })
                             ->where('purchase_order_table.is_initial_inspection_started','!=','1')
                             ->sum('purchase_order_table.quantity');
@@ -204,7 +203,6 @@ class StockMasterController extends Controller
                 'purchase_order.po_number as PurchaseOrderNumber',
                 'purchase_order.project_no as PurchaseOrderProjectNo',
                 'stock_bom_po.po_no as StockBomPONO',
-                'stock_bom_po.mrf_ready_date as StockBomMRFReadyDate',
                 'stock_bom_po.description as StockBomItemDesc',
                 'stock_bom_po.article_no as StockBomItemArticleNo',
                 'stock_bom_po.project_id as StockBomProjectId',
@@ -220,8 +218,7 @@ class StockMasterController extends Controller
             ->whereRaw("CONVERT(purchase_order_table.artical_no USING utf8mb4) = CONVERT(? USING utf8mb4)", [$articleNumber])
             ->whereRaw("CONVERT(purchase_order_table.description USING utf8mb4) = CONVERT(? USING utf8mb4)", [$itemDesc])
             ->where(function ($query) {
-                $query->whereNull('stock_bom_po.mrf_ready_date')
-                    ->orWhereNull('stock_bom_po.id'); // include unmatched rows
+                $query->WhereNull('stock_bom_po.id'); // include unmatched rows
             })
             ->where('purchase_order_table.is_initial_inspection_started','!=','1')
             ->orderBy('purchase_order_table.id', 'asc')
@@ -342,8 +339,7 @@ class StockMasterController extends Controller
                             ->whereRaw("CONVERT(purchase_order_table.artical_no USING utf8mb4) = CONVERT(? USING utf8mb4)", [$stock->article_number])
                             ->whereRaw("CONVERT(purchase_order_table.description USING utf8mb4) = CONVERT(? USING utf8mb4)", [$stock->item_desc])
                             ->where(function ($query) {
-                                $query->whereNull('stock_bom_po.mrf_ready_date')
-                                    ->orWhereNull('stock_bom_po.id'); // include rows not in stock_bom_po
+                                $query->WhereNull('stock_bom_po.id'); // include rows not in stock_bom_po
                             })
                             ->sum('purchase_order_table.quantity');
 

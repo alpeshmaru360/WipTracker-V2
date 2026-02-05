@@ -293,8 +293,7 @@ Route::namespace('App\Http\Controllers\ProductionManager')->group(function () {
         Route::post('/production-manager/projects/upload-execution-image', [ProductionManagerController::class, 'uploadProjectExecutionImage'])->name('uploadProjectExecutionImage');
         Route::post('/production-manager/projects/delete-execution-image', [ProductionManagerController::class, 'deleteProjectExecutionImage'])->name('deleteProjectExecutionImage');
 
-        // Project Execution MRF, PL, Work Orders
-        Route::get('/production-manager/projects/{projectId}/execution/mrf/list', [ProductionManagerController::class, 'getProjectExecutionMRFList'])->name('getProjectExecutionMRFList');
+        // Project Execution, PL, Work Orders
         Route::get('/production-manager/projects/{projectId}/execution/docs/{type}/{articleNumber?}', [ProductionManagerController::class, 'getProjectExecutionDocs'])->name('getProjectExecutionDocs');
         Route::post('/production-manager/projects/upload-execution-doc', [ProductionManagerController::class, 'uploadProjectExecutionDoc'])->name('uploadProjectExecutionDoc');
         Route::post('/production-manager/projects/delete-execution-doc', [ProductionManagerController::class, 'deleteProjectExecutionDoc'])->name('deleteProjectExecutionDoc');
@@ -383,9 +382,6 @@ Route::namespace('App\Http\Controllers\ProductionSuperwisor')
         Route::get('production-superwisor/inbox', 'ProductionSuperwisorController@inbox')->name('ProductionSuperwisorInbox');
         Route::post('production-superwisor/assign_task', 'ProductionSuperwisorController@assign_task')->name('superwisorAssignTaskToOperator');
         Route::post('production-superwisor/assign_task_operators', 'ProductionSuperwisorController@assign_multiple_operators')->name('superwisorAssignTaskToMultipleOperators');
-        Route::get('/mrf-excel-download', [ProductionSuperwisorController::class, 'mrf_excel_download'])->name('MRFExcelDownload');
-        Route::post('/upload-mrf-file', [ProductionSuperwisorController::class, 'uploadMRFFile'])->name('upload.mrf.file');
-        Route::post('/production-superwisor/send-mrf-email', [ProductionSuperwisorController::class, 'sendMRFEmail'])->name('send.mrf.email');
         Route::post('production-superwisor/show_operator_list', 'ProductionSuperwisorController@showOperatorList')->name('showOperatorList');
         Route::post('/update-approval-status', [ProductionSuperwisorController::class, 'updateApprovalStatus'])->name('update.approval.status');
         Route::post('production-superwisor/uploadPlDoc', 'ProductionSuperwisorController@uploadPlDoc')->name('ProductionSuperwisorUploadPlDoc');
@@ -399,19 +395,6 @@ Route::namespace('App\Http\Controllers\ProductionSuperwisor')
         Route::post('production-superwisor/operator_tracking', 'OperatorTrackingController@index')->name('OperatorTrackingFilter');
         Route::post('production-superwisor/operator_tracking/export-csv', 'OperatorTrackingController@exportCSV')->name('OperatorTracking.export.csv');
         Route::post('/update-production-check', 'ProductionSuperwisorController@updateCheckStatus')->name('UpdateProductionCheckStatus');
-        Route::get('/mrf-excel-download-inspected', [ProductionSuperwisorController::class, 'mrf_excel_download_inspected'])
-            ->name('MRFExcelDownloadInspected');
-
-        Route::get('/mrf-excel-download-not-inspected', [ProductionSuperwisorController::class, 'mrf_excel_download_not_inspected'])
-            ->name('MRFExcelDownloadNotInspected');
-        Route::post('/send-mrf-email-inspected', [ProductionSuperwisorController::class, 'send_mrf_email_inspected'])
-            ->name('SendMRFEmailInspected');
-
-        Route::post('/send-mrf-email-not-inspected', [ProductionSupervisorController::class, 'send_mrf_email_not_inspected'])
-            ->name('SendMRFEmailNotInspected');
-
-        Route::post('/send-mrf-email-from-stock', [ProductionSuperwisorController::class, 'send_mrf_email_from_stock'])
-            ->name('SendMRFEmailFromStock');
     });
 
 Route::namespace('App\Http\Controllers\ProductionSuperwisor')

@@ -21,16 +21,12 @@ use App\Models\QtyOfProduct;
 use App\Mail\WItrackProjectCompleteNotifyProductionTeam;
 use App\Mail\WItrackProjectPartialCompleteNotifyProductionTeam;
 use App\Mail\WItrackProjectFullCompleteNotifyProductionTeam;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\MRFToWarehouseExport;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Models\StockBOMPo;
 use App\Models\StockMasterModule;
-use App\Mail\SendMRFToWarehouse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Services\DashboardService;
-use Illuminate\Support\Facades\Log; // Alpesh Maru Date: 12-12-2025 Code
+use Illuminate\Support\Facades\Log;
 
 class ProductionSuperwisorController extends Controller
 {
@@ -75,202 +71,6 @@ class ProductionSuperwisorController extends Controller
     public function inbox(){
         $page_title = "PROJECT STATUS";
 
-        // Fetch the hours from admin_hours_management
-        $hoursEntry = AdminHoursManagement::where('lable', 'StandardProcessTimes')
-            ->where('key', 'request_mrf_to_warehouse')
-            ->where('is_deleted', 0)
-            ->first();
-        $hours = $hoursEntry ? (int)$hoursEntry->value : 24;
-
-        // Get all products Pending MRF (Completed Initial Inspection)
-        $all_pending_projects = ProductsOfProjects::with('projects')
-            ->select('products_of_projects.*', 'initial_inspection_data.ini_inspection_date')
-            ->join('projects', 'products_of_projects.project_id', '=', 'projects.id')
-            ->leftJoin('initial_inspection_data', function ($join) {
-                $join->on('initial_inspection_data.project_no', '=', 'projects.project_no')
-                    ->on('initial_inspection_data.artical_no', '=', 'products_of_projects.full_article_number')
-                    ->on('initial_inspection_data.description', '=', 'products_of_projects.description');
-            })
-            ->orderBy('products_of_projects.id', 'desc')
-            ->whereExists(function ($query) {
-                $query->select(\DB::raw(1))
-                    ->from('stock_bom_po')
-                    ->whereColumn('stock_bom_po.product_id', 'products_of_projects.id')
-                    ->whereColumn('stock_bom_po.project_id', 'products_of_projects.project_id')
-                    ->where('stock_bom_po.select_option', '!=', 'stock')
-                    ->where('stock_bom_po.is_email_sent', 0);
-            })
-
-            // ->whereNotExists(function ($query) {
-            //     $query->select(\DB::raw(1))
-            //         ->from('stock_bom_po')
-            //         ->whereColumn('stock_bom_po.product_id', 'products_of_projects.id')
-            //         ->whereColumn('stock_bom_po.project_id', 'products_of_projects.project_id')
-            //         ->whereNull('stock_bom_po.po_no');
-            // })
-
-            ->get()
-            ->map(function ($item) use ($hours) {
-                $orderDate = $item->ini_inspection_date ? \Carbon\Carbon::parse($item->ini_inspection_date) : $item->created_at;
-                $item->deadline = $this->calculateDeadline($orderDate, $hours);
-
-                // Get all BOM items for this product
-                $bom_items = DB::table('stock_bom_po')
-                    ->where('product_id', $item->id)
-                    ->where('project_id', $item->project_id)
-                    ->where('is_email_sent', 0)
-                    ->whereNotNull('po_no')
-                    ->where('select_option', '!=', 'stock')
-                    ->get();
-                $project = DB::table('projects')
-                    ->where('id', $item->project_id)
-                    ->first();
-                $project_no = $project ? $project->project_no : null;
-
-                // Count inspected vs not inspected items
-                $inspected_count = 0;
-                $not_inspected_count = 0;
-
-                if ($project_no && $bom_items->isNotEmpty()) {
-                    foreach ($bom_items as $bom_item) {
-                        $inspection_exists = DB::table('initial_inspection_data')
-                            ->where('project_no', $project_no)
-                            ->where('po_number', $bom_item->po_no)
-                            ->whereRaw("REPLACE(artical_no, ' ', '') = REPLACE(?, ' ', '')", [$bom_item->article_no])
-                            ->where('description', 'like', '%' . $bom_item->description . '%')
-                            ->exists();
-                        if ($inspection_exists) {
-                            $inspected_count++;
-                        } else {
-                            $not_inspected_count++;
-                        }
-                    }
-                }
-                $item->inspected_items_count = $inspected_count;
-                $item->not_inspected_items_count = $not_inspected_count;
-                $item->total_items_count = $inspected_count + $not_inspected_count;
-                return $item;
-            });
-
-        // Filter for products that have at least one inspected item (MRF)
-        $pending_project_with_inspection = $all_pending_projects->filter(function ($item) {
-            return $item->inspected_items_count > 0;
-        });
-
-        //
-        $all_items_are_from_stock_pending_mrf = ProductsOfProjects::with('projects')
-            ->orderBy('products_of_projects.id', 'desc')
-            ->get()
-            ->filter(function ($item) use ($hours) {
-
-                // Get ALL BOM items for this product
-                $bom_items_all = DB::table('stock_bom_po')
-                    ->where('product_id', $item->id)
-                    ->where('project_id', $item->project_id)
-                    ->where('is_email_sent', 0)
-                    ->whereNotNull('po_no')
-                    ->get();
-
-                // If no BOM items exist → skip
-                if ($bom_items_all->isEmpty()) {
-                    return false;
-                }
-
-                // TRUE only when every item is stock
-                $all_stock = $bom_items_all->every(function ($bom) {
-                    return $bom->select_option === 'stock';
-                });
-
-                if ($all_stock) {
-
-                    // Assign processed_at from FIRST BOM item
-                    $item->processed_at = $bom_items_all->first()->processed_at;
-
-                    // Order date = processed_at OR created_at fallback
-                    $orderDate = $item->processed_at
-                        ? \Carbon\Carbon::parse($item->processed_at)
-                        : $item->created_at;
-
-                    // Calculate deadline using your existing method
-                    $item->deadline = $this->calculateDeadline($orderDate, $hours);
-
-                    return true;
-                }
-
-                return false;
-            });
-        //
-
-        // Filter for products that have at least one non-inspected item (MRF)
-        $pending_project_without_inspection = $all_pending_projects->filter(function ($item) {
-            return $item->not_inspected_items_count > 0;
-        });
-
-        // Separate into two collections
-        $pending_project_ready = $all_pending_projects->filter(function ($item) {
-            return $item->all_items_ready === true;
-        });
-
-        $pending_project_not_ready = $all_pending_projects->filter(function ($item) {
-            return $item->all_items_ready === false;
-        });
-
-        $processing_mrf = ProductsOfProjects::with('projects')
-            ->select('products_of_projects.*', 'initial_inspection_data.ini_inspection_date')
-            ->join('projects', 'products_of_projects.project_id', '=', 'projects.id')
-            ->leftJoin('initial_inspection_data', function ($join) {
-                $join->on('initial_inspection_data.project_no', '=', 'projects.project_no')
-                    ->on('initial_inspection_data.artical_no', '=', 'products_of_projects.full_article_number')
-                    ->on('initial_inspection_data.description', '=', 'products_of_projects.description');
-            })
-            ->orderBy('products_of_projects.id', 'desc')
-            ->whereExists(function ($query) {
-                $query->select(\DB::raw(1))
-                    ->from('stock_bom_po')
-                    ->whereColumn('stock_bom_po.product_id', 'products_of_projects.id')
-                    ->whereColumn('stock_bom_po.project_id', 'products_of_projects.project_id')
-                    ->where('stock_bom_po.is_email_sent', 1)
-                    ->whereNotNull('stock_bom_po.po_no');
-            })
-            ->get()
-            ->map(function ($item) use ($hours) {
-                $orderDate = $item->ini_inspection_date ? \Carbon\Carbon::parse($item->ini_inspection_date) : $item->created_at;
-                $item->deadline = $this->calculateDeadline($orderDate, $hours);
-                return $item;
-            });
-
-        $ready_mrf = ProductsOfProjects::with('projects')
-            ->select('products_of_projects.*', 'initial_inspection_data.ini_inspection_date')
-            ->join('projects', 'products_of_projects.project_id', '=', 'projects.id')
-            ->leftJoin('initial_inspection_data', function ($join) {
-                $join->on('initial_inspection_data.project_no', '=', 'projects.project_no')
-                    ->on('initial_inspection_data.artical_no', '=', 'products_of_projects.full_article_number')
-                    ->on('initial_inspection_data.description', '=', 'products_of_projects.description');
-            })
-            ->orderBy('products_of_projects.id', 'desc')
-            ->whereExists(function ($query) {
-                $query->select(\DB::raw(1))
-                    ->from('stock_bom_po')
-                    ->whereColumn('stock_bom_po.product_id', 'products_of_projects.id')
-                    ->whereColumn('stock_bom_po.project_id', 'products_of_projects.project_id')
-                    ->where('stock_bom_po.is_email_sent', 2);
-            })
-            ->whereNotExists(function ($query) {
-                $query->select(\DB::raw(1))
-                    ->from('stock_bom_po')
-                    ->whereColumn('stock_bom_po.product_id', 'products_of_projects.id')
-                    ->whereColumn('stock_bom_po.project_id', 'products_of_projects.project_id')
-                    ->whereNull('stock_bom_po.po_no');
-            })
-            ->get()
-            ->map(function ($item) use ($hours) {
-                $orderDate = $item->ini_inspection_date ? \Carbon\Carbon::parse($item->ini_inspection_date) : $item->created_at;
-                $item->deadline = $this->calculateDeadline($orderDate, $hours);
-                return $item;
-            });
-
-        $all_projects_full = ProductsOfProjects::with('projects')->with('operator')->orderBy('id', 'desc')->where('delivery', '1')->get();
-        $all_projects_partials = ProductsOfProjects::with('projects')->with('operator')->orderBy('id', 'desc')->where('delivery', '2')->get();
         $operators = User::whereIn('role', ['Wilo Operator', '3rd Party Operator'])->get();
 
         $completed_process_of_assembly_products_qty_wise = QtyOfProduct::where('is_qty_product_assembled', '1')
@@ -304,7 +104,7 @@ class ProductionSuperwisorController extends Controller
             })
             ->orderBy('id', 'desc')
             ->groupBy('project_id')
-            ->get();        
+            ->get();
 
         $upload_pl_partial_dilivery_req = DB::table('qty_of_products')
             ->select(
@@ -335,9 +135,10 @@ class ProductionSuperwisorController extends Controller
 
         $completed_projects = Project::whereNull('deleted_at')->where('status', '2')->get();
 
+        $all_projects_full = ProductsOfProjects::with('projects')->with('operator')->orderBy('id', 'desc')->where('delivery', '1')->get();
+        $all_projects_partials = ProductsOfProjects::with('projects')->with('operator')->orderBy('id', 'desc')->where('delivery', '2')->get();
+
         return view('production_superwisor.inbox', compact(
-            'pending_project_with_inspection',
-            'pending_project_without_inspection',
             'page_title',
             'operators',
             'all_projects_full',
@@ -346,586 +147,9 @@ class ProductionSuperwisorController extends Controller
             'upload_pl_req',
             'completed_projects',
             'completed_process_of_assembly_products_qty_wise',
-            'ready_mrf',
             'upload_pl_partial_dilivery_req',
-            'processing_mrf',
-            'pendingNameplateProductCreationAsPerQtyWise',
-            'all_items_are_from_stock_pending_mrf'
+            'pendingNameplateProductCreationAsPerQtyWise'
         ));
-    }
-
-    // Download Excel for COMPLETED initial inspection items
-    public function mrf_excel_download_inspected(Request $request){
-        $articleNumber = $request->input('article_number');
-        $description = $request->input('description');
-        $qty = $request->input('qty');
-        $projectNo = $request->input('project_no'); // Add project number parameter
-
-        // Fetch project_id using project number
-        $project = Project::where('project_no', $projectNo)->first();
-
-        if (!$project) {
-            return response()->json(['error' => 'Project not found'], 404);
-        }
-
-        $projectId = $project->id;
-
-        // Now use the projectId in the product query
-        $product = ProductsOfProjects::where('full_article_number', $articleNumber)
-            ->where('description', $description)
-            ->where('qty', $qty)
-            ->where('project_id', $projectId) // Add this condition
-            ->first();
-
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
-
-        $productId = $product->id;
-
-        $sanitizedArticleNumber = preg_replace('/[^A-Za-z0-9_-]/', '_', $articleNumber);
-        if($request->all_item_from_stock == false){
-            $fileName = "MRF_Inspected_{$project->project_no}_{$sanitizedArticleNumber}.xlsx";
-        }
-        else{
-            $fileName = "MRF_From_Stock_{$project->project_no}_{$sanitizedArticleNumber}.xlsx";
-        }
-
-        $templatePath = public_path('storage/templates/MRF_to_warehouse.xlsx');
-
-        return Excel::download(
-            new MRFToWarehouseExport($productId, $projectId, 'inspected'),
-            $fileName,
-            \Maatwebsite\Excel\Excel::XLSX,
-            ['template' => $templatePath]
-        );
-    }
-
-    public function uploadMRFFile(Request $request){
-        $validator = Validator::make($request->all(), [
-            'mrf_file' => 'required|mimes:xlsx|max:2048',
-            'product_id' => 'required|integer|exists:products_of_projects,id',
-            'project_id' => 'required|integer|exists:projects,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
-        }
-
-        $file = $request->file('mrf_file');
-        $productId = $request->input('product_id');
-        $projectId = $request->input('project_id');
-
-        // Get product and project details
-        $product = ProductsOfProjects::findOrFail($productId);
-        $project = Project::findOrFail($projectId);
-        $articleNumber = $product->full_article_number;
-        $projectNo = $project->project_no;
-
-        // Sanitize article number for filename matching
-        $sanitizedArticleNumber = preg_replace('/[^A-Za-z0-9_-]/', '_', $articleNumber);
-
-        // Validate filename - accept multiple formats
-        $fileName = $file->getClientOriginalName();
-
-        // Expected filename patterns
-        $expectedPatterns = [
-            "MRF_{$projectNo}_{$sanitizedArticleNumber}.xlsx",              // Original format
-            "MRF_Inspected_{$projectNo}_{$sanitizedArticleNumber}.xlsx",    // Inspected format
-            "MRF_Pending_{$projectNo}_{$sanitizedArticleNumber}.xlsx",      // Pending format
-        ];
-
-        $isValidFileName = false;
-        foreach ($expectedPatterns as $pattern) {
-            if ($fileName === $pattern) {
-                $isValidFileName = true;
-                break;
-            }
-        }
-
-        if (!$isValidFileName) {
-            return response()->json([
-                'success' => false,
-                'message' => "Uploaded file name does not match expected format. Expected one of: " .
-                    "MRF_{$projectNo}_{$sanitizedArticleNumber}.xlsx OR " .
-                    "MRF_Inspected_{$projectNo}_{$sanitizedArticleNumber}.xlsx OR " .
-                    "MRF_Pending_{$projectNo}_{$sanitizedArticleNumber}.xlsx"
-            ], 400);
-        }
-
-        try {
-            // Load spreadsheet
-            $spreadsheet = IOFactory::load($file->getPathname());
-            $sheet = $spreadsheet->getActiveSheet();
-
-            $startRow = 12;
-            $slColumn = 'B';
-            $articleNoColumn = 'C';
-            $descriptionColumn = 'E';
-            $quantityColumn = 'H';
-            $poNoColumn = 'J';
-            $boeColumn = 'K'; // BOE column mapping
-            $maxRows = 10000;
-
-            // Fetch all old BOM items before update
-            $oldItems = StockBOMPo::where('product_id', $productId)
-                ->where('project_id', $projectId)
-                ->get()
-                ->keyBy(function ($item) {
-                    return ($item->article_no ?? '') . '|' . trim($item->description ?? '');
-                });
-
-            $row = $startRow;
-            $updatedCount = 0;
-            $createdCount = 0;
-
-            while (
-                $row < $maxRows &&
-                $sheet->getCell($slColumn . $row)->getValue() &&
-                $sheet->getCell($articleNoColumn . $row)->getValue()
-            ) {
-                $sl = $sheet->getCell($slColumn . $row)->getValue();
-                $articleNo = $sheet->getCell($articleNoColumn . $row)->getValue();
-                $description = trim($sheet->getCell($descriptionColumn . $row)->getValue());
-                $quantity = $sheet->getCell($quantityColumn . $row)->getValue();
-                $poNo = $sheet->getCell($poNoColumn . $row)->getValue();
-                $boe = $sheet->getCell($boeColumn . $row)->getValue();
-
-                $compositeKey = ($articleNo ?? '') . '|' . ($description ?? '');
-
-                if ($sl && $articleNo && $description && $quantity !== null) {
-                    if ($oldItems->has($compositeKey)) {
-                        // Update existing record
-                        $existingItem = $oldItems[$compositeKey];
-                        $dataToUpdate = [];
-
-                        if ($articleNo !== null) $dataToUpdate['article_no'] = $articleNo;
-                        if ($description !== null) $dataToUpdate['description'] = $description;
-                        if ($quantity !== null) $dataToUpdate['item_quantity'] = $quantity;
-                        if ($poNo !== null) $dataToUpdate['po_no'] = $poNo;
-                        if ($boe !== null) $dataToUpdate['boe'] = $boe;
-
-                        if (!empty($dataToUpdate)) {
-                            $existingItem->update($dataToUpdate);
-                            $updatedCount++;
-                        }
-                    } else {
-                        // Create new record
-                        StockBOMPo::create([
-                            'product_id' => $productId,
-                            'project_id' => $projectId,
-                            'article_no' => $articleNo ?: null,
-                            'description' => $description,
-                            'item_quantity' => $quantity,
-                            'po_no' => $poNo ?: null,
-                            'boe' => $boe ?: null,
-                            'po_added' => null,
-                            'select_option' => null,
-                        ]);
-                        $createdCount++;
-                    }
-                }
-
-                $row++;
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => "MRF file uploaded successfully! Updated: {$updatedCount}, Created: {$createdCount}"
-            ]);
-        } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error reading Excel file: ' . $e->getMessage()
-            ], 500);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error processing file: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    // Download Excel for PENDING initial inspection items
-    public function mrf_excel_download_not_inspected(Request $request){
-        $articleNumber = $request->input('article_number');
-        $description = $request->input('description');
-        $qty = $request->input('qty');
-        $projectNo = $request->input('project_no'); // Add project number parameter
-
-        // Fetch project_id using project number
-        $project = Project::where('project_no', $projectNo)->first();
-
-        if (!$project) {
-            return response()->json(['error' => 'Project not found'], 404);
-        }
-
-        $projectId = $project->id;
-
-        // Now use the projectId in the product query
-        $product = ProductsOfProjects::where('full_article_number', $articleNumber)
-            ->where('description', $description)
-            ->where('qty', $qty)
-            ->where('project_id', $projectId) // Add this condition
-            ->first();
-
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
-
-        $productId = $product->id;
-
-        $sanitizedArticleNumber = preg_replace('/[^A-Za-z0-9_-]/', '_', $articleNumber);
-        $fileName = "MRF_Pending_{$project->project_no}_{$sanitizedArticleNumber}.xlsx";
-
-        $templatePath = public_path('storage/templates/MRF_to_warehouse.xlsx');
-
-        return Excel::download(
-            new MRFToWarehouseExport($productId, $projectId, 'not_inspected'),
-            $fileName,
-            \Maatwebsite\Excel\Excel::XLSX,
-            ['template' => $templatePath]
-        );
-    }
-
-    // Send email for COMPLETED inspection items
-    public function send_mrf_email_inspected(Request $request){
-        $productId = $request->input('product_id');
-        $projectId = $request->input('project_id');
-
-        $project = Project::find($projectId);
-        if (!$project) {
-            return response()->json(['error' => 'Project not found'], 404);
-        }
-
-        $product = ProductsOfProjects::find($productId);
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
-
-        $project_no = $project->project_no;
-
-        // Get only inspected items
-        $inspected_items = DB::table('stock_bom_po')
-            ->where('product_id', $productId)
-            ->where('project_id', $projectId)
-            ->where('is_email_sent', 0)
-            ->whereNotNull('po_no')
-            // ->where('select_option', '!=', 'stock')
-            ->whereExists(function ($query) use ($project_no) {
-                $query->select(DB::raw(1))
-                    ->from('initial_inspection_data')
-                    ->where('project_no', $project_no)
-                    ->whereColumn('po_number', 'stock_bom_po.po_no')
-                    ->whereRaw("REPLACE(artical_no, ' ', '') = REPLACE(stock_bom_po.article_no, ' ', '')")
-                    ->whereRaw("description LIKE CONCAT('%', stock_bom_po.description, '%')");
-            })
-            ->get();
-
-        if ($inspected_items->isEmpty()) {
-            return response()->json(['error' => 'No inspected items found'], 404);
-        }
-
-        try {
-            // Generate Excel with inspected items only
-            $sanitizedArticleNumber = preg_replace('/[^A-Za-z0-9_-]/', '_', $product->full_article_number);
-            $fileName = "MRF_Inspected_{$project->project_no}_{$sanitizedArticleNumber}.xlsx";
-
-            // Store in public disk
-            $filePath = 'temp/' . $fileName;
-
-            // Make sure temp directory exists
-            if (!Storage::disk('public')->exists('temp')) {
-                Storage::disk('public')->makeDirectory('temp');
-            }
-
-            // Generate and store Excel file - CORRECTED: Use 'public' as disk name, not XLSX
-            Excel::store(
-                new MRFToWarehouseExport($productId, $projectId, 'inspected'),
-                $filePath,
-                'public'  // Disk name, not file type
-            );
-
-            // Get full path for email attachment
-            $fullFilePath = storage_path('app/public/' . $filePath);
-
-            // Fetch Warehouse Person emails
-            $warehouseUsers = User::where('role', 'Warehouse Person')->pluck('email')->toArray();
-
-            if (empty($warehouseUsers)) {
-                return response()->json(['error' => 'No Warehouse Person users found.'], 404);
-            }
-
-            $batchId = uniqid('mrf_', true);
-                DB::table('stock_bom_po')
-                ->where('product_id', $productId)
-                ->where('project_id', $projectId)
-                // Exclude already emailed records
-                ->where(function ($exclude) {
-                    $exclude->where('is_email_sent', '!=', 1)
-                            ->orWhereNull('mrf_email_sent_date');
-                })
-                ->where(function ($mainQuery) use ($project_no) {
-                    $mainQuery
-                        // Condition 1: Inspected items
-                        ->whereExists(function ($query) use ($project_no) {
-                            $query->select(DB::raw(1))
-                                ->from('initial_inspection_data')
-                                ->where('project_no', $project_no)
-                                ->whereColumn('po_number', 'stock_bom_po.po_no')
-                                ->whereRaw("REPLACE(artical_no, ' ', '') = REPLACE(stock_bom_po.article_no, ' ', '')")
-                                ->whereRaw("description LIKE CONCAT('%', stock_bom_po.description, '%')");
-                        })
-                        // OR Condition 2: Items where select_option = 'stock' and is_email_sent = 0
-                        ->orWhere(function ($orQuery) {
-                            $orQuery->where('select_option', '=', 'stock')
-                                    ->where('is_email_sent', 0);
-                        });
-                })
-                ->update([
-                    'is_email_sent' => 1,
-                    'mrf_email_sent_date' => now(),
-                    'mrf_email_batch' => $batchId,
-                ]);
-
-                // Prepare email data
-            $emailDataBase = [
-                'project_no' => $project->project_no,
-                'project_name' => $project->project_name,
-                'description' => $product->description,
-                'full_article_number' => $product->full_article_number,
-                'product_id' => $productId,
-                'project_id' => $projectId,
-                'batch' => $batchId,
-            ];
-
-            // Send email to each Warehouse Person
-            foreach ($warehouseUsers as $email) {
-                $name = User::where('email', $email)->value('name') ?? '';
-                $emailData = array_merge($emailDataBase, [
-                    'recipient_email' => $email,
-                    'recipient_name'  => $name,
-                ]);
-                Log::info('MRF File Full Path for Email Attachment: ' . $fullFilePath);
-                Mail::to($email)->send(new SendMRFToWarehouse($emailData, $fullFilePath));
-            }
-                
-           // Delete temp file
-            Storage::disk('public')->delete($filePath);
-            Project::where('id', $projectId)->update(['status' => 1]);
-            return response()->json(['success' => true, 'message' => 'Email sent successfully for inspected items!']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to send email: ' . $e->getMessage()], 500);
-        }
-    }
-
-    // Send email for COMPLETED inspection items
-    public function send_mrf_email_from_stock(Request $request){
-        $productId = $request->input('product_id');
-        $projectId = $request->input('project_id');
-
-        $project = Project::find($projectId);
-        if (!$project) {
-            return response()->json(['error' => 'Project not found'], 404);
-        }
-
-        $product = ProductsOfProjects::find($productId);
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
-
-        $project_no = $project->project_no;
-
-        // Get only from stock items
-        $mrf_from_stock_items = DB::table('stock_bom_po')
-            ->where('product_id', $productId)
-            ->where('project_id', $projectId)
-            ->where('is_email_sent', 0)
-            ->whereNotNull('po_no')
-            ->get();
-
-        if ($mrf_from_stock_items->isEmpty()) {
-            return response()->json(['error' => 'No from stock items found'], 404);
-        }
-
-        try {
-            // Generate Excel with inspected items only
-            $sanitizedArticleNumber = preg_replace('/[^A-Za-z0-9_-]/', '_', $product->full_article_number);
-            $fileName = "MRF_Inspected_{$project->project_no}_{$sanitizedArticleNumber}.xlsx";
-
-            // Store in public disk
-            $filePath = 'temp/' . $fileName;
-
-            // Make sure temp directory exists
-            if (!Storage::disk('public')->exists('temp')) {
-                Storage::disk('public')->makeDirectory('temp');
-            }
-
-            // Generate and store Excel file - CORRECTED: Use 'public' as disk name, not XLSX
-            Excel::store(
-                new MRFToWarehouseExport($productId, $projectId, 'from_stock'),
-                $filePath,
-                'public'  // Disk name, not file type
-            );
-
-            // Get full path for email attachment
-            $fullFilePath = storage_path('app/public/' . $filePath);
-
-            // Fetch Warehouse Person emails
-            $warehouseUsers = User::where('role', 'Warehouse Person')->pluck('email')->toArray();
-
-            if (empty($warehouseUsers)) {
-                return response()->json(['error' => 'No Warehouse Person users found.'], 404);
-            }
-
-            $batchId = uniqid('mrf_', true);
-                DB::table('stock_bom_po')
-                ->where('product_id', $productId)
-                ->where('project_id', $projectId)
-                ->update([
-                    'is_email_sent' => 1,
-                    'mrf_email_sent_date' => now(),
-                    'mrf_email_batch' => $batchId,
-                ]);
-
-                // Prepare email data
-            $emailDataBase = [
-                'project_no' => $project->project_no,
-                'project_name' => $project->project_name,
-                'description' => $product->description,
-                'full_article_number' => $product->full_article_number,
-                'product_id' => $productId,
-                'project_id' => $projectId,
-                'batch' => $batchId,
-            ];
-
-            // Send email to each Warehouse Person
-            foreach ($warehouseUsers as $email) {
-                $name = User::where('email', $email)->value('name') ?? '';
-                $emailData = array_merge($emailDataBase, [
-                    'recipient_email' => $email,
-                    'recipient_name'  => $name,
-                ]);
-                Mail::to($email)->send(new SendMRFToWarehouse($emailData, $fullFilePath));
-            }
-                
-           // Delete temp file
-            Storage::disk('public')->delete($filePath);
-            Project::where('id', $projectId)->update(['status' => 1]);
-            return response()->json(['success' => true, 'message' => 'Email sent successfully for from stock items!']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to send email: ' . $e->getMessage()], 500);
-        }
-    }
-
-    // Send email for PENDING inspection items
-    public function send_mrf_email_not_inspected(Request $request){
-        $productId = $request->input('product_id');
-        $projectId = $request->input('project_id');
-
-        $project = Project::find($projectId);
-        if (!$project) {
-            return response()->json(['error' => 'Project not found'], 404);
-        }
-
-        $product = ProductsOfProjects::find($productId);
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
-
-        $project_no = $project->project_no;
-
-        // Get only NOT inspected items
-        $not_inspected_items = DB::table('stock_bom_po')
-            ->where('product_id', $productId)
-            ->where('project_id', $projectId)
-            ->where('is_email_sent', 0)
-            ->whereNotNull('po_no')
-            ->where('select_option', '!=', 'stock')
-            ->whereNotExists(function ($query) use ($project_no) {
-                $query->select(DB::raw(1))
-                    ->from('initial_inspection_data')
-                    ->where('project_no', $project_no)
-                    ->whereColumn('po_number', 'stock_bom_po.po_no')
-                    ->whereRaw("REPLACE(artical_no, ' ', '') = REPLACE(stock_bom_po.article_no, ' ', '')")
-                    ->whereRaw("description LIKE CONCAT('%', stock_bom_po.description, '%')");
-            })
-            ->get();
-
-        if ($not_inspected_items->isEmpty()) {
-            return response()->json(['error' => 'No pending inspection items found'], 404);
-        }
-
-        try {
-            // Generate Excel with not inspected items only
-            $sanitizedArticleNumber = preg_replace('/[^A-Za-z0-9_-]/', '_', $product->full_article_number);
-            $fileName = "MRF_Pending_{$project->project_no}_{$sanitizedArticleNumber}.xlsx";
-
-            // Store in public disk
-            $filePath = 'temp/' . $fileName;
-
-            // Make sure temp directory exists
-            if (!Storage::disk('public')->exists('temp')) {
-                Storage::disk('public')->makeDirectory('temp');
-            }
-
-            // Generate and store Excel file - CORRECTED: Use 'public' as disk name
-            Excel::store(
-                new MRFToWarehouseExport($productId, $projectId, 'not_inspected'),
-                $filePath,
-                'public'  // Disk name, not file type
-            );
-
-            // Get full path for email attachment
-            $fullFilePath = storage_path('app/public/' . $filePath);
-
-            // Fetch Warehouse Person emails
-            $warehouseUsers = User::where('role', 'Warehouse Person')->pluck('email')->toArray();
-
-            if (empty($warehouseUsers)) {
-                return response()->json(['error' => 'No Warehouse Person users found.'], 404);
-            }
-
-            // Prepare email data
-            $emailDataBase = [
-                'project_no' => $project->project_no,
-                'project_name' => $project->project_name,
-                'description' => $product->description,
-                'full_article_number' => $product->full_article_number,
-                'product_id' => $productId,
-                'project_id' => $projectId,
-            ];
-
-            // Send email to each Warehouse Person
-            foreach ($warehouseUsers as $email) {
-                $emailData = array_merge($emailDataBase, ['recipient_email' => $email]);
-                Mail::to($email)->send(new SendMRFToWarehouse($emailData, $fullFilePath));
-            }
-
-            // Mark these specific items as email sent
-            DB::table('stock_bom_po')
-                ->where('product_id', $productId)
-                ->where('project_id', $projectId)
-                ->where('is_email_sent', 0)
-                ->whereNotNull('po_no')
-                ->where('select_option', '!=', 'stock')
-                ->whereNotExists(function ($query) use ($project_no) {
-                    $query->select(DB::raw(1))
-                        ->from('initial_inspection_data')
-                        ->where('project_no', $project_no)
-                        ->whereColumn('po_number', 'stock_bom_po.po_no')
-                        ->whereRaw("REPLACE(artical_no, ' ', '') = REPLACE(stock_bom_po.article_no, ' ', '')")
-                        ->whereRaw("description LIKE CONCAT('%', stock_bom_po.description, '%')");
-                })
-                ->update(['is_email_sent' => 1, 'mrf_email_sent_date' => now()]);
-
-            // Delete temp file
-            Storage::disk('public')->delete($filePath);
-
-            return response()->json(['success' => true, 'message' => 'Email sent successfully for pending inspection items!']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to send email: ' . $e->getMessage()], 500);
-        }
     }
 
     public function updateCheckStatus(Request $request){
@@ -1009,41 +233,6 @@ class ProductionSuperwisorController extends Controller
         ]);
     }
 
-    public function mrf_excel_download(Request $request){
-        $articleNumber = $request->input('article_number');
-        $description = $request->input('description');
-        $qty = $request->input('qty');
-
-        // Find the product in products_of_projects
-        $product = ProductsOfProjects::where('full_article_number', $articleNumber)
-            ->where('description', $description)
-            ->where('qty', $qty)
-            ->first();
-
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
-
-        $productId = $product->id;
-        $projectId = $product->project_id;
-
-        // Get project number
-        $project = Project::find($projectId);
-        if (!$project) {
-            return response()->json(['error' => 'Project not found'], 404);
-        }
-
-        // Sanitize article number to remove invalid filename characters
-        $sanitizedArticleNumber = preg_replace('/[^A-Za-z0-9_-]/', '_', $articleNumber);
-
-        // Construct filename
-        $fileName = "MRF_{$project->project_no}_{$sanitizedArticleNumber}.xlsx";
-
-        // Use the template file
-        $templatePath = public_path('storage/templates/MRF_to_warehouse.xlsx');
-        return Excel::download(new MRFToWarehouseExport($productId, $projectId), $fileName, \Maatwebsite\Excel\Excel::XLSX, ['template' => $templatePath]);
-    }
-
     public function showOperatorList(Request $request){
         $projectId = $request->input('project_id');
         $productId = $request->input('product_id');
@@ -1113,188 +302,6 @@ class ProductionSuperwisorController extends Controller
         return response()->json(['success' => true, 'message' => 'PDF Rejected Successfully.']);
     }
 
-    public function sendMRFEmail(Request $request){
-        $validator = Validator::make($request->all(), [
-            'product_id' => 'required|integer|exists:products_of_projects,id',
-            'project_id' => 'required|integer|exists:projects,id'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
-        }
-
-        $productId = $request->input('product_id');
-        $projectId = $request->input('project_id');
-
-        // Fetch product and project details
-        $product = ProductsOfProjects::findOrFail($productId);
-        $project = Project::findOrFail($projectId);
-
-        // Fetch Warehouse Person emails
-        $warehouseUsers = User::where('role', 'Warehouse Person')->pluck('email')->toArray();
-        if (empty($warehouseUsers)) {
-            return response()->json(['success' => false, 'message' => 'No Warehouse Person users found.'], 404);
-        }
-
-        try {
-            // Generate the Excel file
-            $sanitizedArticleNumber = preg_replace('/[^A-Za-z0-9_-]/', '_', $product->full_article_number);
-            $fileName = "MRF_{$project->project_no}_{$sanitizedArticleNumber}.xlsx";
-            $excelPath = storage_path('app/public/' . $fileName);
-
-            // Ensure the directory exists
-            $directory = dirname($excelPath);
-            if (!File::exists($directory)) {
-                File::makeDirectory($directory, 0755, true);
-            }
-
-            // Generate and store the Excel file
-            Excel::store(new MRFToWarehouseExport($productId, $projectId), 'public/' . $fileName, 'local', \Maatwebsite\Excel\Excel::XLSX);
-
-            // Prepare base email data
-            $emailDataBase = [
-                'project_no' => $project->project_no,
-                'project_name' => $project->project_name,
-                'description' => $product->description,
-                'full_article_number' => $product->full_article_number,
-                'product_id' => $productId,
-                'project_id' => $projectId,
-            ];
-
-            // Send email to each Warehouse Person
-            foreach ($warehouseUsers as $email) {
-                $emailData = array_merge($emailDataBase, ['recipient_email' => $email]);
-                Mail::to($email)->send(new SendMRFToWarehouse($emailData, $excelPath));
-            }
-
-            // Update is_email_sent and mrf_email_sent_date in stock_bom_po
-            StockBOMPo::where('product_id', $productId)
-                ->where('project_id', $projectId)
-                ->update([
-                    'is_email_sent' => 1,
-                    'mrf_email_sent_date' => now(),
-                ]);
-
-            Project::where('id', $projectId)->update(['status' => 1]);
-
-            // Clean up the Excel file
-            File::delete($excelPath);
-
-            return response()->json(['success' => true, 'message' => 'Email sent successfully to Warehouse Persons!']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Error sending email: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function markMaterialsReady(Request $request){
-        $productId = $request->query('product_id');
-        $projectId = $request->query('project_id');
-        $email = $request->query('email');
-        $batch_order_mrf_email = $request->query('batch');
-
-        // Validate input
-        $validator = Validator::make($request->query(), [
-            'product_id' => 'required|integer|exists:products_of_projects,id',
-            'project_id' => 'required|integer|exists:projects,id',
-            'email' => 'required|email|exists:users,email',
-            'batch' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return view('production_superwisor.materials_ready_response', [
-                'message' => $validator->errors()->first(),
-                'status' => 'error'
-            ]);
-        }
-
-        try {
-            // Check if already marked as ready (is_email_sent = 2)
-            $stockBOM = StockBOMPo::where('product_id', $productId)
-                ->where('project_id', $projectId)
-                ->where('is_email_sent', 2)
-                ->where('mrf_email_batch', $batch_order_mrf_email)
-                ->first();
-
-            if ($stockBOM) {
-                // Fetch the user who confirmed the MRF
-                $confirmedByUser = User::where('email', $stockBOM->confirmed_by_email)->first();
-                $confirmedByName = $confirmedByUser ? $confirmedByUser->name : 'Unknown User';
-
-                return view('production_superwisor.materials_ready_response', [
-                    'message' => "This MRF has already been marked as ready by {$confirmedByName}.",
-                    'status' => 'already_responded'
-                ]);
-            }
-
-            // Update is_email_sent to 2, confirmed_by_email, and mrf_ready_date
-            $updated = StockBOMPo::where('product_id', $productId)
-                ->where('project_id', $projectId)
-                ->where('is_email_sent', 1)
-                ->where('mrf_email_batch', $batch_order_mrf_email)
-                ->update([
-                    'is_email_sent' => 2,
-                    'confirmed_by_email' => $email,
-                    'mrf_ready_date' => now(),
-                ]);
-
-            if ($updated) {
-                // Fetch all stock_bom_po records for this product and project to check each item individually
-                $bomRecords = StockBOMPo::where('product_id', $productId)
-                    ->where('project_id', $projectId)
-                    ->get();
-
-                foreach ($bomRecords as $bomRecord) {
-                    if ($bomRecord->is_email_sent == 2 && !is_null($bomRecord->mrf_ready_date) && !is_null($bomRecord->confirmed_by_email) && $bomRecord->select_option != 'stock') {
-                        // Fetch available_qty from stock_master_module using description and article_no for this specific item
-                        $stockMasterRecord = DB::table('stock_master_module')
-                            ->where('item_desc', $bomRecord->description)
-                            ->where('article_number', $bomRecord->article_no)
-                            ->first();
-
-                        // Replace hold_qty with total_required_quantity for this specific item
-                        $bomRecord->update(['hold_qty' => $bomRecord->total_required_quantity]);
-
-                        // Update stock_master_module after stock_bom_po changes are complete
-                        $stockMasterRecord = DB::table('stock_master_module')
-                            ->where('item_desc', $bomRecord->description)
-                            ->where('article_number', $bomRecord->article_no)
-                            ->first();
-
-                        if ($stockMasterRecord) {
-                            $newHoldQty = ($stockMasterRecord->hold_qty ?? 0) + $bomRecord->hold_qty;
-                            $newAvailableQty = $stockMasterRecord->available_qty - $bomRecord->hold_qty;
-                            DB::table('stock_master_module')
-                                ->where('item_desc', $bomRecord->description)
-                                ->where('article_number', $bomRecord->article_no)
-                                ->update([
-                                    'hold_qty' => $newHoldQty,
-                                    'available_qty' => $newAvailableQty
-                                ]);
-                        }
-                    }
-                }
-            }
-
-            if ($updated) {
-                return view('production_superwisor.materials_ready_response', [
-                    'message' => 'Materials marked as ready successfully!',
-                    'status' => 'success'
-                ]);
-            } else {
-                return view('production_superwisor.materials_ready_response', [
-                    'message' => 'No pending MRF found for this product and project.',
-                    'status' => 'error'
-                ]);
-            }
-        } catch (\Exception $e) {
-            Log::error('Error marking materials ready: ' . $e->getMessage(), ['productId' => $productId, 'projectId' => $projectId, 'email' => $email]);
-            return view('production_superwisor.materials_ready_response', [
-                'message' => 'Error processing request: ' . $e->getMessage(),
-                'status' => 'error'
-            ]);
-        }
-    }
-
     public function view_project_details(Request $request){
         $projectId = $request->project_id;
 
@@ -1317,7 +324,7 @@ class ProductionSuperwisorController extends Controller
     
         // Update Project table
         Project::where('id', $project->id)->update([
-            'PL_PDF_path' => $project->PL_PDF_path, // Already set in full order upload
+            'PL_PDF_path' => $project->PL_PDF_path,
             'actual_readiness' => now(),
             'pl_uploaded_date' => now(),
             'status' => 2
@@ -1341,19 +348,11 @@ class ProductionSuperwisorController extends Controller
                 'redirect_link' => $redirectLink,
             ];
             try {
-
-                // Alpesh Maru Date: 13-12-2025 Code Start
-                
-                //Mail::to($sendEmail->email)->send(new WItrackProjectCompleteNotifyProductionTeam($emailData));
-
                 Log::info("FINAL PATH BEFORE MAIL: " . $fullPLFilePath);
                 Log::info("EXISTS? " . (file_exists($fullPLFilePath) ? 'YES' : 'NO'));
 
                 Mail::to($sendEmail->email)
                     ->send(new WItrackProjectCompleteNotifyProductionTeam($emailData, $fullPLFilePath));
-
-                // Alpesh Maru Date: 13-12-2025 Code End
-
 
             } catch (\Exception $e) {
                 return response()->json([
@@ -1363,7 +362,7 @@ class ProductionSuperwisorController extends Controller
             }
         }
 
-        // Send Witrack API request if witrack_no exists // This is for complete order
+        // Send Witrack API request if witrack_no exists
         if ($project->witrack_no) {
             try {
                 $response = Http::post(route('api.send-project-complete'), [
@@ -1448,12 +447,8 @@ class ProductionSuperwisorController extends Controller
             }
         }
 
-        // Alpesh Maru Date: 12-12-2025 Code Start
-
         // Get full path for email attachment
         $fullPLFilePath = public_path($fullPath);
-
-        // Alpesh Maru Date: 12-12-2025 Code End
 
         // START: Updated logic to update stock_master_module qty and transfer hold_qty to release_qty
         DB::transaction(function () use ($project, $fullOrderProductIds) {
@@ -1496,7 +491,7 @@ class ProductionSuperwisorController extends Controller
             $this->handleProjectCompletion($project, $fullPLFilePath);
         } else {
             Log::info("uploadPlDoc Not isProjectFullyUploaded: " . $fullPLFilePath);
-            // Send full order email to production team & also API to wiTrack project = Email = Tested
+            // Send full order email to production team & also API to wiTrack project
 
             if ($project) {
                 try {
@@ -1523,18 +518,8 @@ class ProductionSuperwisorController extends Controller
                     'redirect_link' => $redirectLink,
                 ];
                 try {
-                    
-
-                    // Alpesh Maru Date: 12-12-2025 Code Start
-                    
-                    // Mail::to($sendEmail->email)->send(new WItrackProjectFullCompleteNotifyProductionTeam($emailData));
-
                     Mail::to($sendEmail->email)
                         ->send(new WItrackProjectFullCompleteNotifyProductionTeam($emailData, $fullPLFilePath));
-
-                    // Alpesh Maru Date: 12-12-2025 Code End
-
-                    
                 } catch (\Exception $e) {
                 }
             }
@@ -1600,12 +585,8 @@ class ProductionSuperwisorController extends Controller
             'pl_uploaded_date' => now(),
         ]);
 
-        // Alpesh Maru Date: 12-12-2025 Code Start
-
         // Get full path for email attachment
         $fullPLFilePath = public_path($fullPath);
-
-        // Alpesh Maru Date: 12-12-2025 Code End
 
         // START: Updated logic for partial stock release
         DB::transaction(function () use ($project, $product) {
@@ -1651,11 +632,11 @@ class ProductionSuperwisorController extends Controller
 
         // Check if all documents are uploaded
         if ($this->isProjectFullyUploaded($project)) {
-            Log::info("uploadPartialPlDoc Not isProjectFullyUploaded: " . $fullPLFilePath);
+            Log::info("uploadPartialPlDoc isProjectFullyUploaded: " . $fullPLFilePath);
             $this->handleProjectCompletion($project, $fullPLFilePath);
         } else {
             Log::info("uploadPartialPlDoc Not isProjectFullyUploaded: " . $fullPLFilePath);
-            // Send partial order email to production team & also API to wiTrack project = Email = Tested
+            // Send partial order email to production team & also API to wiTrack project
             if ($qty) {
                 try {
                     $response = Http::post(route('api.send-project-partial-order-complete'), [
@@ -1684,16 +665,8 @@ class ProductionSuperwisorController extends Controller
                     'product_description' => $product->description,
                 ];
                 try {
-
-                    // Alpesh Maru Date: 12-12-2025 Code Start
-
-                    //Mail::to($sendEmail->email)->send(new WItrackProjectPartialCompleteNotifyProductionTeam($emailData));
-                    
                     Mail::to($sendEmail->email)
-                        ->send(new WItrackProjectPartialCompleteNotifyProductionTeam($emailData, $fullPLFilePath));                        
-
-                    // Alpesh Maru Date: 12-12-2025 Code End
-
+                        ->send(new WItrackProjectPartialCompleteNotifyProductionTeam($emailData, $fullPLFilePath));
                 } catch (\Exception $e) {
                 }
             }

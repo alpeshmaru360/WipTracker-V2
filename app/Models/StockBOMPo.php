@@ -27,9 +27,6 @@ class StockBOMPo extends Model
         'po_no',
         'po_added',
         'boe',
-        'is_email_sent',
-        'mrf_email_sent_date',
-        'mrf_ready_date',
         'processed_at',
         'release_qty', 
     ];

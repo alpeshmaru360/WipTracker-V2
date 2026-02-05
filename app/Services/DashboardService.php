@@ -300,9 +300,7 @@ class DashboardService
             'final_inspection_status',
             'packing_status'          
         );
-
     }
-    
     /* ──────────────────────────────────────────────────────────── */
     private function buildEmpty(): array
     {

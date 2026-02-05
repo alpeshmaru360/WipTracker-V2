@@ -122,7 +122,6 @@
 
                             <ul class="subfolder-project_execution mt-2" style="display: none;">
                                 <li class="list-group-item subfolder-item" data-folder="Images">Images</li>
-                                <li class="list-group-item subfolder-item" data-folder="MRF">MRF</li>
                                 <li class="list-group-item subfolder-item" data-folder="Full_Order_PL">Full Order PL</li>
                                 <li class="list-group-item subfolder-item" data-folder="Partial Order PL">Partial Order PL</li>
                                 <li class="list-group-item subfolder-item" data-folder="Work Orders">Work Orders</li>
@@ -264,21 +263,6 @@
                                         @if($is_quality_login)
                                         <th>Action</th>
                                         @endif
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div id="executionMRFListContainer" style="display: none;">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="executionMRFListTable">
-                                <thead>
-                                    <tr>
-                                        <th>Cart Model</th>
-                                        <th>Item Description</th>
-                                        <th>Article Number</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -718,7 +702,6 @@
             '#executionImagesListContainer',
             '#executionImagesQtyListContainer',
             '#executionImagesContainer',
-            '#executionMRFListContainer',
             '#executionWorkOrdersListContainer',
             '#executionDocsContainer',
             '#qualityFinalInspectionListContainer',
@@ -897,10 +880,6 @@
                 pushToHistory('#executionImagesListContainer');
                 showContainer('#executionImagesListContainer');
                 loadProjectExecutionImageList();
-            } else if (subfolderName === 'MRF') {
-                pushToHistory('#executionMRFListContainer');
-                showContainer('#executionMRFListContainer');
-                loadProjectExecutionMRFList();
             } else if (subfolderName === 'Work Orders') {
                 pushToHistory('#executionWorkOrdersListContainer');
                 showContainer('#executionWorkOrdersListContainer');
@@ -1016,8 +995,6 @@
                 currentArticleNumber = params.articleNumber;
                 currentQtyNo = params.qtyNo;
                 loadProjectExecutionImages();
-            } else if (containerId === '#executionMRFListContainer') {
-                loadProjectExecutionMRFList();
             } else if (containerId === '#executionWorkOrdersListContainer') {
                 loadProjectExecutionWorkOrdersList();
             } else if (containerId === '#executionDocsContainer') {
@@ -1222,24 +1199,6 @@
         });
         showContainer('#executionImagesContainer');
         loadProjectExecutionImages();
-
-        setTimeout(() => {
-            isNavigating = false;
-        }, 300);
-    });
-
-    $(document).off('click', '.view-execution-mrf').on('click', '.view-execution-mrf', function(e) {
-        e.stopPropagation();
-        if (isNavigating) return;
-        isNavigating = true;
-
-        currentArticleNumber = $(this).data('article');
-        pushToHistory('#executionDocsContainer', {
-            type: 'MRF',
-            articleNumber: currentArticleNumber
-        });
-        showContainer('#executionDocsContainer');
-        loadProjectExecutionDocs('MRF');
 
         setTimeout(() => {
             isNavigating = false;
@@ -1787,11 +1746,11 @@
             return;
         }
 
-        var type = $('#executionDocsContainer').data('type') || 'MRF';
+        var type = $('#executionDocsContainer').data('type') ;
         var formData = new FormData();
         formData.append('project_id', currentProjectId);
         formData.append('type', type);
-        if ((type === 'MRF' || type === 'Work Orders') && currentArticleNumber) {
+        if ((type === 'Work Orders') && currentArticleNumber) {
             formData.append('article_number', currentArticleNumber);
         }
         formData.append('document', fileInput.files[0]);
@@ -1821,7 +1780,7 @@
         e.stopPropagation();
         var $row = $(this).closest('tr');
         var filePath = $(this).data('path');
-        var type = $('#executionDocsContainer').data('type') || 'MRF';
+        var type = $('#executionDocsContainer').data('type') ;
 
         if (confirm('Are you sure you want to delete this document?')) {
             $.ajax({
@@ -2019,14 +1978,6 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    });
-
-    $(document).off('ajaxComplete').on('ajaxComplete', function() {
-        if ($('#executionDocsContainer').is(':visible') && $('#executionDocsContainer').data('type') === 'MRF') {
-            $('.add-execution-doc').remove();
-            $('#executionDocsTable thead th:last-child').hide();
-            console.log('Global check: Removed Add Document button and hid Action column for MRF after AJAX');
-        }
     });
 
     function loadDocuments(folderName, subfolderName = null) {
@@ -2378,46 +2329,6 @@
         });
     }
 
-    function loadProjectExecutionMRFList() {
-        if (!currentProjectId) {
-            console.error('Project ID is undefined');
-            return;
-        }
-
-        $.ajax({
-            url: '{{ route("getProjectExecutionMRFList", ["projectId" => "projectIdPlaceholder"]) }}'.replace('projectIdPlaceholder', currentProjectId),
-            type: 'GET',
-            success: function(response) {
-                if (!response.mrfList || response.mrfList.length === 0) {
-                    $('#executionMRFListTable tbody').empty();
-                    $('#executionMRFListTable tbody').append('<tr><td colspan="4">No MRF data found</td></tr>');
-                    return;
-                }
-                $('#foldersList').hide();
-                $('#executionMRFListContainer').show();
-                $('#executionMRFListTable tbody').empty();
-
-                $.each(response.mrfList, function(index, item) {
-                    $('#executionMRFListTable tbody').append(`
-                        <tr>
-                            <td>${item.cart_model_name || 'N/A'}</td>
-                            <td>${item.description || 'N/A'}</td>
-                            <td>${item.full_article_number}</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary m-auto d-flex px-2 view-execution-mrf" data-article="${item.full_article_number}">
-                                    <i class="fa fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `);
-                });
-            },
-            error: function(xhr) {
-                alert('Failed to fetch MRF list');
-            }
-        });
-    }
-
     function loadProjectExecutionWorkOrdersList() {
         if (!currentProjectId) {
             console.error('Project ID is undefined');
@@ -2685,7 +2596,7 @@
             return;
         }
 
-        let url = type === 'MRF' && currentArticleNumber ?
+        let url = currentArticleNumber ?
             '{{ route("getProjectExecutionDocs", ["projectId" => "projectIdPlaceholder", "type" => "typePlaceholder", "articleNumber" => "articleNumberPlaceholder"]) }}'
             .replace('projectIdPlaceholder', currentProjectId)
             .replace('typePlaceholder', type)
@@ -2710,25 +2621,10 @@
                 }
 
                 $('#foldersList').hide();
-                $('#executionMRFListContainer').hide();
                 $('#executionWorkOrdersListContainer').hide();
                 $('#executionDocsContainer').show().data('type', type);
                 $('#executionDocsTable tbody').empty();
                 $('#noDocsMessage').hide();
-
-                if (type === 'MRF') {
-                    $('.add-execution-doc').remove();
-                    console.log('Removed Add Document button for MRF');
-                    $('#executionDocsTable thead th:last-child').hide();
-                    console.log('Hid Action column for MRF');
-                } else {
-                    if (!$('.add-execution-doc').length) {
-                        $('#docPathDisplay').after('<button class="btn btn-primary add-execution-doc d-flex" style="margin-left:auto; margin-bottom: 10px;">Add Document</button>');
-                        console.log('Re-added Add Document button for type:', type);
-                    }
-                    $('#executionDocsTable thead th:last-child').show();
-                    console.log('Showed Action column for type:', type);
-                }
 
                 if (response.documents.length === 0) {
                     $('#noDocsMessage').show();
@@ -2745,39 +2641,12 @@
                                 </a>
                             </td>`;
 
-                        // Show delete button only if NOT MRF AND Role is supervisor
-                        if (type !== 'MRF' && isSupervisor) {
-                            rowHtml += `
-                            <td>
-                                <button class="btn btn-danger d-flex m-auto btn-sm delete-execution-doc" data-path="${doc.path}">
-                                    <i class="fa fa-trash"></i> 
-                                </button>
-                            </td>`;
-                        }
 
                         rowHtml += `</tr>`;
                         $('#executionDocsTable tbody').append(rowHtml);
                     });
                 }
 
-                if ((type === 'MRF' || type === 'Work Orders') && currentArticleNumber) {
-                    $.ajax({
-                        url: '{{ route("getProjectById", ["id" => "projectIdPlaceholder"]) }}'.replace('projectIdPlaceholder', currentProjectId),
-                        type: 'GET',
-                        success: function(projectResponse) {
-                            if (projectResponse.success) {
-                                const projectNo = projectResponse.project.project_no;
-                                const path = `${projectNo}/${currentArticleNumber}`;
-                                $('#docPathDisplay').text(path);
-                            }
-                        },
-                        error: function(xhr) {
-                            console.error('Failed to fetch project details:', xhr.responseText);
-                        }
-                    });
-                } else {
-                    $('#docPathDisplay').text('');
-                }
             },
             error: function(xhr) {
                 alert('Failed to fetch documents');
