@@ -97,7 +97,7 @@
 								<th scope="col" class="project_table_heading">{{ $processName }}</th>
 								@endforeach
 								<th scope="col" class="project_table_heading">Final inspection</th>
-								<th scope="col" class="project_table_heading">Prepare PL</th>
+								<th scope="col" class="project_table_heading">Project Completion</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -144,39 +144,105 @@
 								</td>
 								<!-- Project creation - End -->
 
-								<!-- Request MRF to warehouse - Start -->
-								<td>
-									@php								
-									$request_mrf = DB::table('stock_bom_po')
-										            ->where('project_id', $project->id)
-										            ->where('product_id', '=', $val->id)
-										            ->where('is_email_sent', 2)
-										            ->value('mrf_email_sent_date');
+								<!-- BOM, drawings - Start -->
+								@php
+									$bomDate = '--';
+									$bomColor = 'black';
+									$drawingDate = ($val->drawing_req_estimation_manager == 0) ? 'Not Requested' : '--';
+									$drawingColor = 'black';
+									$wipCreateDate = $project->wip_project_create_date ? \Carbon\Carbon::parse($project->wip_project_create_date) : null;                                                                                                                                            	
+					
+									if ($project->is_pricing_tool_quotation_number == 1 && !empty($project->wip_project_create_date))
+									{
+										$bomDate = \Carbon\Carbon::parse($project->wip_project_create_date)->format('d F Y h:i A');
+										$all_tasks_process['bom']['finish_date'] = $project->wip_project_create_date;
+		
+										if ($wipCreateDate && $bom_drawings_hours) {
+														$startDate = \Carbon\Carbon::parse($project->wip_project_create_date);
+		
+														$bomColor = getDeadlineStatusColor($startDate, $bom_drawings_hours, $bomDate);
+														$all_tasks_process['bom']['color'] = $bomColor;
+										}
+									} elseif ($project->is_pricing_tool_quotation_number == 0)
+									{
+										$bomDate = \Carbon\Carbon::parse($val->bom_upload_date)->format('d F Y h:i A');
+										$all_tasks_process['bom']['finish_date'] = $val->bom_upload_date;                                                                      	                                                                            	
+		
+										if ($wipCreateDate && $bom_drawings_hours) {
+											//$startDate = \Carbon\Carbon::parse($val->bom_upload_date);
 
-									// Parse MRF start date if available (assuming the intial_inspection represents the MRF start date date)	
-									$mrf_start = $intial_inspection ? \Carbon\Carbon::parse($intial_inspection) : null;	
-									$request_mrfDate = $request_mrf ? \Carbon\Carbon::parse($request_mrf) : null;
+											$startDate = null;
+											$drawingMissing = false;
+											$bomMissing = false;
+											// Pricing Tool = 0, check both drawing + BOM
+											// Drawing
+											if ($val->drawing_req_estimation_manager == 0) {
+															$drawingDate = $val->created_at;
+											} elseif (!empty($val->drawing_upload_date)) {
+															$drawingDate = \Carbon\Carbon::parse($val->drawing_upload_date);
+											} else {
+															$drawingMissing = true;
+											}
 
-									$color = getDeadlineStatusColor($mrf_start, $request_mrf_hours, $request_mrfDate);
+											// BOM
+											if ($val->bom_req_estimation_manager == 0) {
+															$bomDate = $val->created_at;
+											} elseif (!empty($val->bom_upload_date)) {
+															$bomDate = \Carbon\Carbon::parse($val->bom_upload_date);
+											} else {
+															$bomMissing = true;
+											}
 
-									$mrfRequestDate = $request_mrf
-									? \Carbon\Carbon::parse($request_mrf)->format('d F Y h:i:s A')
-									: '--';
-									
-									if(!$request_mrf){
-										$allTaskTotalHours += $request_mrf_hours;
-										$checkAddedHours['request_mrf_to_warehouse'][$qty] = $request_mrf_hours;
-									}else{
-										$all_tasks_process['request_mrf_to_warehouse']['color'] = $color;
-										$all_tasks_process['request_mrf_to_warehouse']['finish_date'] = $request_mrf;
+											// Take max date if both are uploaded
+											if (!$drawingMissing && !$bomMissing) {
+															$startDate = $drawingDate > $bomDate ? $drawingDate : $bomDate;
+											}
+
+											$bomColor = getDeadlineStatusColor($startDate, $bom_drawings_hours, $bomDate);
+											$all_tasks_process['bom']['color'] = $bomColor;
+										}
+									}                                                                                                                                           	
+					
+									$drawingColor = '';
+									$drawingHoursDifference = '--'; // default if data is missing
+									if (!empty($val->drawing_upload_date))
+									{
+										$drawingDate = \Carbon\Carbon::parse($val->drawing_upload_date)->format('d F Y h:i A');
+										$all_tasks_process['drawings']['finish_date'] = $val->drawing_upload_date;
 									}
-									@endphp								
-								
-									<span style="color: {{ $color }}">
-						                {{ $mrfRequestDate }}
-						            </span>
-								</td>
-								<!-- Request MRF to warehouse - End -->
+									if (!empty($val->drawing_upload_date) && !empty($wipCreateDate) && !empty($bom_drawings_hours))
+									{
+										$drawingUploadDate = \Carbon\Carbon::parse($val->drawing_upload_date);
+										$wipCreate = \Carbon\Carbon::parse($wipCreateDate);
+		
+										$drawingColor = getDeadlineStatusColor($wipCreate, $bom_drawings_hours, $drawingUploadDate);
+		
+										$all_tasks_process['drawings']['color'] = $drawingColor;
+									}                         	
+										
+									$addDrawingsHours = false;
+					
+									// drawing hours will add only for std project with requested for drawing
+									if ($project->is_pricing_tool_quotation_number == 1
+									&& $val->drawing_req_estimation_manager == 1
+									&& empty($val->drawing_upload_date))
+									{
+										$addDrawingsHours = true;                                                                                                                           		
+									}           	
+					
+									// Bom and Drawing both combine for non std project
+									if ($project->is_pricing_tool_quotation_number == 0
+									&& empty($val->bom_upload_date)
+									&& empty($val->drawing_upload_date))
+									{
+										$addDrawingsHours = true;
+									}
+								@endphp          	
+								<td>
+									BOM: <span style="color: {{ $bomColor }}">{{ $bomDate }}</span><br>
+									Drawing: <span style="color: {{ $drawingColor }}">{{ $drawingDate }}</span>
+								</td>                                                                                   	
+								<!-- BOM, drawings - End -->
 
 								<!-- ALL Process - Start -->
 								@php 
@@ -352,7 +418,6 @@
 									$plUploadedDate = $pl_uploaded_date
 									? \Carbon\Carbon::parse($pl_uploaded_date)->format('d F Y h:i:s A')
 									: '--';
-
 									
 									if(!$pl_uploaded_date){
 										$allTaskTotalHours += $prepare_pl_hours;
@@ -366,8 +431,6 @@
 									<span style="color: {{ $color }}">
 						                {{ $plUploadedDate }}
 						            </span>	
-
-									{{-- $pl_uploaded_dates[$project->id] ?? '--' --}}
 								</td>
 								<!-- Prepare PL - End -->
 
