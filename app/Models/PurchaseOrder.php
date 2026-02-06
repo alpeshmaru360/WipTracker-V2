@@ -16,7 +16,6 @@ class PurchaseOrder extends Model
         'po_number',
         'is_project_order',
         'project_no',
-        'is_production_manager_approved',
         'is_production_engineer_approved',
         'project_name',
         'is_local_supplier',
@@ -25,9 +24,7 @@ class PurchaseOrder extends Model
         'currency',
         'order_date',
         'supplier',
-        'approved_remarks_production_manager',
         'approved_remarks_production_engineer',
-        'rejection_reason_production_manager',
         'rejection_reason_pro',
         'oa_file',
         'invoice_file',
@@ -35,8 +32,8 @@ class PurchaseOrder extends Model
         'product_article_no',
         'product_desc',
         'product_qty',
-        'production_manager_approved_date',
-        'production_manager_reject_date',
+        'production_engineer_approved_date',
+        'production_engineer_reject_date',
     ];
 
     protected $casts = [
@@ -72,20 +69,22 @@ class PurchaseOrder extends Model
 
     public function isApproved()
     {
-        return $this->is_production_manager_approved == 1 && $this->is_production_engineer_approved == 1;
+        return $this->is_production_engineer_approved == 1;
     }
 
     public function isRejected()
     {
-        return $this->is_production_manager_approved == 2 && $this->is_production_engineer_approved == 2;
+        return $this->is_production_engineer_approved == 2;
     }
 
     public function getStatusAttribute()
     {
-        if ($this->is_production_manager_approved == 0) {
-            return 'Aproval Not Required';
-        } elseif ($this->is_production_manager_approved == 1 && $this->is_production_engineer_approved == 1) {
+        if ($this->is_production_engineer_approved == 0) {
+            return 'Pending';
+        } elseif ($this->is_production_engineer_approved == 1) {
             return 'Approved';
+        } elseif ($this->is_production_engineer_approved == 2) {
+            return 'Rejected';
         }
         return 'Unknown';
     }

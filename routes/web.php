@@ -204,9 +204,6 @@ Route::namespace('App\Http\Controllers\AssemblyManager')
     ->group(function () {
         Route::get('assembly_manager/dashboard', 'AssemblyManagerController@dashboard')->name('AssemblyManagerDashboard');
         Route::get('/assembly-manager/inbox', [AssemblyManagerController::class, 'inbox'])->name('AssemblyManagerInbox');
-        Route::get('/purchase-order/view/{id}', [AssemblyManagerController::class, 'view'])->name('purchase_order.view');
-        Route::post('/purchase-order/approve/{id}', [AssemblyManagerController::class, 'approve'])->name('purchase_order.approve');
-        Route::post('/purchase-order/reject/{id}', [AssemblyManagerController::class, 'reject'])->name('purchase_order.reject');
     });
 
 // Quality Manager Routes

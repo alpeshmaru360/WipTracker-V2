@@ -22,10 +22,8 @@ class InboxService
          |  ASSEMBLY MANAGER
          ───────────────────────────────────────────────────────────── */
         if ($role === 'Assembly Manager') {
-            // 1 Purchase orders that still need assembly-side approval [Pending Purchase Order Approvals]
-            $count = DB::table('purchase_order')
-                ->where('is_production_manager_approved', 4)   // same filter as controller
-                ->count();
+            // Production Manager PO approvals removed; no pending PO items for Assembly Manager.
+            $count = 0;
         }
 
         /* ─────────────────────────────────────────────────────────────
@@ -88,10 +86,7 @@ class InboxService
                 ->count();
 
             // 3 Rejected POs that need revision [Rejected Purchase Orders]
-            $rejectedPOs = PurchaseOrder::where(function ($q) {
-                    $q->where('is_production_manager_approved', 2)
-                      ->orWhere('is_production_engineer_approved', 2);
-                })
+            $rejectedPOs = PurchaseOrder::where('is_production_engineer_approved', 2)
                 ->count();
 
             // 4 Projects still missing a BOM file [Pending BOM Upload from Estimation Manager Side]

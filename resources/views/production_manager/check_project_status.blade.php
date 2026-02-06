@@ -144,40 +144,6 @@
 								</td>
 								<!-- Project creation - End -->
 
-								<!-- Request MRF to warehouse - Start -->
-								<td>
-									@php								
-									$request_mrf = DB::table('stock_bom_po')
-										            ->where('project_id', $project->id)
-										            ->where('product_id', '=', $val->id)
-										            ->where('is_email_sent', 2)
-										            ->value('mrf_email_sent_date');
-
-									// Parse MRF start date if available (assuming the intial_inspection represents the MRF start date date)	
-									$mrf_start = $intial_inspection ? \Carbon\Carbon::parse($intial_inspection) : null;	
-									$request_mrfDate = $request_mrf ? \Carbon\Carbon::parse($request_mrf) : null;
-
-									$color = getDeadlineStatusColor($mrf_start, $request_mrf_hours, $request_mrfDate);
-
-									$mrfRequestDate = $request_mrf
-									? \Carbon\Carbon::parse($request_mrf)->format('d F Y h:i:s A')
-									: '--';
-									
-									if(!$request_mrf){
-										$allTaskTotalHours += $request_mrf_hours;
-										$checkAddedHours['request_mrf_to_warehouse'][$qty] = $request_mrf_hours;
-									}else{
-										$all_tasks_process['request_mrf_to_warehouse']['color'] = $color;
-										$all_tasks_process['request_mrf_to_warehouse']['finish_date'] = $request_mrf;
-									}
-									@endphp								
-								
-									<span style="color: {{ $color }}">
-						                {{ $mrfRequestDate }}
-						            </span>
-								</td>
-								<!-- Request MRF to warehouse - End -->
-
 								<!-- ALL Process - Start -->
 								@php 
 									$lastProcessEndsAt = null; 
