@@ -189,75 +189,7 @@
             </div>
             @endif
         </div>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center px-5 pt-3">
-        <h3 class="pt-4 text-bold text-left text-uppercase">Rejected Purchase Orders</h3>
-        <a class="mt-4 mb-2 btn btn-primary btn-sm py-2 px-3" onclick="location.reload();">
-            <i class="fa fa-refresh text-light">&#xf021;</i>
-        </a>
-    </div>
-
-    <hr class="mx-5 mt-2 mb-2" />
-
-    <div class="container-fluid px-5 mx-3">
-        <div class="row mt-3 table-responsive">
-            @if($RejectedPurchaseOrders->isNotEmpty())
-            <table class="table table-hover table-bordered w-100 text-center" id="rejected_purchase_order">
-                <thead>
-                    <tr>
-                        <th scope="col" class="project_table_heading p-1">PO No.</th>
-                        <th scope="col" class="project_table_heading p-1">Project No.</th>
-                        <th scope="col" class="project_table_heading p-1">Project Name</th>
-                        <th scope="col" class="project_table_heading p-1">Supplier</th>
-                        <th scope="col" class="project_table_heading p-1">Order Date</th>
-                        <th scope="col" class="project_table_heading p-1">Payment Terms</th>
-                        <th scope="col" class="project_table_heading p-1">Rejected by</th>
-                        <th scope="col" class="project_table_heading p-1" style="width:25%;">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="project_table_body">
-                    @foreach($RejectedPurchaseOrders as $val)
-                    <tr>
-                        <td>{{ $val->po_number }}</td>
-                        <td>{{ $val->project_no ?? 'N/A' }}</td>
-                        <td>{{ $val->project_name ?? 'N/A' }}</td>
-                        <td>{{ $val->supplier ?? 'N/A'}}</td>
-                        <td>{{ $val->order_date ?? 'N/A' }}</td>
-                        <td>{{ $val->payment_terms ?? 'N/A' }}</td>
-                        <td>
-                            @php
-                            $rejectedBy = [];
-
-                            if ($val->is_production_manager_approved == 2 && !empty($val->production_manager_reject_date)) {
-                            $rejectedBy[] = 'Assembly Manager - ' . \Carbon\Carbon::parse($val->production_manager_reject_date)->format('d-m-Y');
-                            }
-                            if ($val->is_production_engineer_approved == 2 && !empty($val->production_engineer_reject_date)) {
-                            $rejectedBy[] = 'Production Engineer - ' . \Carbon\Carbon::parse($val->production_engineer_reject_date)->format('d-m-Y');
-                            }
-                            @endphp
-                            {{ implode(', ', $rejectedBy) ?: 'N/A' }}
-                        </td>
-                        <td>
-                            <button class="btn btn-danger btn-sm view-reasons-btn px-3 py-1"
-                                data-manager-reason="{{ $val->rejection_reason_production_manager ?? 'No reason provided' }}"
-                                data-engineer-reason="{{ $val->rejection_reason_production_engineer ?? 'No reason provided' }}" data-bs-toggle="modal"
-                                data-bs-target="#rejectionReasonModal">
-                                View Reasons
-                            </button>
-                            <a href="{{ route('procurement_manager.reupload_po', $val->id) }}" class="btn btn-info btn-sm px-3 py-1">Re-upload PO</a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            @else
-            <div class="alert alert-info w-100">
-                No pending purchase orders found. All purchase orders have been processed.
-            </div>
-            @endif
-        </div>
-    </div>
+    </div>    
 
     <div class="d-flex justify-content-between align-items-center px-5 pt-3">
         <h3 class="pt-4 text-bold text-left text-uppercase">Pending BOM Upload from Estimation Manager Side</h3>
@@ -591,15 +523,7 @@
                 searching: true,
                 ordering: false
             });
-            $('#pending_po_stock_comparison').removeClass('dataTable');
-            $('#rejected_purchase_order').DataTable({
-                paging: true,
-                pageLength: 2,
-                lengthMenu: [2, 5, 10, 25, 50, 100],
-                searching: true,
-                ordering: false
-            });
-            $('#rejected_purchase_order').removeClass('dataTable');
+            $('#pending_po_stock_comparison').removeClass('dataTable');            
             $('#pending_bom_upload').DataTable({
                 paging: true,
                 pageLength: 2,
@@ -608,14 +532,6 @@
                 ordering: false
             });
             $('#pending_bom_upload').removeClass('dataTable');
-            // $('#procument_role_pending_drawing_check').DataTable({
-            //     paging: true,
-            //     pageLength: 2,
-            //     lengthMenu: [2, 5, 10, 25, 50, 100],
-            //     searching: true,
-            //     ordering: false
-            // });
-            // $('#procument_role_pending_drawing_check').removeClass('dataTable');
             $('#stock_available_table').DataTable({
                 paging: true,
                 pageLength: 2,

@@ -1200,37 +1200,19 @@ class ProcurementManagerController extends Controller
         $pending_bom = ProductsOfProjects::with('projects')
             ->orderBy('id', 'desc')
             ->whereNull('bom_path')
-            ->get();
-
-        // $drawing_check = ProductsOfProjects::with('projects')
-        //     ->orderBy('id', 'desc')
-        //     ->where('drawing_req_estimation_manager', '2')
-        //     ->where('drawing_check_procurement_manager', '1')
-        //     ->get();
+            ->get();        
 
         $bom_checked = ProductsOfProjects::with('projects')
             ->orderBy('id', 'desc')
             ->where('bom_req_estimation_manager', '2')
             ->where('bom_check_procurement_manager', '2')
-            ->get();
-
-        // $drawing_checked = ProductsOfProjects::with('projects')
-        //     ->orderBy('id', 'desc')
-        //     ->where('drawing_req_estimation_manager', '2')
-        //     ->where('drawing_check_procurement_manager', '2')
-        //     ->get();
-
-        $RejectedPurchaseOrders = PurchaseOrder::where(function ($query) {
-            $query->where('is_production_manager_approved', 2)
-                ->orWhere('is_production_engineer_approved', 2);
-        })->get() ?? collect();
+            ->get(); 
 
         $minimumLowStock = StockMasterModule::whereColumn('available_qty', '<=', 'minimum_required_qty')
             ->orderBy('id', 'asc')
             ->get();
 
-        //return view('procurement_manager.inbox', compact('bom_check', 'pending_bom', 'page_title', 'bom_checked', 'drawing_check', 'drawing_checked', 'RejectedPurchaseOrders', 'pending_po_orders', 'minimumLowStock'));
-        return view('procurement_manager.inbox', compact('bom_check', 'pending_bom', 'page_title', 'bom_checked', 'RejectedPurchaseOrders', 'pending_po_orders', 'minimumLowStock'));
+        return view('procurement_manager.inbox', compact('bom_check', 'pending_bom', 'page_title', 'bom_checked', 'pending_po_orders', 'minimumLowStock'));
     }
 
     private function calculateDeadline($createdAt, $hours){
