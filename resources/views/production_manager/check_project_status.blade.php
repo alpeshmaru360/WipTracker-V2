@@ -97,7 +97,7 @@
 								<th scope="col" class="project_table_heading">{{ $processName }}</th>
 								@endforeach
 								<th scope="col" class="project_table_heading">Final inspection</th>
-								<th scope="col" class="project_table_heading">Prepare PL</th>
+								<th scope="col" class="project_table_heading">Project Completion</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -318,7 +318,6 @@
 									$plUploadedDate = $pl_uploaded_date
 									? \Carbon\Carbon::parse($pl_uploaded_date)->format('d F Y h:i:s A')
 									: '--';
-
 									
 									if(!$pl_uploaded_date){
 										$allTaskTotalHours += $prepare_pl_hours;
@@ -332,8 +331,6 @@
 									<span style="color: {{ $color }}">
 						                {{ $plUploadedDate }}
 						            </span>	
-
-									{{-- $pl_uploaded_dates[$project->id] ?? '--' --}}
 								</td>
 								<!-- Prepare PL - End -->
 
