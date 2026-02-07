@@ -229,9 +229,6 @@
                             @php
                             $rejectedBy = [];
 
-                            if ($val->is_production_manager_approved == 2 && !empty($val->production_manager_reject_date)) {
-                            $rejectedBy[] = 'Assembly Manager - ' . \Carbon\Carbon::parse($val->production_manager_reject_date)->format('d-m-Y');
-                            }
                             if ($val->is_production_engineer_approved == 2 && !empty($val->production_engineer_reject_date)) {
                             $rejectedBy[] = 'Production Engineer - ' . \Carbon\Carbon::parse($val->production_engineer_reject_date)->format('d-m-Y');
                             }
@@ -240,7 +237,6 @@
                         </td>
                         <td>
                             <button class="btn btn-danger btn-sm view-reasons-btn px-3 py-1"
-                                data-manager-reason="{{ $val->rejection_reason_production_manager ?? 'No reason provided' }}"
                                 data-engineer-reason="{{ $val->rejection_reason_production_engineer ?? 'No reason provided' }}" data-bs-toggle="modal"
                                 data-bs-target="#rejectionReasonModal">
                                 View Reasons
@@ -380,12 +376,6 @@
                     <h5 class="modal-title" id="rejectionReasonModalLabel">Rejection Reasons</h5>
                 </div>
                 <div class="modal-body">
-                    @if(isset($val->is_production_manager_approved) && $val->is_production_manager_approved == 2)
-                    <div class="mb-3" id="managerReasonSection">
-                        <label class="form-label"><strong>Assembly Manager's Reason:</strong></label>
-                        <textarea class="form-control" id="managerReason" readonly>{{ $val->rejection_reason_production_manager ?? 'No reason provided' }}</textarea>
-                    </div>
-                    @endif
                     @if(isset($val->is_production_engineer_approved) && $val->is_production_engineer_approved == 2)
                     <div class="mb-3" id="engineerReasonSection">
                         <label class="form-label"><strong>Production Engineer's Reason:</strong></label>
@@ -1196,12 +1186,13 @@
         document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll(".view-reasons-btn").forEach(button => {
                 button.addEventListener("click", function() {
-                    let managerReason = this.getAttribute("data-manager-reason") || 'N/A';
                     let engineerReason = this.getAttribute("data-engineer-reason") || 'N/A';
 
                     // Set the textarea values, ensuring null/empty is replaced with 'N/A'
-                    document.getElementById("managerReason").value = managerReason.trim() ? managerReason : 'N/A';
-                    document.getElementById("engineerReason").value = engineerReason.trim() ? engineerReason : 'N/A';
+                    const engineerTextarea = document.getElementById("engineerReason");
+                    if (engineerTextarea) {
+                        engineerTextarea.value = engineerReason.trim() ? engineerReason : 'N/A';
+                    }
                 });
             });
         });
@@ -1210,16 +1201,10 @@
             const viewReasonButtons = document.querySelectorAll('.view-reasons-btn');
             viewReasonButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const managerReason = this.getAttribute('data-manager-reason');
                     const engineerReason = this.getAttribute('data-engineer-reason');
                     // Update modal content
-                    const managerTextarea = document.getElementById('managerReason');
                     const engineerTextarea = document.getElementById('engineerReason');
-                    const managerSection = document.getElementById('managerReasonSection');
                     const engineerSection = document.getElementById('engineerReasonSection');
-                    if (managerSection && managerTextarea) {
-                        managerTextarea.value = managerReason;
-                    }
                     if (engineerSection && engineerTextarea) {
                         engineerTextarea.value = engineerReason;
                     }

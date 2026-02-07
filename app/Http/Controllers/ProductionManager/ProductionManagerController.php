@@ -1405,7 +1405,6 @@ class ProductionManagerController extends Controller
                     $subQuery->orderBy('id', 'desc');
                 }])
                 ->where('is_production_engineer_approved', 1) // Mandatory condition
-                ->whereIn('is_production_manager_approved', [0, 1]) // Allows both 0 and 1
                 ->orderBy('id', 'desc');
             }])
             ->first();

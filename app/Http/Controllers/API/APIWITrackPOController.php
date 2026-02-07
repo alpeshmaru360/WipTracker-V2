@@ -91,7 +91,6 @@ class APIWITrackPOController extends Controller
             $po->po_number = $validated['PO_number'];
             $po->is_project_order =  $isFromInbox ? 1 : ($request->is_Project_Order ?? 0);
             $po->project_no = $validated['project_number'] ?? null;
-            $po->is_production_manager_approved = $request->has('is_production_manager_approved') ? 1 : 0;
             $po->is_production_engineer_approved = $request->has('is_production_engineer_approved') ? 1 : 0;
             $po->project_name = $validated['project_name'] ?? null;
             $po->is_local_supplier = $request->is_local_supplier ?? 0;
