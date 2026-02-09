@@ -1159,7 +1159,12 @@ class ProcurementManagerController extends Controller
         $place_po_hours = AdminHoursManagement::where('lable', 'StandardProcessTimes')
             ->where('key', 'check_the_bom_and_place_po')
             ->where('is_deleted', 0)
-            ->value('value') ?? 48; // Default to 48 hours if not found        
+            ->value('value') ?? 48; // Default to 48 hours if not found  
+        
+        $pending_bom = ProductsOfProjects::with('projects')
+            ->orderBy('id', 'desc')
+            ->whereNull('bom_path')
+            ->get();
 
         $minimumLowStock = StockMasterModule::whereColumn('available_qty', '<=', 'minimum_required_qty')
             ->orderBy('id', 'asc')
