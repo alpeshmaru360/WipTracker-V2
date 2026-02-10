@@ -1159,44 +1159,8 @@ class ProcurementManagerController extends Controller
         $place_po_hours = AdminHoursManagement::where('lable', 'StandardProcessTimes')
             ->where('key', 'check_the_bom_and_place_po')
             ->where('is_deleted', 0)
-            ->value('value') ?? 48; // Default to 48 hours if not found
-
-        $bom_check = ProductsOfProjects::with('projects')
-            ->orderBy('id', 'desc')
-            ->where('bom_check_procurement_manager', '1')
-            ->get()->map(function ($item) use ($bomHours) {
-                $item->deadline = $this->calculateDeadline($item->created_at, $bomHours);
-                return $item;
-            });
-
-        $pending_po_orders = ProductsOfProjects::with('projects')
-            ->where('bom_check_procurement_manager', '3')
-            ->whereNotIn('full_article_number', function ($query) {
-                $query->select('product_article_no')
-                    ->from('purchase_order')
-                    ->whereNotNull('product_article_no');
-            })
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('stock_bom_po as sbp')
-                    ->whereColumn('sbp.project_id', 'products_of_projects.project_id')
-                    ->whereColumn('sbp.product_id', 'products_of_projects.id')
-                    ->where('sbp.po_added', '!=', 1)
-                    ->where('sbp.select_option', '!=', 'stock');
-            })
-            ->orderBy('id', 'desc')->get();
-
-        // Calculate deadlines for pending_po_orders
-        foreach ($pending_po_orders as $item) {
-            $processed_at = StockBOMPo::where('project_id', $item->project_id)
-                ->where('product_id', $item->id)
-                ->value('processed_at');
-
-            $item->deadline = $processed_at
-                ? $this->calculateDeadline($processed_at, $place_po_hours)
-                : null;
-        }
-
+            ->value('value') ?? 48; // Default to 48 hours if not found  
+        
         $pending_bom = ProductsOfProjects::with('projects')
             ->orderBy('id', 'desc')
             ->whereNull('bom_path')
@@ -1227,8 +1191,7 @@ class ProcurementManagerController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
-        //return view('procurement_manager.inbox', compact('bom_check', 'pending_bom', 'page_title', 'bom_checked', 'drawing_check', 'drawing_checked', 'RejectedPurchaseOrders', 'pending_po_orders', 'minimumLowStock'));
-        return view('procurement_manager.inbox', compact('bom_check', 'pending_bom', 'page_title', 'bom_checked', 'RejectedPurchaseOrders', 'pending_po_orders', 'minimumLowStock'));
+        return view('procurement_manager.inbox', compact('pending_bom', 'page_title', 'minimumLowStock'));
     }
 
     private function calculateDeadline($createdAt, $hours){
