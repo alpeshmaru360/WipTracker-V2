@@ -57,7 +57,18 @@ class ProductionManagerController extends Controller
         $qrContent = route('QRPage', ['product_id' => $projectId, 'redirect' => '0']);
         $fileName = $projectName . '_QrCode.png';
         $filePath = public_path($fileName);
-        QrCode::size(400)->margin(5)->format('png')->merge('/public/sales_manager/uploads/logo/wilo_logo.png', 0.4)->generate($qrContent, $filePath);
+
+        // QrCode::size(400)->margin(5)->format('png')
+        //->merge('/public/sales_manager/uploads/logo/wilo_logo.png', 0.4)
+        // ->generate($qrContent, $filePath);
+        config(['qr-code.driver' => 'gd']);
+
+                QrCode::format('png')
+            ->size(400)
+            ->margin(10)
+            ->errorCorrection('H')
+            ->generate($qrContent, $filePath);
+
         $qrImage = imagecreatefrompng($filePath);
         $text = $projectName;
         $fontSize = strlen($text) > 25 ? 16 : 20;
@@ -985,12 +996,20 @@ class ProductionManagerController extends Controller
                 File::makeDirectory($directory, 0777, true);
             }
 
-            $qrCode = QrCode::size(400)
-                ->margin(10) // Increased margin for better padding
-                ->format('png')
-                ->errorCorrection('H') // High error correction for better scannability
-                ->merge('/public/sales_manager/uploads/logo/wilo_logo.png', 0.3) // Reduced opacity
-                ->generate($url, $fullPath);
+            // $qrCode = QrCode::size(400)
+            //     ->margin(10) // Increased margin for better padding
+            //     ->format('png')
+            //     ->errorCorrection('H') // High error correction for better scannability
+            //     // ->merge('/public/sales_manager/uploads/logo/wilo_logo.png', 0.3) // Reduced opacity
+            //     ->generate($url, $fullPath);
+
+            config(['qr-code.driver' => 'gd']);
+
+            $qrCode =   QrCode::format('png')
+                        ->size(400)
+                        ->margin(10)
+                        ->errorCorrection('H')
+                        ->generate($url, $fullPath);
 
             $qrImage = imagecreatefrompng($fullPath);
 

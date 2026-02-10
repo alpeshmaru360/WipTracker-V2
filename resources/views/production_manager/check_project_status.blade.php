@@ -7,6 +7,7 @@
 			<h3 class="ml-3 pt-4 text-bold text-left text-uppercase">Project No :- {{$project->project_no}} &nbsp; Project Name :- {{$project->project_name}}</h3>
 		</div>
 		<hr class="mt-1" />
+		
 		@foreach($project['product'] as $val)
 			<div class="row align-items-center">
 				<!-- QR Codes based on Quantity -->
@@ -486,7 +487,6 @@
 			        document.getElementById("as_per_schedule_date_{{ $val->id }}").innerHTML = actual_html;
 			    @endif
 			</script>
-			
 		@endforeach
 
 	</div>
