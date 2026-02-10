@@ -81,23 +81,6 @@
                                 @if ($table->is_partial_shipment == 1 && $table->is_parent == 1)
                                     <!-- No status for parent row with partial shipment -->
                                 @else
-                                    @if ($order->is_production_manager_approved == 1)
-                                        Approved
-                                        @if ($order->production_manager_approved_date)
-                                            <br>{{ \Carbon\Carbon::parse($order->production_manager_approved_date)->format('d-m-Y') }}
-                                        @endif
-                                    @elseif ($order->production_manager_reject_date)
-                                        Rejected
-                                        <br>{{ \Carbon\Carbon::parse($order->production_manager_reject_date)->format('d-m-Y') }}
-                                    @else
-                                        Not Required
-                                    @endif
-                                @endif
-                            </td>
-                            <td class="toggle-col">
-                                @if ($table->is_partial_shipment == 1 && $table->is_parent == 1)
-                                    <!-- No status for parent row with partial shipment -->
-                                @else
                                     Approved
                                     @if ($order->production_engineer_approved_date)
                                         <br>{{ \Carbon\Carbon::parse($order->production_engineer_approved_date)->format('d-m-Y') }}
@@ -222,19 +205,6 @@
                             <td>{{ $childTable->quantity }}</td>
                             <!-- Child row status columns -->
                             <td class="toggle-col">
-                                @if ($order->is_production_manager_approved == 1)
-                                Approved
-                                @if ($order->production_manager_approved_date)
-                                <br>{{ \Carbon\Carbon::parse($order->production_manager_approved_date)->format('d-m-Y') }}
-                                @endif
-                                @elseif ($order->production_manager_reject_date)
-                                Rejected
-                                <br>{{ \Carbon\Carbon::parse($order->production_manager_reject_date)->format('d-m-Y') }}
-                                @else
-                                Not Required
-                                @endif
-                            </td>
-                            <td class="toggle-col">
                                 Approved
                                 @if ($order->production_engineer_approved_date)
                                 <br>{{ \Carbon\Carbon::parse($order->production_engineer_approved_date)->format('d-m-Y') }}
@@ -317,7 +287,7 @@
                 </div>
                 @else
                 <div class="alert alert-info">
-                    Only purchase orders that require no approval for Assembly Manager or have been approved by the Assembly Manager and also approved by Production Engineer will appear here.
+                    Only purchase orders approved by Production Engineer will appear here.
                 </div>
                 @endif
                 @endif

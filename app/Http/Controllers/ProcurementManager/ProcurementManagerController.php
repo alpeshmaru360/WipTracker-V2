@@ -1166,6 +1166,27 @@ class ProcurementManagerController extends Controller
             ->whereNull('bom_path')
             ->get();
 
+        // $drawing_check = ProductsOfProjects::with('projects')
+        //     ->orderBy('id', 'desc')
+        //     ->where('drawing_req_estimation_manager', '2')
+        //     ->where('drawing_check_procurement_manager', '1')
+        //     ->get();
+
+        $bom_checked = ProductsOfProjects::with('projects')
+            ->orderBy('id', 'desc')
+            ->where('bom_req_estimation_manager', '2')
+            ->where('bom_check_procurement_manager', '2')
+            ->get();
+
+        // $drawing_checked = ProductsOfProjects::with('projects')
+        //     ->orderBy('id', 'desc')
+        //     ->where('drawing_req_estimation_manager', '2')
+        //     ->where('drawing_check_procurement_manager', '2')
+        //     ->get();
+
+        $RejectedPurchaseOrders = PurchaseOrder::where('is_production_engineer_approved', 2)
+            ->get() ?? collect();
+
         $minimumLowStock = StockMasterModule::whereColumn('available_qty', '<=', 'minimum_required_qty')
             ->orderBy('id', 'asc')
             ->get();
@@ -1235,12 +1256,7 @@ class ProcurementManagerController extends Controller
         $formattedOrderDate = $orderDate ? $orderDate->format('Y-m-d') : $purchaseOrder->order_date;
 
         // Update approval statuses based on rejection state
-        $isProductionManagerApproved = $purchaseOrder->is_production_manager_approved;
         $isProductionEngineerApproved = $purchaseOrder->is_production_engineer_approved;
-
-        if ($isProductionManagerApproved == 2) {
-            $isProductionManagerApproved = 4; // Request approval again
-        }
         if ($isProductionEngineerApproved == 2) {
             $isProductionEngineerApproved = 0; // Reset to pending
         }
@@ -1251,7 +1267,6 @@ class ProcurementManagerController extends Controller
             'po_number' => $request->PO_number,
             'is_project_order' => $request->is_Project_Order ?? 0,
             'project_no' => $request->project_number,
-            'is_production_manager_approved' => $isProductionManagerApproved,
             'is_production_engineer_approved' => $isProductionEngineerApproved,
             'project_name' => $request->project_name,
             'is_local_supplier' => $request->is_local_supplier ?? 0,

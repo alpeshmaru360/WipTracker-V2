@@ -28,7 +28,6 @@ class PurchaseOrderController extends Controller
                 $query->orderBy('id', 'desc');
             }])
                 ->where('is_production_engineer_approved', 1)
-                ->whereIn('is_production_manager_approved', [0, 1])
                 ->orderBy('id', 'desc')
                 ->get();
         }
@@ -70,7 +69,6 @@ class PurchaseOrderController extends Controller
             }
         }])
             ->where('is_production_engineer_approved', 1)
-            ->whereIn('is_production_manager_approved', [0, 1])
             ->orderBy('id', 'desc');
         // Apply parent-level filters
         foreach ($filters as $key => $values) {
@@ -107,9 +105,6 @@ class PurchaseOrderController extends Controller
                     break;
                 case 'filter_col_6':
                     $query->whereIn('shipment_method', $values);
-                    break;
-                case 'filter_col_10':
-                    $query->whereIn('is_production_manager_approved', $values);
                     break;
                 case 'filter_col_11':
                     $query->whereIn('is_production_engineer_approved', $values);
@@ -261,7 +256,6 @@ class PurchaseOrderController extends Controller
             'po_number' => $request->PO_number,
             'is_project_order' => $isFromInbox ? 1 : ($request->is_Project_Order ?? 0),
             'project_no' => $request->project_number,
-            'is_production_manager_approved' => $request->has('is_production_manager_approved') ? 4 : 0,
             'is_production_engineer_approved' => $request->has('is_production_engineer_approved') ? 1 : 0,
             'project_name' => $request->project_name,
             'is_local_supplier' => $request->is_local_supplier ?? 0,
@@ -859,7 +853,6 @@ class PurchaseOrderController extends Controller
             }
         }])
             ->where('is_production_engineer_approved', 1)
-            ->whereIn('is_production_manager_approved', [0, 1])
             ->orderBy('id', 'desc');
 
         // Apply parent-level filters
@@ -898,9 +891,6 @@ class PurchaseOrderController extends Controller
                     break;
                 case 'filter_col_6':
                     $query->whereIn('shipment_method', $values);
-                    break;
-                case 'filter_col_10':
-                    $query->whereIn('is_production_manager_approved', $values);
                     break;
                 case 'filter_col_11':
                     $query->whereIn('is_production_engineer_approved', $values);
@@ -971,7 +961,6 @@ class PurchaseOrderController extends Controller
             'Article',
             'Description',
             'Ordered Qty',
-            'Prod. Manager Status',
             'Prod. Engineer Status',
             'ETA Date',
             'Partial Shipment',
@@ -1000,10 +989,9 @@ class PurchaseOrderController extends Controller
                     $isPartialParent = $table->is_partial_shipment == 1 && $table->is_parent == 1;
 
                     // Conditional: Only fetch statuses & times when not a partial parent
-                    $prodManagerStatus = $prodEngineerStatus = $responseTime = $deliveryTime = '';
+                    $prodEngineerStatus = $responseTime = $deliveryTime = '';
                     if (!$isPartialParent) {
-                        [$mgrStatus, $mgrDate, $engStatus, $engDate] = $this->getProductionStatuses($order);
-                        $prodManagerStatus  = $mgrStatus . ' ' . $mgrDate;
+                        [$engStatus, $engDate] = $this->getProductionEngineerStatus($order);
                         $prodEngineerStatus = $engStatus . ' ' . $engDate;
                         $responseTime       = $this->formatDays($table->response_time);
                         $deliveryTime       = $this->formatDays($table->delivery_time);
@@ -1022,7 +1010,6 @@ class PurchaseOrderController extends Controller
                         '="' . $table->artical_no . '"',
                         $table->description,
                         '="' . $table->quantity . '"',
-                        $prodManagerStatus,
                         $prodEngineerStatus,
                         $this->formatDate($table->eta),
                         $isPartialParent ? '' : ($table->is_partial_shipment ? 'Yes' : 'No'),
@@ -1044,7 +1031,7 @@ class PurchaseOrderController extends Controller
                     foreach ($order->purchaseOrderTables as $childTable) {
                         if ($childTable->parent_id != $table->id) continue;
 
-                        [$mgrStatus, $mgrDate, $engStatus, $engDate] = $this->getProductionStatuses($order);
+                        [$engStatus, $engDate] = $this->getProductionEngineerStatus($order);
 
                         fputcsv($file, [
                             $sr_no++,
@@ -1058,7 +1045,6 @@ class PurchaseOrderController extends Controller
                             '="' . $childTable->artical_no . '"',
                             $childTable->description,
                             '="' . $childTable->quantity . '"',
-                            $mgrStatus . ' ' . $mgrDate,
                             $engStatus . ' ' . $engDate,
                             $this->formatDate($childTable->eta),
                             $childTable->pending_slot == 0 ? 'Yes' : 'No',
@@ -1097,24 +1083,11 @@ class PurchaseOrderController extends Controller
     }
 
     // Utility: get production statuses
-    public function getProductionStatuses($order){
-        $managerStatus = 'Not Required';
-        $managerDate = null;
-
-        if ($order->is_production_manager_approved == 1) {
-            $managerStatus = 'Approved';
-            $managerDate = $order->production_manager_approved_date
-                ? Carbon::parse($order->production_manager_approved_date)->format('d-m-Y')
-                : null;
-        } elseif ($order->production_manager_reject_date) {
-            $managerStatus = 'Rejected';
-            $managerDate = Carbon::parse($order->production_manager_reject_date)->format('d-m-Y');
-        }
-
+    public function getProductionEngineerStatus($order){
         $engineerStatus = 'Approved';
         $engineerDate = Carbon::parse($order->production_engineer_approved_date)->format('d-m-Y');
 
-        return [$managerStatus, $managerDate, $engineerStatus, $engineerDate];
+        return [$engineerStatus, $engineerDate];
     }
     
     public function updateReceivedDate(Request $request){
