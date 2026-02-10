@@ -402,51 +402,6 @@
 
     <!-- Replace Status column with two new columns -->
 
-    <!-- Prod. Manager Status -->
-    <th class="project_table_heading toggle-col">
-        <div class="dropdown filter_dropdown">
-            @php
-                $selectedValues = $filters['filter_col_10'] ?? [];
-                $filterClass = $selectedValues ? 'filtered_dd' : '';
-                $statusCodes = ($last_filter_column == 10 ? $purchaseOrdersfilter : $purchaseOrders)
-                    ->pluck('is_production_manager_approved')
-                    ->unique();
-            @endphp
-            <button class="btn btn-sm btn-outline-secondary dropdown-toggle w-100 text-start {{ $filterClass }}"
-                    type="button"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false">
-                Prod. Manager Status
-            </button>
-
-            <div class="dropdown-menu p-2">
-                <label class="dropdown-item font-weight-bold">
-                    <input type="checkbox" class="select-all-filter" data-target=".multi_filter10"> Select All
-                </label>       
-                @foreach($statusCodes as $statusCode)
-                    @php
-                        switch($statusCode) {
-                            case "0": $statusLabel = "Not Required"; break;
-                            case "1": $statusLabel = "Approved"; break;
-                            case "2": $statusLabel = "Rejected"; break;
-                            case "4": $statusLabel = "Pending"; break;
-                            default: $statusLabel = "Unknown"; break;
-                        }
-                    @endphp
-                    <label class="dropdown-item m-0">
-                        <input type="checkbox" name="filters[filter_col_10][]" class="multi-filter multi_filter10" 
-                        value="{{ $statusCode }}" {{ in_array($statusCode, $selectedValues) ? 'checked' : '' }}>
-                        {{ $statusLabel }}
-                    </label>
-                @endforeach
-                <div class="mt-2">
-                    <button type="button" class="btn btn-sm btn-success w-100 apply-filter-btn" data-column="10">OK</button>
-                </div>
-            </div>
-        </div>
-    </th>
-
     <!-- Prod. Engineer Status -->
     <th class="project_table_heading toggle-col">
         <div class="dropdown filter_dropdown">
