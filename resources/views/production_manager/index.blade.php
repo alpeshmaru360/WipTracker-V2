@@ -132,7 +132,6 @@
                             <ul class="subfolder-quality mt-2" style="display: none;">
                                 <li class="list-group-item subfolder-item" data-folder="Final Inspection">Final Inspection doc</li>
                                 <li class="list-group-item subfolder-item" data-folder="Images">Final Inspection Images</li>
-                                <li class="list-group-item subfolder-item" data-folder="Incoming Inspection">Incoming Inspection</li>
                                 <li class="list-group-item subfolder-item" data-folder="Test Reports">Test Reports</li>
                             </ul>
                         </li>
@@ -452,38 +451,7 @@
                             </table>
                         </div>
                     </div>
-                    <div id="incomingInspectionPOListContainer" style="display: none;">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="incomingInspectionPOListTable">
-                                <thead>
-                                    <tr>
-                                        <th>PO Number</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div id="incomingInspectionDocsContainer" style="display: none;">
-                        <div class="table-responsive position-relative">
-                            <div class="path-display mb-2" style="font-size: 14px;color: #555;display: flex;align-items: center;">
-                                <span id="incomingInspectionPathDisplay"></span>
-                            </div>
-                            <table class="table table-bordered" id="incomingInspectionDocsTable">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        @if($is_quality_login)
-                                        <th>Action</th>
-                                        @endif
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                            <div id="noIncomingInspectionDocsMessage" class="text-center text-muted" style="display: none;">No documents found</div>
-                        </div>
-                    </div>
+                    
                     <div id="qualityDocsContainer" style="display: none;">
                         <div class="table-responsive position-relative">
                             <div class="path-display mb-2" style="font-size: 14px;color: #555;display: flex;align-items: center;">
@@ -708,8 +676,6 @@
             '#qualityFinalInspectionQtyListContainer',
             '#qualityTestReportsListContainer',
             '#qualityTestReportsQtyListContainer',
-            '#incomingInspectionPOListContainer',
-            '#incomingInspectionDocsContainer',
             '#qualityDocsContainer',
             '#qrCodesListContainer',
             '#qrCodeImagesContainer',
@@ -908,11 +874,8 @@
                 pushToHistory('#qualityTestReportsListContainer');
                 showContainer('#qualityTestReportsListContainer');
                 loadQualityTestReportsList();
-            } else if (subfolderName === 'Incoming Inspection') {
-                pushToHistory('#incomingInspectionPOListContainer');
-                showContainer('#incomingInspectionPOListContainer');
-                loadIncomingInspectionPOList();
-            }
+            } 
+            
         } else if (subfolderName === 'From Customers') {
             pushToHistory('#documentsList', {
                 folder: 'From Customers'
@@ -1013,11 +976,8 @@
                 currentArticleNumber = params.qarticleNumber;
                 currentQualityType = params.type;
                 loadQualityQtyList(params.articleNumber, params.qqty, params.type);
-            } else if (containerId === '#incomingInspectionPOListContainer') {
-                loadIncomingInspectionPOList();
-            } else if (containerId === '#incomingInspectionDocsContainer') {
-                loadIncomingInspectionDocs(params.poNumber);
-            } else if (containerId === '#qualityDocsContainer') {
+            }             
+            else if (containerId === '#qualityDocsContainer') {
                 currentArticleNumber = params.articleNumber;
                 currentQtyNo = params.qtyNo;
                 currentQualityType = params.type;
@@ -1280,23 +1240,6 @@
         });
         showContainer('#qualityDocsContainer');
         loadQualityDocs(currentQualityType);
-
-        setTimeout(() => {
-            isNavigating = false;
-        }, 300);
-    });
-
-    $(document).off('click', '.view-incoming-inspection-docs').on('click', '.view-incoming-inspection-docs', function(e) {
-        e.stopPropagation();
-        if (isNavigating) return;
-        isNavigating = true;
-
-        const poNumber = $(this).data('po');
-        pushToHistory('#incomingInspectionDocsContainer', {
-            poNumber
-        });
-        showContainer('#incomingInspectionDocsContainer');
-        loadIncomingInspectionDocs(poNumber);
 
         setTimeout(() => {
             isNavigating = false;
@@ -1869,36 +1812,6 @@
                         $('#qualityDocsTable tbody').empty();
                         loadQualityDocs(type);
                         alert(response.message);
-                    }
-                },
-                error: function(xhr) {
-                    alert('Failed to delete document');
-                }
-            });
-        }
-    });
-
-    $(document).off('click', '.delete-incoming-inspection-doc').on('click', '.delete-incoming-inspection-doc', function(e) {
-        e.stopPropagation();
-        var $row = $(this).closest('tr');
-        var filePath = $(this).data('path');
-
-        if (confirm('Are you sure you want to delete this document?')) {
-            $.ajax({
-                url: '{{ route("deleteIncomingInspectionDoc") }}',
-                type: 'POST',
-                data: {
-                    project_id: currentProjectId,
-                    file_path: filePath,
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    if (response.success) {
-                        $row.remove();
-                        alert(response.message);
-                        if ($('#incomingInspectionDocsTable tbody tr').length === 0) {
-                            $('#noIncomingInspectionDocsMessage').show();
-                        }
                     }
                 },
                 error: function(xhr) {
@@ -2651,130 +2564,6 @@
             error: function(xhr) {
                 alert('Failed to fetch documents');
                 console.error('Failed to fetch documents:', xhr.responseText);
-            }
-        });
-    }
-
-    function loadIncomingInspectionPOList() {
-        if (!currentProjectId) {
-            console.error('Project ID is undefined');
-            alert('Project ID is not available.');
-            return;
-        }
-
-        $.ajax({
-            url: '{{ route("getIncomingInspectionPOs") }}',
-            type: 'GET',
-            data: {
-                id: currentProjectId
-            },
-            success: function(response) {
-                $('#foldersList').hide();
-                $('#incomingInspectionDocsContainer').hide();
-                $('#qualityDocsContainer').hide();
-                $('#incomingInspectionPOListContainer').show();
-                $('#incomingInspectionPOListTable tbody').empty();
-
-                if (!response.success) {
-                    $('#incomingInspectionPOListTable tbody').append('<tr><td colspan="2">No purchase orders found</td></tr>');
-                    return;
-                }
-
-                $.each(response.purchaseOrders, function(index, po) {
-                    $('#incomingInspectionPOListTable tbody').append(`
-                        <tr>
-                            <td>${po.po_number}</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary m-auto d-flex px-2 view-incoming-inspection-docs" data-po="${po.po_number}">
-                                    <i class="fa fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `);
-                });
-            },
-            error: function(xhr) {
-                alert('Failed to fetch purchase orders');
-                $('#incomingInspectionPOListContainer').hide();
-            }
-        });
-    }
-
-    function loadIncomingInspectionDocs(poNumber) {
-        if (!currentProjectId || !poNumber) {
-            console.error('Project ID or PO Number is undefined');
-            alert('Project ID or PO Number is not available.');
-            return;
-        }
-
-        $.ajax({
-            url: '{{ route("getIncomingInspectionDocs") }}',
-            type: 'GET',
-            data: {
-                id: currentProjectId,
-                po_number: poNumber
-            },
-            success: function(response) {
-                if (!response.success) {
-                    alert(response.message || 'No documents found');
-                    $('#incomingInspectionDocsTable tbody').empty();
-                    $('#noIncomingInspectionDocsMessage').show();
-                    $('#incomingInspectionDocsContainer').show();
-                    return;
-                }
-
-                $('#incomingInspectionPOListContainer').hide();
-                $('#incomingInspectionDocsContainer').show();
-                $('#incomingInspectionDocsTable tbody').empty();
-                $('#noIncomingInspectionDocsMessage').hide();
-
-                if (response.documents.length === 0) {
-                    $('#noIncomingInspectionDocsMessage').show();
-                } else {
-                    $.each(response.documents, function(index, doc) {
-                        var fileExtension = doc.name.split('.').pop().toLowerCase();
-                        var iconClass = getIconClass(fileExtension);
-                        let rowHtml = `
-                            <tr data-path="${doc.path}">
-                                <td>
-                                    <a href="{{ asset('') }}${doc.path}" target="_blank" class="d-flex align-items-center text-decoration-none">
-                                        <i class="${iconClass} mr-2"></i>
-                                        <span>${doc.name}</span>
-                                    </a>
-                                </td>`;
-
-                        // Show delete button only if Quality role
-                        if (isQuality) {
-                            rowHtml += `
-                                <td>
-                                    <button class="btn btn-danger btn-sm d-flex m-auto delete-incoming-inspection-doc" data-path="${doc.path}">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </td>`;
-                        }
-                        rowHtml += `</tr>`;
-                        $('#incomingInspectionDocsTable tbody').append(rowHtml);
-                    });
-                }
-
-                $.ajax({
-                    url: '{{ route("getProjectById", ["id" => "projectIdPlaceholder"]) }}'.replace('projectIdPlaceholder', currentProjectId),
-                    type: 'GET',
-                    success: function(projectResponse) {
-                        if (projectResponse.success) {
-                            const projectNo = projectResponse.project.project_no;
-                            const path = `${projectNo}/Quality/Incoming Inspection/${poNumber}`;
-                            $('#incomingInspectionPathDisplay').text(path);
-                        }
-                    },
-                    error: function(xhr) {
-                        console.error('Failed to fetch project details:', xhr.responseText);
-                    }
-                });
-            },
-            error: function(xhr) {
-                alert('Failed to fetch documents');
-                $('#incomingInspectionDocsContainer').hide();
             }
         });
     }
