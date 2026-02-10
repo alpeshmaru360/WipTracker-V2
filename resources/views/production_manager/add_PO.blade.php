@@ -124,17 +124,12 @@
 
                                 <div class="row mt-3">
                                     <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-3">
-                                        <label class="form-label" for="">Request Approvals<span class="text-danger">*</span></label>
+                                        <label class="form-label" for="">Approval</label>
                                     </div>
                                     <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-7 d-flex">
                                         <div class="text-center mr-3">
                                             <input class="me-2 req_for_finance_approval" type="checkbox"
-                                                name="is_production_manager_approved" id="is_production_manager_approved" value="1" />
-                                            <span for="is_production_manager_approved" class="d-block">Production Manager</span>
-                                        </div>
-                                        <div class="text-center mr-3">
-                                            <input class="me-2 req_for_finance_approval" type="checkbox"
-                                                name="is_production_engineer_approved" id="is_production_engineer_approved" value="1" checked disabled />
+                                                name="is_production_engineer_approved" id="is_production_engineer_approved" value="1" disabled />
                                             <span for="is_production_engineer_approved" class="d-block">Production Engineer</span>
                                         </div>
                                     </div>

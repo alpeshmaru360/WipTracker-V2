@@ -6,190 +6,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="procurement_inbox_page main_section bg-white m-4 pb-5">
-    <div class="d-flex justify-content-between align-items-center px-5 pt-3">
-        <h3 class="pt-4 text-bold text-left text-uppercase">Pending BOM Check</h3>
-        <a class="mt-4 mb-2 btn btn-primary btn-sm py-2 px-3" onclick="location.reload();">
-            <i class="fa fa-refresh text-light">&#xf021;</i>
-        </a>
-    </div>
-
-    <hr class="mx-5 mt-2 mb-2" />
-
-    <div class="container-fluid px-5 mx-3">
-        <div class="row mt-3 table-responsive">
-            @if(count($bom_check) > 0)
-            <table class="table table-hover table-bordered w-100 text-center" id="procument_role_pending_task">
-                <thead>
-                    <tr>
-                        <th scope="col" class="project_table_heading">Request Date</th>
-                        <th scope="col" class="project_table_heading">Deadline</th>
-                        <th scope="col" class="project_table_heading">Project No.</th>
-                        <th scope="col" class="project_table_heading">Project Name</th>
-                        <th scope="col" class="project_table_heading">Article No.</th>
-                        <th scope="col" class="project_table_heading">Product Description</th>
-                        <th scope="col" class="project_table_heading">QTY</th>
-                        <th scope="col" class="project_table_heading">Check BOM</th>
-                        <th scope="col" class="project_table_heading">Remarks</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($bom_check as $val)
-                    <tr>
-                        @php
-                            $requestDate = null;
-                            $drawingMissing = false;
-                            $bomMissing = false;
-
-                            // Pricing Tool = 1, only drawing
-                            if ($val->projects->is_pricing_tool_quotation_number == 1) {
-                                if ($val->drawing_req_estimation_manager == 0) {
-                                    $requestDate = $val->created_at;
-                                } elseif (!empty($val->drawing_upload_date)) {
-                                    $requestDate = \Carbon\Carbon::parse($val->drawing_upload_date);
-                                } else {
-                                    $drawingMissing = true;
-                                }
-                            } else {
-                                // Pricing Tool = 0, check both drawing + BOM
-                                // Drawing
-                                if ($val->drawing_req_estimation_manager == 0) {
-                                    $drawingDate = $val->created_at;
-                                } elseif (!empty($val->drawing_upload_date)) {
-                                    $drawingDate = \Carbon\Carbon::parse($val->drawing_upload_date);
-                                } else {
-                                    $drawingMissing = true;
-                                }
-
-                                // BOM
-                                if ($val->bom_req_estimation_manager == 0) {
-                                    $bomDate = $val->created_at;
-                                } elseif (!empty($val->bom_upload_date)) {
-                                    $bomDate = \Carbon\Carbon::parse($val->bom_upload_date);
-                                } else {
-                                    $bomMissing = true;
-                                }
-
-                                // Take max date if both are uploaded
-                                if (!$drawingMissing && !$bomMissing) {
-                                    $requestDate = $drawingDate > $bomDate ? $drawingDate : $bomDate;
-                                }
-                            }
-
-                            // Determine the message
-                            if ($drawingMissing && $bomMissing) {
-                                $message = 'Waiting for Estimation Drawing & BOM PDF';
-                            } elseif ($drawingMissing) {
-                                $message = 'Waiting for Estimation Drawing PDF';
-                            } elseif ($bomMissing) {
-                                $message = 'Waiting for Estimation BOM PDF';
-                            } else {
-                                $message = $requestDate ? $requestDate->format('d-m-y H:i') : null;
-                            }
-                        @endphp
-
-                        <td>{{ $message }}</td>
-
-                        <td class="{{ $val->deadline && $requestDate && \Carbon\Carbon::now()->greaterThan($val->deadline) ? 'text-danger' : 'text-success' }}">
-                            {{ $val->deadline && $requestDate ? $val->deadline->format('d-m-y H:i') : '--' }}
-                        </td>
-                        <td>{{$val->projects['project_no']}}</td>
-                        <td>{{$val->projects['project_name']}}</td>
-                        <td>{{$val->full_article_number}}</td>
-                        <td>{{ $val->description}}</td>
-                        <td>{{$val->qty}}</td>
-                        <td>
-                            <button class="btn btn-info check-bom-btn btn-primary py-1 px-2"
-                                data-id="{{ $val->id }}"
-                                data-toggle="modal"
-                                data-target="#bomModal"
-                                data-drawing_req_estimation_manager="{{$val->drawing_req_estimation_manager}}">
-                                <i class="fa fa-eye"></i>
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-primary add-remark-btn py-1 px-2"
-                                data-id="{{ $val->id }}"
-                                data-toggle="modal"
-                                data-target="#remarkModal">
-                                <i class="fa fa-plus"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            @else
-            <div class="alert alert-info w-100">
-                No Pending BOM Check found.
-            </div>
-            @endif
-        </div>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center px-5 pt-3">
-        <h3 class="pt-4 text-bold text-left text-uppercase">BOM Items - Place PO</h3>
-        <a class="mt-4 mb-2 btn btn-primary btn-sm py-2 px-3" onclick="location.reload();">
-            <i class="fa fa-refresh text-light">&#xf021;</i>
-        </a>
-    </div>
-
-    <hr class="mx-5 mt-2 mb-2" />
-
-    <div class="container-fluid px-5 mx-3">
-        <div class="row mt-3 table-responsive">
-            @if(count($pending_po_orders) > 0)
-            <table class="table table-hover table-bordered w-100 text-center" id="pending_po_stock_comparison">
-                <thead>
-                    <tr>
-                        <th scope="col" class="project_table_heading">Request Date</th>
-                        <th scope="col" class="project_table_heading">Deadline</th>
-                        <th scope="col" class="project_table_heading">Project No.</th>
-                        <th scope="col" class="project_table_heading">Project Name</th>
-                        <th scope="col" class="project_table_heading">Article No.</th>
-                        <th scope="col" class="project_table_heading">Product Description</th>
-                        <th scope="col" class="project_table_heading">QTY</th>
-                        <th scope="col" class="project_table_heading">View BOM</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($pending_po_orders as $bom)
-                    <tr>
-                        <td>
-                            @php
-                            $processedDate = \App\Models\StockBOMPo::where('project_id', $bom->project_id)
-                            ->where('product_id', $bom->id)
-                            ->value('processed_at');
-                            @endphp
-                            {{ $processedDate ? \Carbon\Carbon::parse($processedDate)->format('d-m-y H:i') : 'N/A' }}
-                        </td>
-                        <td class="{{ $bom->deadline && \Carbon\Carbon::now()->greaterThan($bom->deadline) ? 'text-danger' : 'text-success' }}">
-                            {{ $bom->deadline ? $bom->deadline->format('d-m-y H:i') : 'N/A' }}
-                        </td>
-                        <td>{{ $bom->projects->project_no ?? '-' }}</td>
-                        <td>{{ $bom->projects['project_name']}}</td>
-                        <td>{{ $bom->full_article_number }}</td>
-                        <td>{{ $bom->description }}</td>
-                        <td>{{ $bom->qty }}</td>
-                        <td>
-                            <button class="btn btn-info check-bom-btn btn-primary py-1 px-2"
-                                data-id="{{ $bom->id }}"
-                                data-toggle="modal"
-                                data-target="#bomModal">
-                                <i class="fa fa-eye"></i>
-                            </button>
-                        </td>                      
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            @else
-            <div class="alert alert-info w-100">
-                No Pending PO Orders from Stock Comparison.
-            </div>
-            @endif
-        </div>
-    </div>    
+<div class="procurement_inbox_page main_section bg-white m-4 pb-5">   
 
     <div class="d-flex justify-content-between align-items-center px-5 pt-3">
         <h3 class="pt-4 text-bold text-left text-uppercase">Pending BOM Upload from Estimation Manager Side</h3>
@@ -312,12 +129,6 @@
                     <h5 class="modal-title" id="rejectionReasonModalLabel">Rejection Reasons</h5>
                 </div>
                 <div class="modal-body">
-                    @if(isset($val->is_production_manager_approved) && $val->is_production_manager_approved == 2)
-                    <div class="mb-3" id="managerReasonSection">
-                        <label class="form-label"><strong>Assembly Manager's Reason:</strong></label>
-                        <textarea class="form-control" id="managerReason" readonly>{{ $val->rejection_reason_production_manager ?? 'No reason provided' }}</textarea>
-                    </div>
-                    @endif
                     @if(isset($val->is_production_engineer_approved) && $val->is_production_engineer_approved == 2)
                     <div class="mb-3" id="engineerReasonSection">
                         <label class="form-label"><strong>Production Engineer's Reason:</strong></label>
@@ -506,24 +317,7 @@
 
     <script>
         $(document).ready(function() {
-            $('#bomTableBody').empty();
-            $('#procument_role_pending_task').DataTable().destroy();
-            $('#procument_role_pending_task').DataTable({
-                paging: true,
-                pageLength: 2,
-                lengthMenu: [2, 5, 10, 25, 50, 100],
-                searching: true,
-                ordering: false
-            });
-            $('#procument_role_pending_task').removeClass('dataTable');
-            $('#pending_po_stock_comparison').DataTable({
-                paging: true,
-                pageLength: 2,
-                lengthMenu: [2, 5, 10, 25, 50, 100],
-                searching: true,
-                ordering: false
-            });
-            $('#pending_po_stock_comparison').removeClass('dataTable');            
+            $('#bomTableBody').empty();           
             $('#pending_bom_upload').DataTable({
                 paging: true,
                 pageLength: 2,
@@ -1112,12 +906,13 @@
         document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll(".view-reasons-btn").forEach(button => {
                 button.addEventListener("click", function() {
-                    let managerReason = this.getAttribute("data-manager-reason") || 'N/A';
                     let engineerReason = this.getAttribute("data-engineer-reason") || 'N/A';
 
                     // Set the textarea values, ensuring null/empty is replaced with 'N/A'
-                    document.getElementById("managerReason").value = managerReason.trim() ? managerReason : 'N/A';
-                    document.getElementById("engineerReason").value = engineerReason.trim() ? engineerReason : 'N/A';
+                    const engineerTextarea = document.getElementById("engineerReason");
+                    if (engineerTextarea) {
+                        engineerTextarea.value = engineerReason.trim() ? engineerReason : 'N/A';
+                    }
                 });
             });
         });
@@ -1126,16 +921,10 @@
             const viewReasonButtons = document.querySelectorAll('.view-reasons-btn');
             viewReasonButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const managerReason = this.getAttribute('data-manager-reason');
                     const engineerReason = this.getAttribute('data-engineer-reason');
                     // Update modal content
-                    const managerTextarea = document.getElementById('managerReason');
                     const engineerTextarea = document.getElementById('engineerReason');
-                    const managerSection = document.getElementById('managerReasonSection');
                     const engineerSection = document.getElementById('engineerReasonSection');
-                    if (managerSection && managerTextarea) {
-                        managerTextarea.value = managerReason;
-                    }
                     if (engineerSection && engineerTextarea) {
                         engineerTextarea.value = engineerReason;
                     }

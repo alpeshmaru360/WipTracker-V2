@@ -89,10 +89,6 @@
                                     </div>
                                     <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-7 d-flex">
                                         <div class="text-center mr-3">
-                                            <input class="me-2 req_for_finance_approval" type="checkbox" name="is_production_manager_approved" id="is_production_manager_approved" value="1" {{ $purchaseOrder->is_production_manager_approved == 2 ? 'checked' : '' }} disabled />
-                                            <span for="is_production_manager_approved" style="display: block;">Production Manager</span>
-                                        </div>
-                                        <div class="text-center mr-3">
                                             <input class="me-2 req_for_finance_approval" type="checkbox" name="is_production_engineer_approved" id="is_production_engineer_approved" value="1" {{ $purchaseOrder->is_production_engineer_approved == 2 ? 'checked' : '' }} disabled />
                                             <span for="is_production_engineer_approved" style="display: block;">Production Engineer</span>
                                         </div>
