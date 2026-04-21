@@ -18,5 +18,11 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-composer.lock
-package-lock.json
+
+/storage/logs
+/storage/framework
+/storage/debugbar
+.DS_Store
+Thumbs.db
+
+* text=auto
